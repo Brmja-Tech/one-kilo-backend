@@ -30,16 +30,6 @@ Route::get('/countries',                            [LocationController::class, 
 Route::get('/countries/{country_id}/governorates',  [LocationController::class, 'governorates']);
 ## ================== LOOKUPS (Mobile) ==================
 
-## ================== COMMERCE ================== ##
-Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{slug}', [CategoryController::class, 'show']);
-Route::get('/categories/{slug}/products', [ProductController::class, 'categoryProducts']);
-Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{slug}', [ProductController::class, 'show']);
-## ================== COMMERCE ================== ##
-
-
-
 ## ------------------ AUTH ROUTES ------------------ ##
 Route::controller(AuthController::class)->group(function () {
     Route::post('/register',     'register')->middleware('guest');
@@ -60,6 +50,16 @@ Route::post('/forgot/verify-otp',       [ForgotController::class, 'verifyOtp'])-
 Route::post('/forgot/resend-otp',       [ForgotController::class, 'resendOtp'])->middleware('guest');
 Route::post('/forgot/reset-password',   [ForgotController::class, 'resetPassword'])->middleware('guest');
 ## ------------------ Forgot Password ------------------ ##
+
+
+## ================== COMMERCE ================== ##
+Route::get('/categories', [CategoryController::class, 'index']);
+Route::get('/categories/{slug}', [CategoryController::class, 'show']);
+Route::get('/categories/{slug}/products', [ProductController::class, 'categoryProducts']);
+Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/{slug}', [ProductController::class, 'show']);
+## ================== COMMERCE ================== ##
+
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::get('/favorites', [FavoriteController::class, 'index']);
