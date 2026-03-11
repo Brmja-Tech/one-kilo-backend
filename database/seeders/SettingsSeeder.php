@@ -3,10 +3,10 @@
 namespace Database\Seeders;
 
 use App\Models\About;
-use App\Models\Terms;
+use App\Models\Faq;
 use App\Models\Privacy;
 use App\Models\Setting;
-use App\Models\Faq;
+use App\Models\Terms;
 use Illuminate\Database\Seeder;
 
 class SettingsSeeder extends Seeder
@@ -16,181 +16,202 @@ class SettingsSeeder extends Seeder
      */
     public function run(): void
     {
-        $defaultImage = 'uploads/images/logo.png';
+        $defaultLogo = 'uploads/images/logo.png';
+        $defaultImage = 'uploads/images/image.png';
 
-        $data = [
-            // Translatable
+        $settings = Setting::query()->firstOrNew([]);
+        $settings->fill([
             'site_name' => [
-                'en' => 'FIX Store',
-                'ar' => 'FIX Store',
+                'en' => 'One Kilo',
+                'ar' => 'ون كيلو',
             ],
             'site_title' => [
-                'en' => 'FIX Store — Mobiles & Spare Parts',
-                'ar' => 'FIX Store — موبايلات وقطع غيار',
+                'en' => 'One Kilo | Grocery delivery and daily essentials',
+                'ar' => 'ون كيلو | مقاضي وسوبر ماركت بتوصيل سريع',
             ],
             'site_desc' => [
-                'en' => 'Shop mobiles, accessories, and original spare parts with fast delivery and secure checkout.',
-                'ar' => 'تسوّق الموبايلات والإكسسوارات وقطع الغيار الأصلية مع توصيل سريع ودفع آمن.',
+                'en' => 'Order fresh groceries, pantry staples, drinks, and household essentials with fast, reliable delivery.',
+                'ar' => 'اطلب الخضار والفاكهة والمنتجات اليومية ومستلزمات البيت بتوصيل سريع وموثوق.',
             ],
             'site_address' => [
                 'en' => 'Cairo, Egypt',
                 'ar' => 'القاهرة، مصر',
             ],
             'meta_key' => [
-                'en' => 'mobiles, smartphones, spare parts, phone parts, accessories, screens, batteries, chargers',
-                'ar' => 'موبايلات, هواتف, قطع غيار, اكسسوارات, شاشات, بطاريات, شواحن',
+                'en' => 'grocery delivery, supermarket, fresh food, vegetables, fruits, household essentials, offers',
+                'ar' => 'توصيل مقاضي, سوبر ماركت, خضار, فاكهة, مواد غذائية, مستلزمات منزلية, عروض',
             ],
             'meta_desc' => [
-                'en' => 'FIX Store offers mobiles, accessories, and trusted spare parts with clear pricing and support.',
-                'ar' => 'FIX Store يوفر موبايلات وإكسسوارات وقطع غيار موثوقة بأسعار واضحة ودعم سريع.',
+                'en' => 'One Kilo helps shoppers order fresh groceries and everyday essentials with clear pricing and dependable support.',
+                'ar' => 'ون كيلو يساعد العملاء على طلب المقاضي والاحتياجات اليومية بأسعار واضحة ودعم سريع.',
             ],
+            'site_phone' => '+201000000000',
+            'site_email' => 'hello@onekilo.test',
+            'email_support' => 'support@onekilo.test',
+            'facebook' => 'https://facebook.com/onekiloapp',
+            'x_url' => 'https://x.com/onekiloapp',
+            'youtube' => 'https://youtube.com/@onekiloapp',
+            'instagram' => 'https://instagram.com/onekiloapp',
+            'tiktok' => 'https://tiktok.com/@onekiloapp',
+            'linkedin' => 'https://linkedin.com/company/onekiloapp',
+            'whatsapp' => '+201000000000',
+            'logo' => $defaultLogo,
+            'favicon' => $defaultLogo,
+            'site_copyright' => '(c) ' . now()->year . ' One Kilo. All rights reserved.',
+            'promotion_url' => 'https://onekilo.test/offers/fresh-weekly-deals',
+        ]);
+        $settings->save();
 
-            // Non-translatable
-            'site_phone'    => '+201000000000',
-            'site_email'    => 'info@fix-store.com',
-            'email_support' => 'support@fix-store.com',
-
-            // Social
-            'facebook'  => 'https://facebook.com/fixstore',
-            'x_url'     => 'https://x.com/fixstore',
-            'youtube'   => 'https://youtube.com/@fixstore',
-            'instagram' => 'https://instagram.com/fixstore',
-            'tiktok'    => 'https://tiktok.com/@fixstore',
-            'linkedin'  => 'https://linkedin.com/company/fixstore',
-            'whatsapp'  => '+201000000000',
-
-            // Media (use default image everywhere for now)
-            'logo'    => $defaultImage,
-            'favicon' => $defaultImage,
-
-            // Others
-            'site_copyright' => '© ' . now()->year . ' FIX Store. All rights reserved.',
-            'promotion_url'  => 'https://fix-store.com/offers',
-        ];
-
-        // Update first row if exists, else create
-        $existing = Setting::query()->first();
-        if ($existing) {
-            $existing->update($data);
-        } else {
-            Setting::query()->create($data);
-        }
-
-        // About (idempotent)
-        About::query()->updateOrCreate(
-            ['id' => 1],
+        $this->syncPageContent(
+            About::class,
             [
                 'title' => [
-                    'en' => 'About FIX Store',
-                    'ar' => 'عن FIX Store',
+                    'en' => 'About One Kilo',
+                    'ar' => 'عن ون كيلو',
                 ],
                 'desc' => [
-                    'en' => 'FIX Store is your destination for mobiles, accessories, and reliable spare parts. We focus on quality, fair pricing, and fast delivery for consumers and merchants.',
-                    'ar' => 'FIX Store هو وجهتك للموبايلات والإكسسوارات وقطع الغيار الموثوقة. نركز على الجودة والسعر المناسب والتوصيل السريع للمستهلك والتاجر.',
+                    'en' => 'One Kilo is a supermarket delivery app built for fast reorders, fresh groceries, and dependable service for busy households.',
+                    'ar' => 'ون كيلو تطبيق سوبر ماركت وتوصيل مقاضي مصمم لإعادة الطلب بسرعة وتوفير منتجات طازجة وخدمة يعتمد عليها للعائلات المشغولة.',
                 ],
                 'banner' => $defaultImage,
-                'image'  => $defaultImage,
+                'image' => $defaultImage,
             ]
         );
 
-        // Privacy (idempotent)
-        Privacy::query()->updateOrCreate(
-            ['id' => 1],
+        $this->syncPageContent(
+            Privacy::class,
             [
                 'title' => [
                     'en' => 'Privacy Policy',
                     'ar' => 'سياسة الخصوصية',
                 ],
                 'desc' => [
-                    'en' => 'We respect your privacy. Your data is used to process orders, provide support, and improve your shopping experience. We do not sell your personal information.',
-                    'ar' => 'نحترم خصوصيتك. تُستخدم بياناتك لمعالجة الطلبات وتقديم الدعم وتحسين تجربة التسوق. لا نقوم ببيع بياناتك الشخصية.',
+                    'en' => 'We use customer data only to process orders, coordinate delivery, provide support, and improve the shopping experience.',
+                    'ar' => 'نستخدم بيانات العملاء فقط لتنفيذ الطلبات وتنسيق التوصيل وتقديم الدعم وتحسين تجربة التسوق.',
                 ],
                 'banner' => $defaultImage,
-                'image'  => $defaultImage,
+                'image' => $defaultImage,
             ]
         );
 
-        // Terms (idempotent)
-        Terms::query()->updateOrCreate(
-            ['id' => 1],
+        $this->syncPageContent(
+            Terms::class,
             [
                 'title' => [
                     'en' => 'Terms & Conditions',
                     'ar' => 'الشروط والأحكام',
                 ],
                 'desc' => [
-                    'en' => 'By using FIX Store, you agree to our terms regarding orders, payments, returns, and warranty policies. Please read them carefully before purchasing.',
-                    'ar' => 'باستخدام FIX Store، أنت توافق على الشروط الخاصة بالطلبات والدفع والاسترجاع وسياسات الضمان. يُرجى قراءتها جيدًا قبل الشراء.',
+                    'en' => 'By placing an order through One Kilo, you agree to our policies for delivery windows, item substitutions, returns, and payment confirmation.',
+                    'ar' => 'عند إتمام طلب عبر ون كيلو فأنت توافق على سياسات مواعيد التوصيل واستبدال الأصناف والاسترجاع وتأكيد الدفع.',
                 ],
                 'banner' => $defaultImage,
-                'image'  => $defaultImage,
+                'image' => $defaultImage,
             ]
         );
 
-        // FAQs (idempotent by English question to avoid duplicates)
-        $faqs = [
+        $this->syncFaqs([
             [
                 'question' => [
-                    'en' => 'How can I order from FIX Store?',
-                    'ar' => 'إزاي أطلب من FIX Store؟',
+                    'en' => 'How does grocery delivery work on One Kilo?',
+                    'ar' => 'كيف يعمل توصيل المقاضي في ون كيلو؟',
                 ],
                 'answer' => [
-                    'en' => 'Browse products, add items to your cart, then proceed to checkout and confirm your order.',
-                    'ar' => 'اختار المنتجات، ضيفها للسلة، وبعد كده كمل خطوة الدفع وأكد الطلب.',
+                    'en' => 'Browse the catalog, add products to your cart, choose your address and delivery time, then confirm the order.',
+                    'ar' => 'تصفح المنتجات ثم أضف احتياجاتك إلى السلة واختر العنوان وموعد التوصيل وبعدها أكمل تأكيد الطلب.',
                 ],
                 'status' => 1,
             ],
             [
                 'question' => [
-                    'en' => 'Do you sell original spare parts?',
-                    'ar' => 'هل بتبيعوا قطع غيار أصلية؟',
+                    'en' => 'Can I schedule my order for later today?',
+                    'ar' => 'هل يمكنني جدولة طلبي لوقت لاحق اليوم؟',
                 ],
                 'answer' => [
-                    'en' => 'We offer reliable spare parts with clear specifications. Product pages show condition, compatibility, and warranty details when available.',
-                    'ar' => 'بنوفّر قطع غيار موثوقة بمواصفات واضحة. صفحة المنتج بتوضح الحالة والتوافق والضمان إن وُجد.',
+                    'en' => 'Yes. Available delivery windows depend on your area and the current order volume at checkout.',
+                    'ar' => 'نعم. مواعيد التوصيل المتاحة تعتمد على منطقتك وحجم الطلبات الحالي عند إتمام الشراء.',
                 ],
                 'status' => 1,
             ],
             [
                 'question' => [
-                    'en' => 'How long does delivery take?',
-                    'ar' => 'التوصيل بياخد قد إيه؟',
+                    'en' => 'What happens if an item is out of stock?',
+                    'ar' => 'ماذا يحدث إذا كان المنتج غير متوفر؟',
                 ],
                 'answer' => [
-                    'en' => 'Delivery time depends on your location. Most orders arrive within 1–3 business days.',
-                    'ar' => 'مدة التوصيل بتختلف حسب المكان. أغلب الطلبات بتوصل خلال 1–3 أيام عمل.',
+                    'en' => 'We can follow your substitution preferences or remove the item from the order before final billing.',
+                    'ar' => 'يمكننا تطبيق بدائل حسب تفضيلاتك أو حذف المنتج من الطلب قبل الفاتورة النهائية.',
                 ],
                 'status' => 1,
             ],
             [
                 'question' => [
-                    'en' => 'Can merchants buy in bulk?',
-                    'ar' => 'هل التاجر يقدر يشتري جملة؟',
+                    'en' => 'Is there a minimum order amount?',
+                    'ar' => 'هل يوجد حد أدنى لقيمة الطلب؟',
                 ],
                 'answer' => [
-                    'en' => 'Yes. Register as a merchant to access business details and support for bulk purchasing.',
-                    'ar' => 'أيوه. سجّل كتاجر علشان تضيف بيانات النشاط وتحصل على دعم للشراء بالجملة.',
+                    'en' => 'The minimum order value may vary by delivery zone and active campaigns. The cart shows the current requirement.',
+                    'ar' => 'قد يختلف الحد الأدنى للطلب حسب منطقة التوصيل والعروض الحالية، وستجد القيمة المطلوبة داخل السلة.',
                 ],
                 'status' => 1,
             ],
             [
                 'question' => [
-                    'en' => 'What is your return policy?',
-                    'ar' => 'إيه سياسة الاسترجاع؟',
+                    'en' => 'How are chilled and frozen products handled?',
+                    'ar' => 'كيف يتم التعامل مع المنتجات المبردة والمجمدة؟',
                 ],
                 'answer' => [
-                    'en' => 'Returns are accepted according to item condition and category. Please contact support with your order number.',
-                    'ar' => 'الاسترجاع متاح حسب حالة المنتج ونوعه. تواصل مع الدعم برقم الطلب.',
+                    'en' => 'Temperature-sensitive items are packed separately to help preserve product quality until delivery.',
+                    'ar' => 'يتم تغليف المنتجات الحساسة للحرارة بشكل منفصل للمساعدة في الحفاظ على جودتها حتى وقت التوصيل.',
                 ],
                 'status' => 1,
             ],
+            [
+                'question' => [
+                    'en' => 'How can I contact support about an order?',
+                    'ar' => 'كيف أتواصل مع الدعم بخصوص طلب؟',
+                ],
+                'answer' => [
+                    'en' => 'Reach us through the in-app contact form, support email, or WhatsApp number listed in the app settings.',
+                    'ar' => 'يمكنك التواصل معنا من خلال نموذج التواصل داخل التطبيق أو بريد الدعم أو رقم واتساب الموجود في الإعدادات.',
+                ],
+                'status' => 1,
+            ],
+        ]);
+    }
+
+    private function syncPageContent(string $modelClass, array $attributes): void
+    {
+        $record = $modelClass::query()->firstOrNew([]);
+        $record->fill($attributes);
+        $record->save();
+    }
+
+    private function syncFaqs(array $faqs): void
+    {
+        $existingFaqs = Faq::query()
+            ->get()
+            ->keyBy(fn (Faq $faq) => $faq->getTranslation('question', 'en'));
+
+        $legacyQuestions = [
+            'How can I order from FIX Store?',
+            'Do you sell original spare parts?',
+            'How long does delivery take?',
+            'Can merchants buy in bulk?',
+            'What is your return policy?',
         ];
 
-        foreach ($faqs as $faq) {
-            Faq::query()->updateOrCreate(
-                ['question->en' => $faq['question']['en']],
-                $faq
-            );
+        foreach ($faqs as $faqData) {
+            $englishQuestion = $faqData['question']['en'];
+
+            $faq = $existingFaqs->get($englishQuestion, new Faq());
+            $faq->fill($faqData);
+            $faq->save();
         }
+
+        $existingFaqs
+            ->filter(fn (Faq $faq, string $question) => in_array($question, $legacyQuestions, true))
+            ->each
+            ->delete();
     }
 }

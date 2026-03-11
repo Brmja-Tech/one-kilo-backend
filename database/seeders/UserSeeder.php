@@ -2,6 +2,8 @@
 
 namespace Database\Seeders;
 
+use App\Models\Country;
+use App\Models\Governorate;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -12,13 +14,27 @@ class UserSeeder extends Seeder
      */
     public function run(): void
     {
-        User::create([
-            'image'                => 'uploads/images/image.png',
-            'name'                 => 'User',
-            'email'                => 'user@gmail.com',
-            'phone'                => '1234567890',
-            'email_verified_at'    => now(),
-            'password'             => bcrypt('password'),
-        ]);
+        $egypt = Country::query()
+            ->get()
+            ->first(fn (Country $country) => $country->getTranslation('name', 'en') === 'Egypt');
+
+        $cairo = Governorate::query()
+            ->where('country_id', $egypt?->id)
+            ->get()
+            ->first(fn (Governorate $governorate) => $governorate->getTranslation('name', 'en') === 'Cairo');
+
+        $user = User::query()->firstOrNew(['email' => 'shopper@onekilo.test']);
+        $user->image = 'uploads/images/image.png';
+        $user->name = 'Sample Shopper';
+        $user->email = 'shopper@onekilo.test';
+        $user->phone = '201155555555';
+        $user->password = 'Shopper@123456';
+        $user->gender = 'female';
+        $user->country_id = $egypt?->id;
+        $user->governorate_id = $cairo?->id;
+        $user->status = true;
+        $user->birth_date = '1996-01-15';
+        $user->email_verified_at = now();
+        $user->save();
     }
 }

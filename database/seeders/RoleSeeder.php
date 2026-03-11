@@ -3,7 +3,6 @@
 namespace Database\Seeders;
 
 use App\Models\Role;
-use Illuminate\Database\Console\Seeds\WithoutModelEvents;
 use Illuminate\Database\Seeder;
 
 class RoleSeeder extends Seeder
@@ -13,15 +12,17 @@ class RoleSeeder extends Seeder
      */
     public function run(): void
     {
-        $permissions = array_keys(config('permessions_ar'));
+        $permissions = array_keys(config('permessions_en'));
 
-        Role::create([
-            'role' => [
-                'ar' => 'المدير',
-                'en' => 'manger',
-            ],
-            'permession' => json_encode($permissions),
-        ]);
+        Role::query()->updateOrCreate(
+            ['id' => 1],
+            [
+                'role' => [
+                    'ar' => 'مدير النظام',
+                    'en' => 'Super Admin',
+                ],
+                'permession' => json_encode($permissions, JSON_UNESCAPED_UNICODE),
+            ]
+        );
     }
-
 }

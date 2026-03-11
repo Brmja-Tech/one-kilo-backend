@@ -2,27 +2,35 @@
 
 namespace Database\Seeders;
 
-use Illuminate\Database\Seeder;
 use App\Models\Country;
+use Illuminate\Database\Seeder;
 
 class CountrySeeder extends Seeder
 {
     public function run(): void
     {
-        Country::updateOrCreate(
-            ['name->en' => 'Egypt'],
+        $countries = [
             [
-                'name'      => ['ar' => 'مصر', 'en' => 'Egypt'],
+                'name' => [
+                    'ar' => 'مصر',
+                    'en' => 'Egypt',
+                ],
                 'status' => true,
-            ]
-        );
+            ],
+            [
+                'name' => [
+                    'ar' => 'المملكة العربية السعودية',
+                    'en' => 'Saudi Arabia',
+                ],
+                'status' => true,
+            ],
+        ];
 
-        Country::updateOrCreate(
-            ['name->en' => 'Saudi Arabia'],
-            [
-                'name'      => ['ar' => 'السعودية', 'en' => 'Saudi Arabia'],
-                'status' => true,
-            ]
-        );
+        foreach ($countries as $countryData) {
+            Country::query()->updateOrCreate(
+                ['name->en' => $countryData['name']['en']],
+                $countryData
+            );
+        }
     }
 }
