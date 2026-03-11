@@ -38,7 +38,7 @@ class AuthController extends Controller
     public function verifyOtp(Request $request)
     {
         $data = $request->validate([
-            'email'         => 'required|string|exists:users,email',
+            'phone'         => 'required|string|exists:users,phone',
             'token'         => 'required|string',
             'fcm_token'     => 'nullable',
         ]);
@@ -52,7 +52,7 @@ class AuthController extends Controller
 
     public function login(LoginRequest $request)
     {
-        $credenshais = $request->only('email', 'password', 'fcm_token');
+        $credenshais = $request->only('phone', 'password', 'fcm_token');
         $response = $this->authService->login($credenshais, 'web');
         return ApiResponse::sendResponse($response['status'], $response['message'], $response['data']);
     }
@@ -63,7 +63,7 @@ class AuthController extends Controller
     public function resendOtp(Request $request)
     {
         $data = $request->validate([
-            'email' => 'required|string|exists:users,email',
+            'phone' => 'required|string|exists:users,phone',
         ]);
         $response = $this->authService->resendOtp($data);
         return ApiResponse::sendResponse($response['status'], $response['message'], $response['data']);

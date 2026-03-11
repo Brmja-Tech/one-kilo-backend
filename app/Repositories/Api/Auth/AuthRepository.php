@@ -39,7 +39,7 @@ class AuthRepository
 
     public function verifyOtp($data)
     {
-        $user = User::where('email', $data['email'])->first();
+        $user = User::where('phone', $data['phone'])->first();
 
         if (!$user) {
             return [
@@ -53,7 +53,7 @@ class AuthRepository
             $user->update(['fcm_token' => $data['fcm_token']]);
         }
 
-        $otp = $this->otp->validate($data['email'], $data['token']);
+        $otp = $this->otp->validate($data['phone'], $data['token']);
         if (!$otp->status) {
             return [
                 'status' => 422,
@@ -91,7 +91,7 @@ class AuthRepository
             ];
         }
 
-        $user = User::where('email', $credentials['email'])->first();
+        $user = User::where('phone', $credentials['phone'])->first();
 
         if (!$user) {
             return [
@@ -102,18 +102,18 @@ class AuthRepository
         }
 
         if ($user->email_verified_at == null) {
-            $user->notify(new SendOtpNotify($user->email));
+            $user->notify(new SendOtpNotify($user->phone));
             return [
                 'status' => 415,
                 'message' => __('front.verify-account-first'),
-                'data' => ['email' => $user->email]
+                'data' => ['phone' => $user->phone]
             ];
         }
         if ($user->status == 0) {
             return [
                 'status' => 422,
                 'message' => __('front.account-not-activated'),
-                'data' => ['email' => $user->email]
+                'data' => ['phone' => $user->phone]
             ];
         }
 
@@ -144,7 +144,7 @@ class AuthRepository
 
     public function resendOtp($data)
     {
-        $user = User::where('email', $data['email'])->first();
+        $user = User::where('phone', $data['phone'])->first();
         if (!$user) {
             return [
                 'status' => 422,
@@ -154,13 +154,13 @@ class AuthRepository
         }
 
         // Send new OTP
-        $user->notify(new SendOtpNotify($user->email));
+        $user->notify(new SendOtpNotify($user->phone));
 
         return [
             'status' => 200,
             'message' => __('front.otp-resent-successfully'),
             'data' => [
-                'email' => $user->email
+                'phone' => $user->phone
             ]
         ];
     } // End resendOtp Method

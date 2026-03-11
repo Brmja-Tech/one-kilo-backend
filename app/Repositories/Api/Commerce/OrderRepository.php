@@ -1,0 +1,104 @@
+<?php
+
+namespace App\Repositories\Api\Commerce;
+
+use App\Models\Order;
+use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+
+class OrderRepository
+{
+    public function paginateForUser(int $userId, array $filters): LengthAwarePaginator
+    {
+        $query = Order::query()
+            ->where('user_id', $userId)
+            ->with(['address.country', 'address.governorate'])
+            ->withSum('items as items_count', 'quantity')
+            ->latest('id');
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['payment_status'])) {
+            $query->where('payment_status', $filters['payment_status']);
+        }
+
+        if (! empty($filters['payment_method'])) {
+            $query->where('payment_method', $filters['payment_method']);
+        }
+
+        if (! empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (! empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        return $query->paginate($filters['per_page'] ?? 15)->withQueryString();
+    }
+
+    public function findForUser(int $userId, string $reference): Order
+    {
+        $query = Order::query()
+            ->where('user_id', $userId)
+            ->with([
+                'coupon',
+                'items',
+                'address.country',
+                'address.governorate',
+                'walletTransaction',
+            ])
+            ->withSum('items as items_count', 'quantity');
+
+        if (ctype_digit($reference)) {
+            $query->where(function ($builder) use ($reference) {
+                $builder->whereKey((int) $reference)
+                    ->orWhere('order_number', $reference);
+            });
+        } else {
+            $query->where('order_number', $reference);
+        }
+
+        return $query->firstOrFail();
+    }
+
+    public function create(array $data): Order
+    {
+        return Order::query()->create($data);
+    }
+
+    public function update(Order $order, array $data): Order
+    {
+        $order->update($data);
+
+        return $order;
+    }
+
+    public function createItems(Order $order, array $items): void
+    {
+        $order->items()->createMany($items);
+    }
+
+    public function loadDetails(Order $order): Order
+    {
+        return $order->load([
+            'coupon',
+            'items',
+            'address.country',
+            'address.governorate',
+            'walletTransaction',
+        ]);
+    }
+
+    public function generateOrderNumber(): string
+    {
+        do {
+            $orderNumber = 'OK-' . now()->format('YmdHis') . '-' . random_int(1000, 9999);
+        } while (
+            Order::query()->where('order_number', $orderNumber)->exists()
+        );
+
+        return $orderNumber;
+    }
+}

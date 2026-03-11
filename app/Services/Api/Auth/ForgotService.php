@@ -17,12 +17,12 @@ class ForgotService
 
 
 
-    public function sendOTP($email)
+    public function sendOTP($phone)
     {
-        $user = $this->forgotRepository->getUserByEmail($email);
+        $user = $this->forgotRepository->getUserByPhone($phone);
         if (!$user) return false;
 
-        $user->notify(new SendOtpNotify($email));
+        $user->notify(new SendOtpNotify($phone));
         return true;
     }
 

@@ -1,0 +1,286 @@
+<?php
+
+namespace App\Services\Api\Commerce;
+
+use App\Exceptions\ApiBusinessException;
+use App\Models\Address;
+use App\Models\Cart;
+use App\Models\CartItem;
+use App\Models\Coupon;
+use App\Models\Order;
+use App\Repositories\Api\Commerce\AddressRepository;
+use App\Repositories\Api\Commerce\CartRepository;
+use App\Repositories\Api\Commerce\CouponRepository;
+use App\Repositories\Api\Commerce\OrderRepository;
+use Illuminate\Support\Facades\DB;
+
+class CheckoutService
+{
+    public function __construct(
+        protected CartRepository $cartRepository,
+        protected AddressRepository $addressRepository,
+        protected CouponRepository $couponRepository,
+        protected OrderRepository $orderRepository,
+        protected WalletService $walletService,
+        protected CardPaymentService $cardPaymentService
+    ) {
+    }
+
+    public function checkout(int $userId, array $data): array
+    {
+        return DB::transaction(function () use ($userId, $data) {
+            $address = $this->addressRepository->findActiveForUser($userId, (int) $data['address_id']);
+            $cart = $this->cartRepository->findForUser($userId);
+
+            if (! $cart || $cart->itemsCount() === 0) {
+                throw new ApiBusinessException(
+                    __('front.cart-empty'),
+                    422,
+                    ['cart' => [__('front.cart-empty')]]
+                );
+            }
+
+            $this->assertCartIsReadyForCheckout($cart);
+
+            $coupon = $this->resolveCheckoutCoupon($cart, $userId);
+            $totals = $this->calculateTotals($cart, $address, $coupon);
+            $order = $this->createOrder($userId, $address, $cart, $coupon, $totals, $data);
+
+            $this->orderRepository->createItems($order, $this->buildOrderItemsPayload($cart));
+
+            $wallet = null;
+
+            if ($order->payment_method === Order::PAYMENT_METHOD_CARD) {
+                $order = $this->orderRepository->update($order, [
+                    'payment_url' => $this->cardPaymentService->generatePaymentUrl($order),
+                ]);
+            }
+
+            if ($order->payment_method === Order::PAYMENT_METHOD_WALLET) {
+                $walletTransaction = $this->walletService->debitForOrder($userId, $order, $totals['total']);
+                $order = $this->orderRepository->update($order, [
+                    'wallet_transaction_id' => $walletTransaction->id,
+                ]);
+                $wallet = $this->walletService->refreshWallet($walletTransaction->wallet);
+            }
+
+            if ($coupon && $this->shouldConsumeCouponOnPlacement($order->payment_method)) {
+                $this->couponRepository->registerUsage($coupon, $userId, $order->id, $totals['discount_amount']);
+            }
+
+            $this->cartRepository->clear($cart);
+
+            return [
+                'order' => $this->orderRepository->loadDetails($order->fresh()),
+                'wallet' => $wallet,
+            ];
+        });
+    }
+
+    private function createOrder(
+        int $userId,
+        Address $address,
+        Cart $cart,
+        ?Coupon $coupon,
+        array $totals,
+        array $data
+    ): Order {
+        $now = now();
+        $state = $this->resolveOrderState($data['payment_method'], $now);
+
+        return $this->orderRepository->create([
+            'user_id' => $userId,
+            'address_id' => $address->id,
+            'coupon_id' => $coupon?->id,
+            'order_number' => $this->orderRepository->generateOrderNumber(),
+            'status' => $state['status'],
+            'payment_method' => $data['payment_method'],
+            'payment_status' => $state['payment_status'],
+            'subtotal' => $totals['subtotal'],
+            'discount_amount' => $totals['discount_amount'],
+            'delivery_fee' => $totals['delivery_fee'],
+            'total' => $totals['total'],
+            'notes' => $data['notes'] ?? null,
+            'placed_at' => $now,
+            'paid_at' => $state['paid_at'],
+            'meta' => [
+                'address_snapshot' => $this->buildAddressSnapshot($address),
+                'coupon_snapshot' => $coupon ? [
+                    'id' => $coupon->id,
+                    'code' => $coupon->code,
+                    'discount_amount' => $totals['discount_amount'],
+                ] : null,
+            ],
+        ]);
+    }
+
+    private function resolveOrderState(string $paymentMethod, $now): array
+    {
+        return match ($paymentMethod) {
+            Order::PAYMENT_METHOD_CASH_ON_DELIVERY => [
+                'status' => Order::STATUS_PENDING,
+                'payment_status' => Order::PAYMENT_STATUS_UNPAID,
+                'paid_at' => null,
+            ],
+            Order::PAYMENT_METHOD_CARD => [
+                'status' => Order::STATUS_AWAITING_PAYMENT,
+                'payment_status' => Order::PAYMENT_STATUS_PENDING,
+                'paid_at' => null,
+            ],
+            Order::PAYMENT_METHOD_WALLET => [
+                'status' => Order::STATUS_CONFIRMED,
+                'payment_status' => Order::PAYMENT_STATUS_PAID,
+                'paid_at' => $now,
+            ],
+            default => throw new ApiBusinessException(
+                __('front.invalid-payment-method'),
+                422,
+                ['payment_method' => [__('front.invalid-payment-method')]]
+            ),
+        };
+    }
+
+    private function buildOrderItemsPayload(Cart $cart): array
+    {
+        return $cart->items
+            ->map(function (CartItem $item) {
+                return [
+                    'product_id' => $item->product_id,
+                    'product_name' => $item->product?->name ?? '',
+                    'product_image' => $item->product?->image,
+                    'unit_price' => $item->unitPrice(),
+                    'quantity' => (int) $item->quantity,
+                    'line_total' => $item->lineTotal(),
+                ];
+            })
+            ->all();
+    }
+
+    private function calculateTotals(Cart $cart, Address $address, ?Coupon $coupon): array
+    {
+        $subtotal = round($cart->subtotal(), 2);
+        $discountAmount = $coupon ? $coupon->calculateDiscount($subtotal) : 0.0;
+        $deliveryFee = round((float) ($address->governorate?->shipping_price ?? 0), 2);
+        $total = round(max($subtotal - $discountAmount + $deliveryFee, 0), 2);
+
+        return [
+            'subtotal' => $subtotal,
+            'discount_amount' => $discountAmount,
+            'delivery_fee' => $deliveryFee,
+            'total' => $total,
+        ];
+    }
+
+    private function resolveCheckoutCoupon(Cart $cart, int $userId): ?Coupon
+    {
+        if (! $cart->coupon_id) {
+            return null;
+        }
+
+        $coupon = $this->couponRepository->lockById($cart->coupon_id);
+
+        if (! $coupon || ! $coupon->isActive()) {
+            throw new ApiBusinessException(
+                __('front.invalid-or-expired-coupon-code'),
+                422,
+                ['coupon' => [__('front.invalid-or-expired-coupon-code')]]
+            );
+        }
+
+        if (! $coupon->hasRemainingUsage()) {
+            throw new ApiBusinessException(
+                __('front.coupon-usage-limit-reached'),
+                422,
+                ['coupon' => [__('front.coupon-usage-limit-reached')]]
+            );
+        }
+
+        if ($coupon->usage_limit_per_user !== null
+            && $this->couponRepository->userUsageCount($coupon->id, $userId) >= $coupon->usage_limit_per_user) {
+            throw new ApiBusinessException(
+                __('front.coupon-user-usage-limit-reached'),
+                422,
+                ['coupon' => [__('front.coupon-user-usage-limit-reached')]]
+            );
+        }
+
+        if (! $coupon->canApplyToSubtotal($cart->subtotal())) {
+            throw new ApiBusinessException(
+                __('front.coupon-minimum-order-not-met'),
+                422,
+                ['coupon' => [__('front.coupon-minimum-order-not-met')]]
+            );
+        }
+
+        return $coupon;
+    }
+
+    private function assertCartIsReadyForCheckout(Cart $cart): void
+    {
+        foreach ($cart->items as $item) {
+            if (! $item->product || ! $item->product->status) {
+                throw new ApiBusinessException(
+                    __('front.cart-product-not-available'),
+                    422,
+                    ['product' => [__('front.cart-product-not-available')]]
+                );
+            }
+
+            if ((int) $item->quantity < 1) {
+                throw new ApiBusinessException(
+                    __('front.invalid-cart-item-quantity'),
+                    422,
+                    ['quantity' => [__('front.invalid-cart-item-quantity')]]
+                );
+            }
+
+            if ((int) $item->product->stock < 1) {
+                throw new ApiBusinessException(
+                    __('front.cart-product-out-of-stock'),
+                    422,
+                    ['product' => [__('front.cart-product-out-of-stock')]]
+                );
+            }
+
+            if ((int) $item->quantity > (int) $item->product->stock) {
+                throw new ApiBusinessException(
+                    __('front.cart-insufficient-stock'),
+                    422,
+                    ['quantity' => [__('front.cart-insufficient-stock')]]
+                );
+            }
+        }
+    }
+
+    private function buildAddressSnapshot(Address $address): array
+    {
+        return [
+            'id' => $address->id,
+            'label' => $address->label,
+            'contact_name' => $address->contact_name,
+            'phone' => $address->phone,
+            'country_id' => $address->country_id,
+            'country_name' => $address->country?->name,
+            'governorate_id' => $address->governorate_id,
+            'governorate_name' => $address->governorate?->name,
+            'city' => $address->city,
+            'area' => $address->area,
+            'street' => $address->street,
+            'building_number' => $address->building_number,
+            'floor' => $address->floor,
+            'apartment_number' => $address->apartment_number,
+            'landmark' => $address->landmark,
+            'latitude' => $address->latitude !== null ? (float) $address->latitude : null,
+            'longitude' => $address->longitude !== null ? (float) $address->longitude : null,
+            'full_address' => $address->fullAddress(),
+        ];
+    }
+
+    private function shouldConsumeCouponOnPlacement(string $paymentMethod): bool
+    {
+        return in_array($paymentMethod, [
+            Order::PAYMENT_METHOD_CASH_ON_DELIVERY,
+            Order::PAYMENT_METHOD_WALLET,
+        ], true);
+    }
+}

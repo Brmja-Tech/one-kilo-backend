@@ -2,12 +2,12 @@
 
 namespace App\Exceptions;
 
+use App\Helpers\ApiResponse;
 use Throwable;
 use Illuminate\Validation\ValidationException;
 use Illuminate\Auth\AuthenticationException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\MethodNotAllowedHttpException;
-use App\Helpers\ApiResponse;
 
 class ApiExceptionHandler
 {
@@ -15,6 +15,14 @@ class ApiExceptionHandler
     {
         if (! $request->expectsJson()) {
             return null;
+        }
+
+        if ($e instanceof ApiBusinessException) {
+            return ApiResponse::sendResponse(
+                $e->status(),
+                $e->getMessage(),
+                $e->data()
+            );
         }
 
         if ($e instanceof ValidationException) {

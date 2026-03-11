@@ -17,17 +17,18 @@ class ForgotRepository
 
 
 
-    public function getUserByEmail($email)
+    public function getUserByPhone($phone)
     {
-        return User::where('email', $email)->first();
+        return User::where('phone', $phone)->first();
     }
+
 
 
 
 
     public function verifyOtp($data)
     {
-        return $this->otp->validate($data['email'], $data['token']);
+        return $this->otp->validate($data['phone'], $data['token']);
     }
 
 
@@ -35,7 +36,7 @@ class ForgotRepository
 
     public function resetPassword($data)
     {
-        $user = $this->getUserByEmail($data['email']);
+        $user = $this->getUserByPhone($data['phone']);
         if (!$user) return false;
         $user->password = bcrypt($data['password']);
         $user->save();

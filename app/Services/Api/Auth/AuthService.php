@@ -33,7 +33,7 @@ class AuthService
             return false;
         }
         // Send OTP notification after registration
-        $user->notify(new SendOtpNotify($user->email));
+        $user->notify(new SendOtpNotify($user->phone));
 
         $user->tokens()->delete(); // Delete old tokens
         return $user ? [

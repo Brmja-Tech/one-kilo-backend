@@ -1,7 +1,5 @@
 <?php
 
-use Illuminate\Support\Str;
-
 return [
 
     /**
@@ -61,10 +59,7 @@ return [
      *    'method' => array('Str','slug'),
      */
 
-    'method' => function ($string, $separator) {
-        $stringWithUuid = $string . ' ' . Str::uuid();
-        return Str::slug($stringWithUuid, $separator);
-    },
+    'method' => null,
     /**
      * Separator to use when generating slugs.  Defaults to a hyphen.
      */

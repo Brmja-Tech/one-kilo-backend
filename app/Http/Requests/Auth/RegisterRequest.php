@@ -41,20 +41,20 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'name'       => 'required|string|max:255',
-            'email'      => 'nullable|string|email|max:255|unique:users,email',
-            'phone'      => [
+            'name'              => 'required|string|max:255',
+            'email'             => 'nullable|string|email|max:255|unique:users,email',
+            'phone'             => [
                 'required',
                 'string',
                 'regex:/^(\+20|0)\d{9,10}$/',
                 'unique:users,phone',
             ],
-            'birth_date' => 'nullable|date_format:Y-m-d',
-            'password'   => 'required|string|min:8|confirmed',
-            'image'      => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'country_id' => 'nullable|exists:countries,id',
-            'governorate_id' => 'nullable|exists:governorates,id',
-            
+            'birth_date'        => 'nullable|date_format:Y-m-d',
+            'password'          => 'required|string|min:8|confirmed',
+            'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
+            'country_id'        => 'nullable|exists:countries,id',
+            'governorate_id'    => 'nullable|exists:governorates,id',
+
         ];
     }
 

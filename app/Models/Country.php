@@ -27,4 +27,9 @@ class Country extends Model
     {
         return $this->hasMany(Governorate::class);
     }
+
+    public function addresses(): HasMany
+    {
+        return $this->hasMany(Address::class);
+    }
 }
