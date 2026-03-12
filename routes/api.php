@@ -54,10 +54,10 @@ Route::post('/forgot/reset-password',   [ForgotController::class, 'resetPassword
 
 ## ================== COMMERCE ================== ##
 Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{slug}', [CategoryController::class, 'show']);
-Route::get('/categories/{slug}/products', [ProductController::class, 'categoryProducts']);
+Route::get('/categories/{id}', [CategoryController::class, 'show']);
+Route::get('/categories/{id}/products', [ProductController::class, 'categoryProducts']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{slug}', [ProductController::class, 'show']);
+Route::get('/products/{id}', [ProductController::class, 'show']);
 ## ================== COMMERCE ================== ##
 
 

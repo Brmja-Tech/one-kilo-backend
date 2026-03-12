@@ -34,6 +34,20 @@ class ProductRepository
         return $query->firstOrFail();
     }
 
+
+    public function findActiveById(string $id, ?int $userId = null): Product
+    {
+        $query = Product::query()
+            ->select('products.*')
+            ->active()
+            ->with(['category', 'images'])
+            ->where('id', $id);
+
+        $this->attachFavoriteState($query, $userId);
+
+        return $query->firstOrFail();
+    }
+
     public function findActiveBySlugForCart(string $slug): Product
     {
         return Product::query()

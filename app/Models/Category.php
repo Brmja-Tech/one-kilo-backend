@@ -7,10 +7,16 @@ use Illuminate\Database\Eloquent\Builder;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
+use Spatie\Translatable\HasTranslations;
 
 class Category extends Model
 {
-    use Sluggable;
+    use Sluggable, HasTranslations;
+
+    public $translatable = [
+        'name',
+    ];
+
     protected $fillable = [
         'parent_id',
         'name',

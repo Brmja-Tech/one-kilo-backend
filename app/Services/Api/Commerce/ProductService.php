@@ -22,14 +22,14 @@ class ProductService
         return $this->productRepository->paginateForIndex($filters, $userId);
     }
 
-    public function show(string $slug, ?int $userId = null): Product
+    public function show(string $id, ?int $userId = null): Product
     {
-        return $this->productRepository->findActiveBySlug($slug, $userId);
+        return $this->productRepository->findActiveById($id, $userId);
     }
 
-    public function paginateForCategory(string $categorySlug, array $filters, ?int $userId = null): LengthAwarePaginator
+    public function paginateForCategory($id, array $filters, ?int $userId = null): LengthAwarePaginator
     {
-        $category = $this->categoryRepository->findActiveBySlug($categorySlug);
+        $category = $this->categoryRepository->findActiveById($id);
         $filters['category_ids'] = $filters['include_descendants'] ?? true
             ? $this->categoryRepository->branchIds($category)
             : [$category->id];

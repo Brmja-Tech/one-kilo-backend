@@ -80,7 +80,6 @@ class CategoryRepository
 
         if (array_key_exists('parent_id', $filters)) {
             $query->where('parent_id', $filters['parent_id']);
-
             return;
         }
 

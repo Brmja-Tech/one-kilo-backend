@@ -11,68 +11,104 @@ class CategorySeeder extends Seeder
     {
         $categories = [
             [
-                'name' => 'Fruits',
+                'name' => [
+                    'en' => 'Fruits',
+                    'ar' => 'الفواكه',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/01.jpg',
                 'sort_order' => 1,
                 'children' => [
                     [
-                        'name' => 'Citrus',
+                        'name' => [
+                            'en' => 'Citrus',
+                            'ar' => 'البرتقال',
+                        ],
                         'image' => 'dashboard/app-assets/images/slider/02.jpg',
                         'sort_order' => 1,
                     ],
                     [
-                        'name' => 'Imported Fruits',
+                        'name' => [
+                            'en' => 'Imported Fruits',
+                            'ar' => 'الفواكه المستوردة',
+                        ],
                         'image' => 'dashboard/app-assets/images/slider/03.jpg',
                         'sort_order' => 2,
                     ],
                 ],
             ],
             [
-                'name' => 'Vegetables',
+                'name' => [
+                    'en' => 'Vegetables',
+                    'ar' => 'الخضروات',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/04.jpg',
                 'sort_order' => 2,
                 'children' => [
                     [
-                        'name' => 'Leafy Greens',
+                        'name' => [
+                            'en' => 'Leafy Greens',
+                            'ar' => 'الخضروات الورقية',
+                        ],
                         'image' => 'dashboard/app-assets/images/slider/05.jpg',
                         'sort_order' => 1,
                     ],
                 ],
             ],
             [
-                'name' => 'Beverages',
+                'name' => [
+                    'en' => 'Beverages',
+                    'ar' => 'المشروبات',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/06.jpg',
                 'sort_order' => 3,
                 'children' => [
                     [
-                        'name' => 'Juice',
+                        'name' => [
+                            'en' => 'Juice',
+                            'ar' => 'عصير',
+                        ],
                         'image' => 'dashboard/app-assets/images/slider/07.jpg',
                         'sort_order' => 1,
                     ],
                     [
-                        'name' => 'Soda',
+                        'name' => [
+                            'en' => 'Soda',
+                            'ar' => ' soda',
+                        ],
                         'image' => 'dashboard/app-assets/images/slider/08.jpg',
                         'sort_order' => 2,
                     ],
                 ],
             ],
             [
-                'name' => 'Bakery',
+                'name' => [
+                    'en' => 'Bakery',
+                    'ar' => 'المخبوزات',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/09.jpg',
                 'sort_order' => 4,
             ],
             [
-                'name' => 'Snacks',
+                'name' => [
+                    'en' => 'Snacks',
+                    'ar' => 'الوجبات الخفيفة',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/10.jpg',
                 'sort_order' => 5,
             ],
             [
-                'name' => 'Dairy',
+                'name' => [
+                    'en' => 'Dairy',
+                    'ar' => 'الألبان',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/01.jpg',
                 'sort_order' => 6,
             ],
             [
-                'name' => 'Cleaning Supplies',
+                'name' => [
+                    'en' => 'Cleaning Supplies',
+                    'ar' => 'معدات التنظيف',
+                ],
                 'image' => 'dashboard/app-assets/images/slider/02.jpg',
                 'sort_order' => 7,
             ],
