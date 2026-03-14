@@ -36,7 +36,8 @@ class CartController extends ApiController
         return ApiResponse::sendResponse(
             200,
             __('front.product-add-to-cart'),
-            new CartResource($cart)
+            []
+            //new CartResource($cart)
         );
     }
 

@@ -44,7 +44,6 @@ class ProductRepository
             ->where('id', $id);
 
         $this->attachFavoriteState($query, $userId);
-
         return $query->firstOrFail();
     }
 
@@ -60,7 +59,7 @@ class ProductRepository
     {
         if ($userId) {
             $query->withExists([
-                'favorites as is_favorite' => fn (Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
+                'favorites as is_favorite' => fn(Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
             ]);
 
             return;
@@ -72,7 +71,7 @@ class ProductRepository
     private function applyFilters(Builder $query, array $filters): void
     {
         if (array_key_exists('status', $filters)) {
-            $query->where('status', $filters['status']);
+            $query->where('status', $filters['status'] ?? 1);
         }
 
         if (! empty($filters['category_ids'])) {

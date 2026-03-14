@@ -13,7 +13,6 @@ class CheckoutResource extends JsonResource
         $wallet = $this['wallet'] ?? null;
 
         return [
-            'order' => new OrderDetailsResource($order),
             'payment_method' => $order->payment_method,
             'payment_status' => $order->payment_status,
             'order_status' => $order->status,
@@ -25,6 +24,7 @@ class CheckoutResource extends JsonResource
                 'delivery_fee' => round((float) $order->delivery_fee, 2),
                 'total' => round((float) $order->total, 2),
             ],
+            'order' => new OrderDetailsResource($order),
         ];
     }
 }

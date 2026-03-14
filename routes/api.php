@@ -69,7 +69,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/addresses', [AddressController::class, 'store']);
     Route::post('/addresses/{id}/set-default', [AddressController::class, 'setDefault'])->whereNumber('id');
     Route::get('/addresses/{id}', [AddressController::class, 'show'])->whereNumber('id');
-    Route::put('/addresses/{id}', [AddressController::class, 'update'])->whereNumber('id');
+    Route::post('/addresses/{id}', [AddressController::class, 'update'])->whereNumber('id');
     Route::delete('/addresses/{id}', [AddressController::class, 'destroy'])->whereNumber('id');
 
     Route::get('/wallet/transactions', [WalletController::class, 'transactions']);
@@ -77,7 +77,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/add', [CartController::class, 'add']);
-    Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
+    Route::post('/cart/items/{id}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
     Route::delete('/cart/clear', [CartController::class, 'clear']);
     Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon']);

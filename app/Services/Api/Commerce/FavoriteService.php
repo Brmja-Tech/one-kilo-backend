@@ -10,8 +10,7 @@ class FavoriteService
     public function __construct(
         protected FavoriteRepository $favoriteRepository,
         protected ProductService $productService
-    ) {
-    }
+    ) {}
 
     public function paginate(int $userId, int $perPage = 15): LengthAwarePaginator
     {
@@ -22,11 +21,9 @@ class FavoriteService
     {
         $product = $this->productService->findActiveBySlugForCart($productSlug);
         $isFavorite = $this->favoriteRepository->toggle($userId, $product->id);
-        $displayProduct = $this->productService->show($productSlug, $userId);
 
         return [
             'is_favorite' => $isFavorite,
-            'product' => $displayProduct,
         ];
     }
 }

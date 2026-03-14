@@ -16,19 +16,19 @@ class UserSeeder extends Seeder
     {
         $egypt = Country::query()
             ->get()
-            ->first(fn (Country $country) => $country->getTranslation('name', 'en') === 'Egypt');
+            ->first(fn(Country $country) => $country->getTranslation('name', 'en') === 'Egypt');
 
         $cairo = Governorate::query()
             ->where('country_id', $egypt?->id)
             ->get()
-            ->first(fn (Governorate $governorate) => $governorate->getTranslation('name', 'en') === 'Cairo');
+            ->first(fn(Governorate $governorate) => $governorate->getTranslation('name', 'en') === 'Cairo');
 
         $user = User::query()->firstOrNew(['email' => 'shopper@onekilo.test']);
         $user->image = 'uploads/images/image.png';
         $user->name = 'Sample Shopper';
         $user->email = 'shopper@onekilo.test';
-        $user->phone = '201155555555';
-        $user->password = 'Shopper@123456';
+        $user->phone = '+201140158807';
+        $user->password = bcrypt('password');
         $user->gender = 'female';
         $user->country_id = $egypt?->id;
         $user->governorate_id = $cairo?->id;

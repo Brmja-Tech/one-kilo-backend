@@ -12,9 +12,7 @@ use App\Services\Api\Commerce\AddressService;
 
 class AddressController extends ApiController
 {
-    public function __construct(protected AddressService $service)
-    {
-    }
+    public function __construct(protected AddressService $service) {}
 
     public function index()
     {
@@ -74,7 +72,7 @@ class AddressController extends ApiController
         return ApiResponse::sendResponse(
             200,
             __('front.address-deleted-successfully'),
-            new AddressResource($address)
+            []
         );
     }
 

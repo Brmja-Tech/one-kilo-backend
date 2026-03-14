@@ -41,7 +41,6 @@ class FavoriteController extends ApiController
                 : __('front.favorite-removed-successfully'),
             [
                 'is_favorite' => $result['is_favorite'],
-                'product' => new ProductResource($result['product']),
             ]
         );
     }
