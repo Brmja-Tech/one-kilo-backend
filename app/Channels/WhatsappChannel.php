@@ -11,8 +11,8 @@ class WhatsappChannel
     /**
      * BULQ API settings
      */
-    protected string $apiUrl = 'https://app.bulq.chat/api/v1/elmohamy/messages/template';
-    protected string $token  = 'e205c2b49a07ed9f25f385ecded4e2b167f3ab67be89790b9c45f12f07e46bd4';
+    protected string $apiUrl = 'https://app.bulq.chat/api/v1/bluebird/messages/template';
+    protected string $token  = 'c2b9346330b70290c6b390ca8ec73eb65a91533ce984b2628bb7172a2cd3702c';
 
     /**
      * Send OTP via BULQ template endpoint.
