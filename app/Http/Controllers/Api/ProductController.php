@@ -29,9 +29,9 @@ class ProductController extends ApiController
         );
     }
 
-    public function show(Request $request, string $id)
+    public function show(Request $request, string $slug)
     {
-        $product = $this->service->show($id, $request->user('sanctum')?->id);
+        $product = $this->service->show($slug, $request->user('sanctum')?->id);
 
         return ApiResponse::sendResponse(
             200,
@@ -40,10 +40,10 @@ class ProductController extends ApiController
         );
     }
 
-    public function categoryProducts(ProductIndexRequest $request, string $id)
+    public function categoryProducts(ProductIndexRequest $request, string $slug)
     {
         $products = $this->service->paginateForCategory(
-            $id,
+            $slug,
             $request->filters(),
             $request->user('sanctum')?->id
         );

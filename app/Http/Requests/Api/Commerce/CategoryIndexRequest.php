@@ -12,7 +12,8 @@ class CategoryIndexRequest extends ApiFormRequest
         return [
             'search' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'boolean'],
-            'parent_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'parent_id' => ['prohibited'],
+            'parent_slug' => ['nullable', 'string', 'exists:categories,slug'],
             'root_only' => ['nullable', 'boolean'],
             'include_children' => ['nullable', 'boolean'],
             'sort' => ['nullable', Rule::in(['latest', 'oldest', 'name', 'sort_order'])],
@@ -29,8 +30,8 @@ class CategoryIndexRequest extends ApiFormRequest
             'status' => $this->has('status') ? $this->boolean('status') : true,
         ];
 
-        if ($this->filled('parent_id')) {
-            $filters['parent_id'] = (int) $this->validated('parent_id');
+        if ($this->filled('parent_slug')) {
+            $filters['parent_slug'] = $this->validated('parent_slug');
         } else {
             $filters['root_only'] = $this->has('root_only')
                 ? $this->boolean('root_only')
@@ -39,7 +40,7 @@ class CategoryIndexRequest extends ApiFormRequest
 
         $filters['include_children'] = $this->has('include_children')
             ? $this->boolean('include_children')
-            : (($filters['root_only'] ?? false) && ! isset($filters['parent_id']));
+            : (($filters['root_only'] ?? false) && ! isset($filters['parent_slug']));
 
         return $filters;
     }

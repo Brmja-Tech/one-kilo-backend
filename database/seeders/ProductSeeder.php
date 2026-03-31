@@ -5,6 +5,7 @@ namespace Database\Seeders;
 use App\Models\Category;
 use App\Models\Product;
 use Illuminate\Database\Seeder;
+use Illuminate\Support\Str;
 
 class ProductSeeder extends Seeder
 {
@@ -248,10 +249,12 @@ class ProductSeeder extends Seeder
         ];
 
         foreach ($products as $productData) {
-            $category = Category::query()->where('name->en', $productData['category'])->firstOrFail();
+            $category = Category::query()
+                ->where('slug', Str::slug($productData['category']))
+                ->firstOrFail();
 
             $product = Product::query()->firstOrNew([
-                'name' => $productData['name'],
+                'slug' => Str::slug($productData['name']['en']),
             ]);
 
             unset($productData['category']);

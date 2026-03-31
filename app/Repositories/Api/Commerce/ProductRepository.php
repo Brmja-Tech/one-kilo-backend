@@ -12,7 +12,7 @@ class ProductRepository
     {
         $query = Product::query()
             ->select('products.*')
-            ->with(['category', 'images']);
+            ->with(['category.parent:id,slug', 'images']);
 
         $this->attachFavoriteState($query, $userId);
         $this->applyFilters($query, $filters);
@@ -26,24 +26,11 @@ class ProductRepository
         $query = Product::query()
             ->select('products.*')
             ->active()
-            ->with(['category', 'images'])
+            ->with(['category.parent:id,slug', 'images'])
             ->where('slug', $slug);
 
         $this->attachFavoriteState($query, $userId);
 
-        return $query->firstOrFail();
-    }
-
-
-    public function findActiveById(string $id, ?int $userId = null): Product
-    {
-        $query = Product::query()
-            ->select('products.*')
-            ->active()
-            ->with(['category', 'images'])
-            ->where('id', $id);
-
-        $this->attachFavoriteState($query, $userId);
         return $query->firstOrFail();
     }
 
@@ -59,7 +46,7 @@ class ProductRepository
     {
         if ($userId) {
             $query->withExists([
-                'favorites as is_favorite' => fn(Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
+                'favorites as is_favorite' => fn (Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
             ]);
 
             return;
@@ -76,8 +63,6 @@ class ProductRepository
 
         if (! empty($filters['category_ids'])) {
             $query->whereIn('category_id', $filters['category_ids']);
-        } elseif (! empty($filters['category_id'])) {
-            $query->where('category_id', $filters['category_id']);
         }
 
         if (! empty($filters['search'])) {

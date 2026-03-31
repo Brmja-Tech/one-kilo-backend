@@ -54,10 +54,10 @@ Route::post('/forgot/reset-password',   [ForgotController::class, 'resetPassword
 
 ## ================== COMMERCE ================== ##
 Route::get('/categories', [CategoryController::class, 'index']);
-Route::get('/categories/{id}', [CategoryController::class, 'show']);
-Route::get('/categories/{id}/products', [ProductController::class, 'categoryProducts']);
+Route::get('/categories/{slug}', [CategoryController::class, 'show']);
+Route::get('/categories/{slug}/products', [ProductController::class, 'categoryProducts']);
 Route::get('/products', [ProductController::class, 'index']);
-Route::get('/products/{id}', [ProductController::class, 'show']);
+Route::get('/products/{slug}', [ProductController::class, 'show']);
 ## ================== COMMERCE ================== ##
 
 
@@ -78,6 +78,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/cart', [CartController::class, 'show']);
     Route::post('/cart/add', [CartController::class, 'add']);
     Route::post('/cart/items/{id}', [CartController::class, 'updateItem']);
+    Route::put('/cart/items/{id}', [CartController::class, 'updateItem']);
     Route::delete('/cart/items/{id}', [CartController::class, 'removeItem']);
     Route::delete('/cart/clear', [CartController::class, 'clear']);
     Route::post('/cart/apply-coupon', [CartController::class, 'applyCoupon']);

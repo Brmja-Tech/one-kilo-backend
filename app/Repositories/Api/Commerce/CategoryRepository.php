@@ -11,7 +11,8 @@ class CategoryRepository
 {
     public function paginateForIndex(array $filters): LengthAwarePaginator
     {
-        $query = Category::query();
+        $query = Category::query()
+            ->with('parent:id,slug');
 
         if ($filters['include_children'] ?? false) {
             $query->with('childrenRecursive');
@@ -27,16 +28,8 @@ class CategoryRepository
     {
         return Category::query()
             ->active()
-            ->with(['parent', 'childrenRecursive'])
+            ->with(['parent:id,slug', 'childrenRecursive'])
             ->where('slug', $slug)
-            ->firstOrFail();
-    }
-
-    public function findActiveById(int $id): Category
-    {
-        return Category::query()
-            ->active()
-            ->whereKey($id)
             ->firstOrFail();
     }
 
@@ -78,8 +71,13 @@ class CategoryRepository
             $query->where('name', 'like', '%' . $filters['search'] . '%');
         }
 
-        if (array_key_exists('parent_id', $filters)) {
-            $query->where('parent_id', $filters['parent_id']);
+        if (! empty($filters['parent_slug'])) {
+            $query->whereHas('parent', function (Builder $parentQuery) use ($filters) {
+                $parentQuery
+                    ->active()
+                    ->where('slug', $filters['parent_slug']);
+            });
+
             return;
         }
 

@@ -22,14 +22,14 @@ class ProductService
         return $this->productRepository->paginateForIndex($filters, $userId);
     }
 
-    public function show(string $id, ?int $userId = null): Product
+    public function show(string $slug, ?int $userId = null): Product
     {
-        return $this->productRepository->findActiveById($id, $userId);
+        return $this->productRepository->findActiveBySlug($slug, $userId);
     }
 
-    public function paginateForCategory($id, array $filters, ?int $userId = null): LengthAwarePaginator
+    public function paginateForCategory(string $slug, array $filters, ?int $userId = null): LengthAwarePaginator
     {
-        $category = $this->categoryRepository->findActiveById($id);
+        $category = $this->categoryRepository->findActiveBySlug($slug);
         $filters['category_ids'] = $filters['include_descendants'] ?? true
             ? $this->categoryRepository->branchIds($category)
             : [$category->id];
@@ -46,11 +46,6 @@ class ProductService
     {
         if (! empty($filters['category_slug'])) {
             $category = $this->categoryRepository->findActiveBySlug($filters['category_slug']);
-            $filters['category_ids'] = $filters['include_descendants'] ?? true
-                ? $this->categoryRepository->branchIds($category)
-                : [$category->id];
-        } elseif (! empty($filters['category_id'])) {
-            $category = $this->categoryRepository->findActiveById((int) $filters['category_id']);
             $filters['category_ids'] = $filters['include_descendants'] ?? true
                 ? $this->categoryRepository->branchIds($category)
                 : [$category->id];

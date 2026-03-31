@@ -22,7 +22,12 @@ class CommerceApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('code', 200)
             ->assertJsonPath('data.0.name', 'Fruits')
+            ->assertJsonPath('data.0.slug', 'fruits')
+            ->assertJsonPath('data.0.color', '0xFFE4572E')
             ->assertJsonPath('data.0.children.0.name', 'Citrus')
+            ->assertJsonPath('data.0.children.0.parent_slug', 'fruits')
+            ->assertJsonMissingPath('data.0.id')
+            ->assertJsonMissingPath('data.0.parent_id')
             ->assertJsonStructure([
                 'code',
                 'message',
@@ -44,10 +49,82 @@ class CommerceApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('code', 200)
             ->assertJsonPath('data.0.name', 'Mango Juice 1L')
+            ->assertJsonPath('data.0.slug', 'mango-juice-1l')
             ->assertJsonPath('data.0.is_favorite', true)
             ->assertJsonPath('data.0.has_active_discount', true)
             ->assertJsonPath('data.0.price_before_discount', 42)
-            ->assertJsonPath('data.0.price_after_discount', 37);
+            ->assertJsonPath('data.0.price_after_discount', 37)
+            ->assertJsonPath('data.0.category.slug', 'juice')
+            ->assertJsonPath('data.0.category.color', '0xFFFF9800')
+            ->assertJsonPath('data.0.category.parent_slug', 'beverages')
+            ->assertJsonMissingPath('data.0.id')
+            ->assertJsonMissingPath('data.0.category.id');
+    }
+
+    public function test_category_show_endpoint_uses_slug_and_returns_color(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $response = $this->getJson('/api/categories/beverages');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('code', 200)
+            ->assertJsonPath('data.slug', 'beverages')
+            ->assertJsonPath('data.color', '0xFF1946B9')
+            ->assertJsonMissingPath('data.id')
+            ->assertJsonMissingPath('data.parent_id');
+    }
+
+    public function test_category_products_and_product_show_endpoints_use_slugs(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $categoryProductsResponse = $this->getJson('/api/categories/juice/products');
+
+        $categoryProductsResponse
+            ->assertOk()
+            ->assertJsonPath('code', 200)
+            ->assertJsonPath('data.0.slug', 'mango-juice-1l')
+            ->assertJsonPath('data.0.category.slug', 'juice');
+
+        $productResponse = $this->getJson('/api/products/mango-juice-1l');
+
+        $productResponse
+            ->assertOk()
+            ->assertJsonPath('code', 200)
+            ->assertJsonPath('data.slug', 'mango-juice-1l')
+            ->assertJsonPath('data.category.slug', 'juice')
+            ->assertJsonPath('data.category.color', '0xFFFF9800')
+            ->assertJsonMissingPath('data.id')
+            ->assertJsonMissingPath('data.category.id');
+    }
+
+    public function test_category_and_product_filters_reject_legacy_numeric_parameters(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $this->getJson('/api/categories?parent_id=1')
+            ->assertUnprocessable()
+            ->assertJsonStructure(['data' => ['parent_id']]);
+
+        $this->getJson('/api/products?category_id=1')
+            ->assertUnprocessable()
+            ->assertJsonStructure(['data' => ['category_id']]);
+    }
+
+    public function test_category_listing_accepts_parent_slug_filter(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $response = $this->getJson('/api/categories?parent_slug=fruits');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('code', 200)
+            ->assertJsonCount(2, 'data')
+            ->assertJsonPath('data.0.parent_slug', 'fruits')
+            ->assertJsonPath('data.1.parent_slug', 'fruits');
     }
 
     public function test_cart_endpoints_cover_add_update_coupon_remove_and_clear(): void

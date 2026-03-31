@@ -17,6 +17,7 @@ return new class extends Migration
                 ->cascadeOnUpdate();
             $table->string('name');
             $table->string('slug')->unique();
+            $table->string('color', 10);
             $table->string('image')->nullable();
             $table->boolean('status')->default(true)->index();
             $table->unsignedInteger('sort_order')->nullable();

@@ -14,7 +14,7 @@ class FavoriteRepository
             ->select('products.*')
             ->active()
             ->whereHas('favorites', fn ($query) => $query->where('user_id', $userId))
-            ->with(['category', 'images'])
+            ->with(['category.parent:id,slug', 'images'])
             ->withExists([
                 'favorites as is_favorite' => fn ($query) => $query->where('user_id', $userId),
             ])

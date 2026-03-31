@@ -10,7 +10,7 @@ class ProductIndexRequest extends ApiFormRequest
     public function rules(): array
     {
         return [
-            'category_id' => ['nullable', 'integer', 'exists:categories,id'],
+            'category_id' => ['prohibited'],
             'category_slug' => ['nullable', 'string', 'exists:categories,slug'],
             'search' => ['nullable', 'string', 'max:255'],
             'status' => ['nullable', 'boolean'],
@@ -44,7 +44,7 @@ class ProductIndexRequest extends ApiFormRequest
                 : true,
         ];
 
-        foreach (['category_id', 'category_slug', 'min_price', 'max_price'] as $field) {
+        foreach (['category_slug', 'min_price', 'max_price'] as $field) {
             if ($this->filled($field)) {
                 $filters[$field] = $this->validated($field);
             }

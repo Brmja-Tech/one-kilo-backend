@@ -29,7 +29,7 @@ class CartRepository
         return $cart->load([
             'coupon',
             'items' => fn ($query) => $query->orderBy('id'),
-            'items.product' => fn ($query) => $query->with('category'),
+            'items.product' => fn ($query) => $query->with('category.parent:id,slug'),
         ]);
     }
 
@@ -38,7 +38,7 @@ class CartRepository
         return CartItem::query()
             ->whereKey($itemId)
             ->whereHas('cart', fn ($query) => $query->where('user_id', $userId))
-            ->with(['product.category', 'cart.coupon'])
+            ->with(['product.category.parent:id,slug', 'cart.coupon'])
             ->firstOrFail();
     }
 
