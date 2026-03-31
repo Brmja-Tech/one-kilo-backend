@@ -22,6 +22,11 @@ class ProductService
         return $this->productRepository->paginateForIndex($filters, $userId);
     }
 
+    public function getBestSellingProducts(array $filters, ?int $userId = null): LengthAwarePaginator
+    {
+        return $this->productRepository->paginateBestSelling($filters, $userId);
+    }
+
     public function show(string $slug, ?int $userId = null): Product
     {
         return $this->productRepository->findActiveBySlug($slug, $userId);

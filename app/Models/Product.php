@@ -67,7 +67,7 @@ class Product extends Model
 
     public function scopeActive(Builder $query): Builder
     {
-        return $query->where('status', true);
+        return $query->where($this->qualifyColumn('status'), true);
     }
 
     public function category(): BelongsTo

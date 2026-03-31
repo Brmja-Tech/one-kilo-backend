@@ -14,6 +14,7 @@ class ProductSummaryResource extends JsonResource
             'slug' => $this->slug,
             'image' => $this->image ? asset($this->image) : '',
             'category' => $this->whenLoaded('category', fn () => new CategoryResource($this->category)),
+            'sold_quantity' => $this->when(isset($this->sold_quantity), (int) $this->sold_quantity),
             'stock' => (int) $this->stock,
             'status' => (bool) $this->status,
             'price_before_discount' => $this->priceBeforeDiscount(),

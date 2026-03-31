@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api;
 use App\Helpers\ApiResponse;
 use App\Http\Requests\Api\Commerce\ProductIndexRequest;
 use App\Http\Resources\ProductResource;
+use App\Http\Resources\ProductSummaryResource;
 use App\Services\Api\Commerce\ProductService;
 use Illuminate\Http\Request;
 
@@ -25,6 +26,23 @@ class ProductController extends ApiController
             200,
             __('front.products-retrieved-successfully'),
             ProductResource::collection($products),
+            $this->paginationData($products)
+        );
+    }
+
+    public function bestSelling(ProductIndexRequest $request)
+    {
+        $filters = $request->filters();
+
+        $products = $this->service->getBestSellingProducts(
+            ['per_page' => $filters['per_page']],
+            $request->user('sanctum')?->id
+        );
+
+        return ApiResponse::sendResponse(
+            200,
+            __('front.products-retrieved-successfully'),
+            ProductSummaryResource::collection($products),
             $this->paginationData($products)
         );
     }

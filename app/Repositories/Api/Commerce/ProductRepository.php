@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Api\Commerce;
 
+use App\Models\Order;
 use App\Models\Product;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
@@ -40,6 +41,25 @@ class ProductRepository
             ->active()
             ->where('slug', $slug)
             ->firstOrFail();
+    }
+
+    public function paginateBestSelling(array $filters, ?int $userId = null): LengthAwarePaginator
+    {
+        $query = Product::query()
+            ->select('products.*')
+            ->selectRaw('SUM(order_items.quantity) as sold_quantity')
+            ->join('order_items', 'order_items.product_id', '=', 'products.id')
+            ->join('orders', 'orders.id', '=', 'order_items.order_id')
+            ->active()
+            ->with('category.parent:id,slug')
+            ->whereIn('orders.status', Order::salesStatuses())
+            ->groupBy('products.id')
+            ->orderByDesc('sold_quantity')
+            ->orderByDesc('products.id');
+
+        $this->attachFavoriteState($query, $userId);
+
+        return $query->paginate($filters['per_page'] ?? 15)->withQueryString();
     }
 
     private function attachFavoriteState(Builder $query, ?int $userId): void

@@ -57,6 +57,7 @@ Route::get('/categories', [CategoryController::class, 'index']);
 Route::get('/categories/{slug}', [CategoryController::class, 'show']);
 Route::get('/categories/{slug}/products', [ProductController::class, 'categoryProducts']);
 Route::get('/products', [ProductController::class, 'index']);
+Route::get('/products/best-selling', [ProductController::class, 'bestSelling']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 ## ================== COMMERCE ================== ##
 

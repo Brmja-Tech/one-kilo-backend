@@ -94,6 +94,16 @@ class Order extends Model
         ];
     }
 
+    public static function salesStatuses(): array
+    {
+        return [
+            self::STATUS_CONFIRMED,
+            self::STATUS_PREPARING,
+            self::STATUS_OUT_FOR_DELIVERY,
+            self::STATUS_DELIVERED,
+        ];
+    }
+
     public function user(): BelongsTo
     {
         return $this->belongsTo(User::class);

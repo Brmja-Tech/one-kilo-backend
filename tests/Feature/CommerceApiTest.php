@@ -2,6 +2,9 @@
 
 namespace Tests\Feature;
 
+use App\Models\Address;
+use App\Models\Order;
+use App\Models\Product;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
 use Illuminate\Foundation\Testing\RefreshDatabase;
@@ -59,6 +62,73 @@ class CommerceApiTest extends TestCase
             ->assertJsonPath('data.0.category.parent_slug', 'beverages')
             ->assertJsonMissingPath('data.0.id')
             ->assertJsonMissingPath('data.0.category.id');
+    }
+
+    public function test_best_selling_products_endpoint_returns_paginated_sales_ranking(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $user = User::query()->where('email', 'shopper@onekilo.test')->firstOrFail();
+        $address = Address::query()->where('user_id', $user->id)->firstOrFail();
+        $mangoJuice = Product::query()->where('slug', 'mango-juice-1l')->firstOrFail();
+        $chips = Product::query()->where('slug', 'sea-salt-chips')->firstOrFail();
+        $cola = Product::query()->where('slug', 'cola-can-330ml')->firstOrFail();
+        $avocado = Product::query()->where('slug', 'imported-avocado')->firstOrFail();
+
+        $confirmedOrder = $this->createOrder($user, $address, 'OK-BEST-SELLING-1', Order::STATUS_CONFIRMED, Order::PAYMENT_STATUS_PAID);
+        $confirmedOrder->items()->create([
+            'product_id' => $mangoJuice->id,
+            'product_name' => $mangoJuice->name,
+            'product_image' => $mangoJuice->image,
+            'unit_price' => $mangoJuice->priceAfterDiscount(),
+            'quantity' => 5,
+            'line_total' => round($mangoJuice->priceAfterDiscount() * 5, 2),
+        ]);
+
+        $preparingOrder = $this->createOrder($user, $address, 'OK-BEST-SELLING-2', Order::STATUS_PREPARING, Order::PAYMENT_STATUS_PAID);
+        $preparingOrder->items()->create([
+            'product_id' => $chips->id,
+            'product_name' => $chips->name,
+            'product_image' => $chips->image,
+            'unit_price' => $chips->priceAfterDiscount(),
+            'quantity' => 3,
+            'line_total' => round($chips->priceAfterDiscount() * 3, 2),
+        ]);
+
+        $pendingOrder = $this->createOrder($user, $address, 'OK-BEST-SELLING-3', Order::STATUS_PENDING, Order::PAYMENT_STATUS_UNPAID);
+        $pendingOrder->items()->create([
+            'product_id' => $cola->id,
+            'product_name' => $cola->name,
+            'product_image' => $cola->image,
+            'unit_price' => $cola->priceAfterDiscount(),
+            'quantity' => 50,
+            'line_total' => round($cola->priceAfterDiscount() * 50, 2),
+        ]);
+
+        $canceledOrder = $this->createOrder($user, $address, 'OK-BEST-SELLING-4', Order::STATUS_CANCELED, Order::PAYMENT_STATUS_REFUNDED);
+        $canceledOrder->items()->create([
+            'product_id' => $avocado->id,
+            'product_name' => $avocado->name,
+            'product_image' => $avocado->image,
+            'unit_price' => $avocado->priceAfterDiscount(),
+            'quantity' => 40,
+            'line_total' => round($avocado->priceAfterDiscount() * 40, 2),
+        ]);
+
+        $response = $this->getJson('/api/products/best-selling?per_page=1');
+
+        $response
+            ->assertOk()
+            ->assertJsonPath('code', 200)
+            ->assertJsonCount(1, 'data')
+            ->assertJsonPath('data.0.slug', 'mango-juice-1l')
+            ->assertJsonPath('data.0.sold_quantity', 5)
+            ->assertJsonPath('data.0.category.slug', 'juice')
+            ->assertJsonPath('data.0.category.color', '0xFFFF9800')
+            ->assertJsonMissingPath('data.0.id')
+            ->assertJsonPath('pagination.total', 2)
+            ->assertJsonPath('pagination.per_page', 1)
+            ->assertJsonPath('pagination.current_page', 1);
     }
 
     public function test_category_show_endpoint_uses_slug_and_returns_color(): void
@@ -175,5 +245,23 @@ class CommerceApiTest extends TestCase
             ->assertOk()
             ->assertJsonPath('data.items_count', 0)
             ->assertJsonPath('data.total', 0);
+    }
+
+    private function createOrder(User $user, Address $address, string $orderNumber, string $status, string $paymentStatus): Order
+    {
+        return Order::query()->create([
+            'user_id' => $user->id,
+            'address_id' => $address->id,
+            'order_number' => $orderNumber,
+            'status' => $status,
+            'payment_method' => Order::PAYMENT_METHOD_WALLET,
+            'payment_status' => $paymentStatus,
+            'subtotal' => 100,
+            'discount_amount' => 0,
+            'delivery_fee' => 0,
+            'total' => 100,
+            'placed_at' => now(),
+            'paid_at' => $paymentStatus === Order::PAYMENT_STATUS_PAID ? now() : null,
+        ]);
     }
 }
