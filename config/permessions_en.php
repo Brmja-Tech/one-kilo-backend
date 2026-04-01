@@ -10,6 +10,7 @@ return [
     'countries'             => 'Manage Countries',
     'categories'            => 'Manage Categories',
     'products'              => 'Manage Products',
+    'orders'                => 'Manage Orders',
     'coupons'               => 'Manage Coupons',
     'contacts'              => 'Manage Contacts',
 ];

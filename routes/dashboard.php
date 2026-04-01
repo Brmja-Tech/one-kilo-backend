@@ -8,6 +8,7 @@ use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\ContactsController;
 use App\Http\Controllers\Dashboard\CountriesController;
 use App\Http\Controllers\Dashboard\CouponsController;
+use App\Http\Controllers\Dashboard\OrdersController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\RoleController;
@@ -86,6 +87,11 @@ Route::group([
         ############################### PRODUCTS Routes ############################################
         Route::get('products',      [ProductsController::class, 'index'])->middleware('can:products')->name('products');
         ############################### End PRODUCTS Routes ############################################
+
+        ############################### ORDERS Routes ############################################
+        Route::get('orders',        [OrdersController::class, 'index'])->middleware('can:orders')->name('orders');
+        Route::get('orders/{order}', [OrdersController::class, 'show'])->middleware('can:orders')->name('orders.show');
+        ############################### End ORDERS Routes ############################################
 
         ############################### COUPONS Routes ############################################
         Route::get('coupons',       [CouponsController::class, 'index'])->middleware('can:coupons')->name('coupons');

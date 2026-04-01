@@ -1,0 +1,392 @@
+@extends('dashboard.master', ['title' => __('dashboard.order-details')])
+@section('orders-active', 'active')
+
+@section('content')
+    @php
+        $orderStatusClasses = [
+            \App\Models\Order::STATUS_PENDING => 'warning',
+            \App\Models\Order::STATUS_AWAITING_PAYMENT => 'info',
+            \App\Models\Order::STATUS_CONFIRMED => 'primary',
+            \App\Models\Order::STATUS_PREPARING => 'secondary',
+            \App\Models\Order::STATUS_OUT_FOR_DELIVERY => 'info',
+            \App\Models\Order::STATUS_DELIVERED => 'success',
+            \App\Models\Order::STATUS_CANCELED => 'danger',
+            \App\Models\Order::STATUS_FAILED => 'danger',
+        ];
+
+        $paymentStatusClasses = [
+            \App\Models\Order::PAYMENT_STATUS_UNPAID => 'danger',
+            \App\Models\Order::PAYMENT_STATUS_PENDING => 'warning',
+            \App\Models\Order::PAYMENT_STATUS_PAID => 'success',
+            \App\Models\Order::PAYMENT_STATUS_FAILED => 'danger',
+            \App\Models\Order::PAYMENT_STATUS_REFUNDED => 'secondary',
+        ];
+    @endphp
+
+    <section class="app-order-view">
+        <div class="row mb-1">
+            <div class="col-12 d-flex flex-wrap justify-content-between align-items-center gap-1">
+                <div>
+                    <h4 class="mb-0">{{ __('dashboard.order-details') }}</h4>
+                    <small class="text-muted">{{ __('dashboard.order-number') }}: {{ $order->order_number }}</small>
+                </div>
+
+                <a href="{{ route('dashboard.orders') }}" class="btn btn-outline-primary">
+                    <i data-feather="arrow-left"></i> {{ __('dashboard.back') }}
+                </a>
+            </div>
+        </div>
+
+        <div class="row">
+            <div class="col-xl-4 col-lg-5">
+                <div class="card">
+                    <div class="card-body">
+                        <div class="text-center mb-2">
+                            <h3 class="mb-50">{{ $order->order_number }}</h3>
+                            <span class="text-muted">#{{ $order->id }}</span>
+                        </div>
+
+                        <div class="d-flex flex-column gap-75">
+                            <div>
+                                <span class="fw-bolder d-block mb-25">{{ __('dashboard.order-status') }}</span>
+                                <span class="badge bg-light-{{ $orderStatusClasses[$order->status] ?? 'secondary' }}">
+                                    {{ __('dashboard.order-status-' . str_replace('_', '-', $order->status)) }}
+                                </span>
+                            </div>
+
+                            <div>
+                                <span class="fw-bolder d-block mb-25">{{ __('dashboard.payment-status') }}</span>
+                                <span class="badge bg-light-{{ $paymentStatusClasses[$order->payment_status] ?? 'secondary' }}">
+                                    {{ __('dashboard.payment-status-' . str_replace('_', '-', $order->payment_status)) }}
+                                </span>
+                            </div>
+
+                            <div>
+                                <span class="fw-bolder d-block mb-25">{{ __('dashboard.payment-method') }}</span>
+                                <span class="badge bg-light-primary">
+                                    {{ __('dashboard.payment-method-' . str_replace('_', '-', $order->payment_method)) }}
+                                </span>
+                            </div>
+                        </div>
+
+                        <hr>
+
+                        <ul class="list-unstyled mb-0">
+                            <li class="mb-75">
+                                <span class="fw-bolder me-25">{{ __('dashboard.placed-at') }}:</span>
+                                <span>{{ $order->placed_at?->format('Y-m-d H:i') ?? '-' }}</span>
+                            </li>
+                            <li class="mb-75">
+                                <span class="fw-bolder me-25">{{ __('dashboard.paid-at') }}:</span>
+                                <span>{{ $order->paid_at?->format('Y-m-d H:i') ?? '-' }}</span>
+                            </li>
+                            <li class="mb-75">
+                                <span class="fw-bolder me-25">{{ __('dashboard.created-at') }}:</span>
+                                <span>{{ $order->created_at?->format('Y-m-d H:i') ?? '-' }}</span>
+                            </li>
+                            <li>
+                                <span class="fw-bolder me-25">{{ __('dashboard.updated-at') }}:</span>
+                                <span>{{ $order->updated_at?->format('Y-m-d H:i') ?? '-' }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+
+                <div class="card">
+                    <div class="card-header">
+                        <h4 class="card-title">{{ __('dashboard.pricing-summary') }}</h4>
+                    </div>
+                    <div class="card-body">
+                        <ul class="list-unstyled mb-0">
+                            <li class="d-flex justify-content-between mb-75">
+                                <span>{{ __('dashboard.subtotal') }}</span>
+                                <span>{{ number_format((float) $order->subtotal, 2) }}</span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-75">
+                                <span>{{ __('dashboard.discount') }}</span>
+                                <span>{{ number_format((float) $order->discount_amount, 2) }}</span>
+                            </li>
+                            <li class="d-flex justify-content-between mb-75">
+                                <span>{{ __('dashboard.shipping') }}</span>
+                                <span>{{ number_format((float) $order->delivery_fee, 2) }}</span>
+                            </li>
+                            <li class="d-flex justify-content-between fw-bolder border-top pt-75 mb-0">
+                                <span>{{ __('dashboard.total') }}</span>
+                                <span>{{ number_format((float) $order->total, 2) }}</span>
+                            </li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-xl-8 col-lg-7">
+                <div class="row">
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.customer-info') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-75">
+                                        <span class="fw-bolder me-25">{{ __('dashboard.customer') }}:</span>
+                                        <span>{{ $order->user?->name ?? data_get($address, 'contact_name') ?? '-' }}</span>
+                                    </li>
+                                    <li class="mb-75">
+                                        <span class="fw-bolder me-25">{{ __('dashboard.user-id') }}:</span>
+                                        <span>{{ $order->user?->id ?? '-' }}</span>
+                                    </li>
+                                    <li class="mb-75">
+                                        <span class="fw-bolder me-25">{{ __('dashboard.email') }}:</span>
+                                        <span>{{ $order->user?->email ?? '-' }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
+                                        <span>{{ $order->user?->phone ?? data_get($address, 'phone') ?? '-' }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.delivery-info') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                @if ($address !== [])
+                                    <ul class="list-unstyled mb-0">
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.recipient-name') }}:</span>
+                                            <span>{{ data_get($address, 'contact_name', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.phone') }}:</span>
+                                            <span>{{ data_get($address, 'phone', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.country') }}:</span>
+                                            <span>{{ data_get($address, 'country_name', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.governorate') }}:</span>
+                                            <span>{{ data_get($address, 'governorate_name', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.city') }}:</span>
+                                            <span>{{ data_get($address, 'city', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.area') }}:</span>
+                                            <span>{{ data_get($address, 'area', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.address-details') }}:</span>
+                                            <span>{{ data_get($address, 'street', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.building-number') }}:</span>
+                                            <span>{{ data_get($address, 'building_number', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.floor') }}:</span>
+                                            <span>{{ data_get($address, 'floor', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.apartment-number') }}:</span>
+                                            <span>{{ data_get($address, 'apartment_number', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.landmark') }}:</span>
+                                            <span>{{ data_get($address, 'landmark', '-') }}</span>
+                                        </li>
+                                        <li>
+                                            <span class="fw-bolder me-25">{{ __('dashboard.full-address') }}:</span>
+                                            <span>{{ data_get($address, 'full_address', '-') }}</span>
+                                        </li>
+                                    </ul>
+                                @else
+                                    <p class="text-muted mb-0">{{ __('dashboard.no-address-available') }}</p>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.payment-info') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                <div class="row">
+                                    <div class="col-md-6">
+                                        <ul class="list-unstyled mb-md-0 mb-1">
+                                            <li class="mb-75">
+                                                <span class="fw-bolder me-25">{{ __('dashboard.payment-method') }}:</span>
+                                                <span>{{ __('dashboard.payment-method-' . str_replace('_', '-', $order->payment_method)) }}</span>
+                                            </li>
+                                            <li class="mb-75">
+                                                <span class="fw-bolder me-25">{{ __('dashboard.payment-status') }}:</span>
+                                                <span>{{ __('dashboard.payment-status-' . str_replace('_', '-', $order->payment_status)) }}</span>
+                                            </li>
+                                            <li class="mb-75">
+                                                <span class="fw-bolder me-25">{{ __('dashboard.paid-at') }}:</span>
+                                                <span>{{ $order->paid_at?->format('Y-m-d H:i') ?? '-' }}</span>
+                                            </li>
+                                            <li class="mb-75">
+                                                <span class="fw-bolder me-25">{{ __('dashboard.payment-url') }}:</span>
+                                                @if ($order->payment_url)
+                                                    <a href="{{ $order->payment_url }}" target="_blank" rel="noopener noreferrer">
+                                                        {{ __('dashboard.view') }}
+                                                    </a>
+                                                @else
+                                                    <span>-</span>
+                                                @endif
+                                            </li>
+                                            <li>
+                                                <span class="fw-bolder me-25">{{ __('dashboard.notes') }}:</span>
+                                                <span>{{ $order->notes ?: '-' }}</span>
+                                            </li>
+                                        </ul>
+                                    </div>
+
+                                    <div class="col-md-6">
+                                        @if ($order->walletTransaction)
+                                            <ul class="list-unstyled mb-0">
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.wallet-transaction') }}:</span>
+                                                    <span>#{{ $order->walletTransaction->id }}</span>
+                                                </li>
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.reference') }}:</span>
+                                                    <span>{{ $order->walletTransaction->reference ?: '-' }}</span>
+                                                </li>
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.transaction-type') }}:</span>
+                                                    <span>{{ $order->walletTransaction->transaction_type ?: '-' }}</span>
+                                                </li>
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.amount') }}:</span>
+                                                    <span>{{ number_format((float) $order->walletTransaction->amount, 2) }}</span>
+                                                </li>
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.balance-before') }}:</span>
+                                                    <span>{{ number_format((float) $order->walletTransaction->balance_before, 2) }}</span>
+                                                </li>
+                                                <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.balance-after') }}:</span>
+                                                    <span>{{ number_format((float) $order->walletTransaction->balance_after, 2) }}</span>
+                                                </li>
+                                                <li>
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.status') }}:</span>
+                                                    <span class="badge bg-light-{{ $order->walletTransaction->status ? 'success' : 'danger' }}">
+                                                        {{ $order->walletTransaction->status ? __('dashboard.active') : __('dashboard.inactive') }}
+                                                    </span>
+                                                </li>
+                                            </ul>
+                                        @else
+                                            <p class="text-muted mb-0">{{ __('dashboard.no-payment-data') }}</p>
+                                        @endif
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.coupon') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-75">
+                                        <span class="fw-bolder me-25">{{ __('dashboard.code') }}:</span>
+                                        <span>{{ $order->coupon?->code ?? data_get($couponSnapshot, 'code') ?? '-' }}</span>
+                                    </li>
+                                    <li>
+                                        <span class="fw-bolder me-25">{{ __('dashboard.discount') }}:</span>
+                                        <span>{{ number_format((float) data_get($couponSnapshot, 'discount_amount', $order->discount_amount), 2) }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-6">
+                        <div class="card h-100">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.items') }}</h4>
+                            </div>
+                            <div class="card-body">
+                                <ul class="list-unstyled mb-0">
+                                    <li class="mb-75 d-flex justify-content-between">
+                                        <span>{{ __('dashboard.item-count') }}</span>
+                                        <span>{{ $order->items->sum('quantity') }}</span>
+                                    </li>
+                                    <li class="d-flex justify-content-between">
+                                        <span>{{ __('dashboard.order-items') }}</span>
+                                        <span>{{ $order->items->count() }}</span>
+                                    </li>
+                                </ul>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4 class="card-title">{{ __('dashboard.order-items') }}</h4>
+                            </div>
+                            <div class="table-responsive">
+                                <table class="table table-hover align-middle mb-0">
+                                    <thead>
+                                        <tr>
+                                            <th>#</th>
+                                            <th>{{ __('dashboard.image') }}</th>
+                                            <th>{{ __('dashboard.product') }}</th>
+                                            <th>{{ __('dashboard.sku') }}</th>
+                                            <th>{{ __('dashboard.qty') }}</th>
+                                            <th>{{ __('dashboard.unit-price') }}</th>
+                                            <th>{{ __('dashboard.line-total') }}</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody>
+                                        @forelse ($order->items as $index => $item)
+                                            <tr>
+                                                <td>{{ $index + 1 }}</td>
+                                                <td>
+                                                    @if ($item->product_image)
+                                                        <img src="{{ asset($item->product_image) }}" alt="{{ $item->product_name }}"
+                                                            class="rounded border object-fit-cover" width="52" height="52">
+                                                    @else
+                                                        <span class="text-muted">{{ __('dashboard.no-image') }}</span>
+                                                    @endif
+                                                </td>
+                                                <td>
+                                                    <div class="fw-semibold">{{ $item->product_name }}</div>
+                                                    @if ($item->product_id)
+                                                        <small class="text-muted">#{{ $item->product_id }}</small>
+                                                    @endif
+                                                </td>
+                                                <td>{{ $item->product?->sku ?? '-' }}</td>
+                                                <td>{{ $item->quantity }}</td>
+                                                <td>{{ number_format((float) $item->unit_price, 2) }}</td>
+                                                <td>{{ number_format((float) $item->line_total, 2) }}</td>
+                                            </tr>
+                                        @empty
+                                            <tr>
+                                                <td colspan="7" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
+                                            </tr>
+                                        @endforelse
+                                    </tbody>
+                                </table>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+@endsection
