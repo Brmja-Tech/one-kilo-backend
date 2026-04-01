@@ -3,7 +3,9 @@
 namespace Tests\Feature;
 
 use App\Models\Admin;
+use App\Models\Contact;
 use App\Models\Order;
+use App\Models\Product;
 use App\Models\Role;
 use App\Models\User;
 use Database\Seeders\DatabaseSeeder;
@@ -153,6 +155,41 @@ class DashboardOrderManagementTest extends TestCase
         $this->actingAs($admin, 'admin')
             ->get(route('dashboard.orders.print', $order))
             ->assertForbidden();
+    }
+
+    public function test_dashboard_home_displays_real_analytics_sections(): void
+    {
+        $this->seed(DatabaseSeeder::class);
+
+        $admin = Admin::query()->where('email', 'admin@gmail.com')->firstOrFail();
+        $user = User::query()->where('email', 'shopper@onekilo.test')->firstOrFail();
+        $product = Product::query()->firstOrFail();
+        $order = $this->createOrder($user, Order::STATUS_DELIVERED, 'OK-DASH-2001');
+        $order->items()->create([
+            'product_id' => $product->id,
+            'product_name' => $product->name,
+            'product_image' => $product->image,
+            'unit_price' => 50,
+            'quantity' => 3,
+            'line_total' => 150,
+        ]);
+
+        Contact::query()->create([
+            'name' => 'Dashboard Contact',
+            'email' => 'contact@example.com',
+            'phone' => '+201100000000',
+            'subject' => 'Need help with my order',
+            'message' => 'Please call me back.',
+        ]);
+
+        $this->actingAs($admin, 'admin')
+            ->get(route('dashboard.home', ['range' => '30d']))
+            ->assertOk()
+            ->assertSeeText('Analytics Overview')
+            ->assertSeeText($order->order_number)
+            ->assertSeeText($product->name)
+            ->assertSeeText($user->name)
+            ->assertSeeText('Top Selling Products');
     }
 
     public function test_user_profile_page_displays_wallet_orders_and_favorites(): void

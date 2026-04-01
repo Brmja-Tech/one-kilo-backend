@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Dashboard\Auth;
 use App\Models\Admin;
 use Illuminate\Http\Request;
 use App\Services\Dashboard\Auth\AuthService;
+use App\Services\Dashboard\HomeDashboardService;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\CreateAdminRequest;
@@ -13,10 +14,11 @@ use Illuminate\Routing\Controllers\HasMiddleware;
 
 class AuthController extends Controller implements HasMiddleware
 {
-    protected $authService;
-    public function __construct(AuthService $authService)
+    protected $authService, $homeDashboardService;
+    public function __construct(AuthService $authService, HomeDashboardService $homeDashboardService)
     {
         $this->authService = $authService;
+        $this->homeDashboardService = $homeDashboardService;
     }
 
     public static function middleware()
@@ -26,9 +28,11 @@ class AuthController extends Controller implements HasMiddleware
         ];
     }
 
-    public function home()
+    public function home(Request $request)
     {
-        return view('dashboard.dashboard');
+        return view('dashboard.dashboard', [
+            'analytics' => $this->homeDashboardService->build((string) $request->query('range', '30d')),
+        ]);
     } // End Method
     public function login()
     {
