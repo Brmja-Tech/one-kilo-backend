@@ -8,6 +8,7 @@ return [
     'users'                 => 'Manage Users',
     'settings'              => 'Manage Settings',
     'countries'             => 'Manage Countries',
+    'categories'            => 'Manage Categories',
     'coupons'               => 'Manage Coupons',
     'contacts'              => 'Manage Contacts',
 ];

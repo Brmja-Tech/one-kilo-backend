@@ -90,6 +90,13 @@
                 </li>
             @endcan
 
+            @can('categories')
+                <li class="nav-item @yield('categories-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.categories') }}"><i data-feather='grid'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.categories') }}</span></a>
+                </li>
+            @endcan
+
             @can('contacts')
                 <li class="nav-item @yield('contacts-active')"><a class="d-flex align-items-center"
                         href="{{ route('dashboard.contacts') }}"><i data-feather='message-square'></i><span

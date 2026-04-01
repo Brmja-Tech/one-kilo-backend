@@ -4,6 +4,7 @@ use App\Http\Controllers\Dashboard\AdminController;
 use App\Http\Controllers\Dashboard\Auth\AuthController;
 use App\Http\Controllers\Dashboard\Auth\ForgotController;
 use App\Http\Controllers\Dashboard\Auth\ResetPasswordController;
+use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\ContactsController;
 use App\Http\Controllers\Dashboard\CountriesController;
 use App\Http\Controllers\Dashboard\CouponsController;
@@ -76,6 +77,10 @@ Route::group([
         ############################### COUNTRIES Routes ############################################
         Route::get('countries',     [CountriesController::class, 'index'])->middleware('can:countries')->name('countries');
         ############################### COUNTRIES Routes ############################################
+
+        ############################### CATEGORIES Routes ############################################
+        Route::get('categories',    [CategoriesController::class, 'index'])->middleware('can:categories')->name('categories');
+        ############################### End CATEGORIES Routes ############################################
 
         ############################### COUPONS Routes ############################################
         Route::get('coupons',       [CouponsController::class, 'index'])->middleware('can:coupons')->name('coupons');
