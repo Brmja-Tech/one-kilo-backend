@@ -235,6 +235,7 @@ class OrdersData extends Component
             'statuses' => Order::statuses(),
             'paymentStatuses' => Order::paymentStatuses(),
             'paymentMethods' => Order::paymentMethods(),
+            'canChangeStatus' => (bool) auth('admin')->user()?->hasAccess('orders_change_status'),
         ]);
     }
 }

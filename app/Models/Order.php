@@ -60,6 +60,23 @@ class Order extends Model
         ];
     }
 
+    protected static function booted(): void
+    {
+        static::created(function (Order $order): void {
+            $order->statusLogs()->create([
+                'old_status' => null,
+                'new_status' => $order->status,
+                'title' => __('dashboard.order-created'),
+                'description' => __('dashboard.order-created-description', [
+                    'status' => __('dashboard.order-status-' . str_replace('_', '-', $order->status)),
+                ]),
+                'meta' => [
+                    'source' => 'system',
+                ],
+            ]);
+        });
+    }
+
     public static function statuses(): array
     {
         return [
@@ -94,6 +111,43 @@ class Order extends Model
         ];
     }
 
+    public static function statusTransitions(): array
+    {
+        return [
+            self::STATUS_PENDING => [
+                self::STATUS_CONFIRMED,
+                self::STATUS_CANCELED,
+                self::STATUS_FAILED,
+                self::STATUS_AWAITING_PAYMENT,
+            ],
+            self::STATUS_AWAITING_PAYMENT => [
+                self::STATUS_CONFIRMED,
+                self::STATUS_FAILED,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_CONFIRMED => [
+                self::STATUS_PREPARING,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_PREPARING => [
+                self::STATUS_OUT_FOR_DELIVERY,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_OUT_FOR_DELIVERY => [
+                self::STATUS_DELIVERED,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_DELIVERED => [],
+            self::STATUS_CANCELED => [],
+            self::STATUS_FAILED => [],
+        ];
+    }
+
+    public static function allowedTransitionsFor(string $status): array
+    {
+        return self::statusTransitions()[$status] ?? [];
+    }
+
     public static function salesStatuses(): array
     {
         return [
@@ -102,6 +156,16 @@ class Order extends Model
             self::STATUS_OUT_FOR_DELIVERY,
             self::STATUS_DELIVERED,
         ];
+    }
+
+    public function allowedNextStatuses(): array
+    {
+        return self::allowedTransitionsFor($this->status);
+    }
+
+    public function canTransitionTo(string $status): bool
+    {
+        return in_array($status, $this->allowedNextStatuses(), true);
     }
 
     public function user(): BelongsTo
@@ -127,6 +191,11 @@ class Order extends Model
     public function items(): HasMany
     {
         return $this->hasMany(OrderItem::class);
+    }
+
+    public function statusLogs(): HasMany
+    {
+        return $this->hasMany(OrderStatusLog::class)->latest('created_at')->latest('id');
     }
 
     public function walletTransactions(): HasMany

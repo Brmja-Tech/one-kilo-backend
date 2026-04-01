@@ -1,0 +1,38 @@
+<?php
+
+namespace App\Repositories\Dashboard;
+
+use App\Models\Order;
+use App\Models\OrderStatusLog;
+
+class OrderRepository
+{
+    public function loadDetails(Order $order): Order
+    {
+        return $order->load([
+            'user:id,name,email,phone',
+            'address:id,country_id,governorate_id,label,contact_name,phone,city,area,street,building_number,floor,apartment_number,landmark,status',
+            'address.country:id,name',
+            'address.governorate:id,country_id,name,shipping_price',
+            'coupon:id,code',
+            'walletTransaction:id,wallet_id,user_id,order_id,type,transaction_type,amount,balance_before,balance_after,reference,notes,status,created_at',
+            'items:id,order_id,product_id,product_name,product_image,unit_price,quantity,line_total',
+            'items.product:id,sku,slug',
+            'statusLogs.changedByAdmin:id,name',
+        ]);
+    }
+
+    public function updateStatus(Order $order, string $status): Order
+    {
+        $order->update([
+            'status' => $status,
+        ]);
+
+        return $order->fresh();
+    }
+
+    public function createStatusLog(Order $order, array $data): OrderStatusLog
+    {
+        return $order->statusLogs()->create($data);
+    }
+}

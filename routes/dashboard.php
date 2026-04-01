@@ -91,6 +91,8 @@ Route::group([
         ############################### ORDERS Routes ############################################
         Route::get('orders',        [OrdersController::class, 'index'])->middleware('can:orders')->name('orders');
         Route::get('orders/{order}', [OrdersController::class, 'show'])->middleware('can:orders')->name('orders.show');
+        Route::get('orders/{order}/print', [OrdersController::class, 'print'])->middleware('can:orders')->name('orders.print');
+        Route::post('orders/{order}/status', [OrdersController::class, 'updateStatus'])->middleware('can:orders_change_status')->name('orders.status.update');
         ############################### End ORDERS Routes ############################################
 
         ############################### COUPONS Routes ############################################

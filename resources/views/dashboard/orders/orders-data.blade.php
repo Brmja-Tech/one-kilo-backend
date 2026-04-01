@@ -1,4 +1,4 @@
-<div>
+﻿<div>
     @php
         $orderStatusClasses = [
             \App\Models\Order::STATUS_PENDING => 'warning',
@@ -144,6 +144,7 @@
                         $customerPhone = $item->user?->phone
                             ?? data_get($addressSnapshot, 'phone')
                             ?? $item->address?->phone;
+                        $allowedNextStatuses = \App\Models\Order::allowedTransitionsFor($item->status);
                     @endphp
                     <tr>
                         <td>{{ $items->firstItem() + $index }}</td>
@@ -182,11 +183,36 @@
                             <small class="text-muted">{{ __('dashboard.items') }}: {{ $item->items_count }}</small>
                         </td>
                         <td>{{ $item->placed_at?->format('Y-m-d H:i') ?? $item->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
-                        <td>
-                            <a href="{{ route('dashboard.orders.show', $item) }}" class="btn btn-sm btn-primary"
-                                title="{{ __('dashboard.view-order') }}">
-                                <i class="fa-solid fa-eye"></i>
-                            </a>
+                        <td style="min-width: 190px;">
+                            <div class="d-flex flex-column gap-50">
+                                <a href="{{ route('dashboard.orders.show', $item) }}" class="btn btn-sm btn-primary"
+                                    title="{{ __('dashboard.view-order') }}">
+                                    <i class="fa-solid fa-eye"></i>
+                                </a>
+
+                                @if ($canChangeStatus)
+                                    @if ($allowedNextStatuses !== [])
+                                        <form action="{{ route('dashboard.orders.status.update', $item) }}" method="POST"
+                                            class="d-flex flex-column gap-50">
+                                            @csrf
+                                            <select name="status" class="form-select form-select-sm" required>
+                                                <option value="" selected disabled>{{ __('dashboard.next-status') }}</option>
+                                                @foreach ($allowedNextStatuses as $nextStatus)
+                                                    <option value="{{ $nextStatus }}">
+                                                        {{ __('dashboard.order-status-' . str_replace('_', '-', $nextStatus)) }}
+                                                    </option>
+                                                @endforeach
+                                            </select>
+
+                                            <button type="submit" class="btn btn-sm btn-outline-primary">
+                                                {{ __('dashboard.change-status') }}
+                                            </button>
+                                        </form>
+                                    @else
+                                        <small class="text-muted">{{ __('dashboard.no-available-status-changes') }}</small>
+                                    @endif
+                                @endif
+                            </div>
                         </td>
                     </tr>
                 @empty

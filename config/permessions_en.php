@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'dashboard'             => 'Manage Dashboard',
@@ -11,6 +11,7 @@ return [
     'categories'            => 'Manage Categories',
     'products'              => 'Manage Products',
     'orders'                => 'Manage Orders',
+    'orders_change_status'  => 'Change Order Status',
     'coupons'               => 'Manage Coupons',
     'contacts'              => 'Manage Contacts',
 ];

@@ -36,5 +36,20 @@ class UserSeeder extends Seeder
         $user->birth_date = '1996-01-15';
         $user->email_verified_at = now();
         $user->save();
+
+
+        $khalifa = User::query()->firstOrNew(['email' => 'khalifa@onekilo.test']);
+        $khalifa->image = 'uploads/images/image.png';
+        $khalifa->name = 'Khalifa Shopper';
+        $khalifa->email = 'khalifa@onekilo.test';
+        $khalifa->phone = '+201022113041';
+        $khalifa->password = bcrypt('password');
+        $khalifa->gender = 'male';
+        $khalifa->country_id = $egypt?->id;
+        $khalifa->governorate_id = $cairo?->id;
+        $khalifa->status = true;
+        $khalifa->birth_date = '1996-01-15';
+        $khalifa->email_verified_at = now();
+        $khalifa->save();
     }
 }

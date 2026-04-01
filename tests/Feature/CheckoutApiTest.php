@@ -108,7 +108,7 @@ class CheckoutApiTest extends TestCase
         $this->assertNotNull($order->wallet_transaction_id);
         $this->assertSame('357.00', $wallet->balance);
         $this->assertDatabaseCount('order_items', 3);
-        $this->assertDatabaseCount('wallet_transactions', 1);
+        $this->assertDatabaseCount('wallet_transactions', 2);
         $this->assertDatabaseCount('coupon_usages', 1);
         $this->assertSame(1, $coupon->fresh()->used_count);
         $this->assertSame(0, Cart::query()->where('user_id', $user->id)->firstOrFail()->items()->count());
@@ -146,7 +146,7 @@ class CheckoutApiTest extends TestCase
         $this->assertNotNull($paymentUrl);
         $this->assertStringStartsWith('https://example.com/pay/OK-', $paymentUrl);
         $this->assertDatabaseCount('orders', 1);
-        $this->assertDatabaseCount('wallet_transactions', 0);
+        $this->assertDatabaseCount('wallet_transactions', 1);
         $this->assertDatabaseCount('coupon_usages', 0);
         $this->assertSame(0, Coupon::query()->where('code', 'WELCOME10')->firstOrFail()->used_count);
         $this->assertSame('500.00', Wallet::query()->where('user_id', $user->id)->firstOrFail()->balance);

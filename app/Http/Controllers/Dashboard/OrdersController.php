@@ -3,10 +3,16 @@
 namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Order;
+use App\Services\Dashboard\OrderService;
 
 class OrdersController extends Controller
 {
+    public function __construct(protected OrderService $orderService)
+    {
+    }
+
     public function index()
     {
         return view('dashboard.orders.index');
@@ -14,22 +20,34 @@ class OrdersController extends Controller
 
     public function show(Order $order)
     {
-        $order->load([
-            'user:id,name,email,phone',
-            'address:id,country_id,governorate_id,label,contact_name,phone,city,area,street,building_number,floor,apartment_number,landmark,status',
-            'address.country:id,name',
-            'address.governorate:id,country_id,name,shipping_price',
-            'coupon:id,code',
-            'walletTransaction:id,wallet_id,user_id,order_id,type,transaction_type,amount,balance_before,balance_after,reference,notes,status,created_at',
-            'items:id,order_id,product_id,product_name,product_image,unit_price,quantity,line_total',
-            'items.product:id,sku,slug',
-        ]);
+        $data = $this->buildOrderViewData($order);
 
         return view('dashboard.orders.show', [
-            'order' => $order,
-            'address' => $this->resolveAddress($order),
-            'couponSnapshot' => (array) data_get($order->meta, 'coupon_snapshot', []),
+            ...$data,
+            'allowedNextStatuses' => $data['order']->allowedNextStatuses(),
+            'canChangeStatus' => (bool) auth('admin')->user()?->hasAccess('orders_change_status'),
         ]);
+    }
+
+    public function print(Order $order)
+    {
+        return view('dashboard.orders.print', [
+            ...$this->buildOrderViewData($order),
+            'printedAt' => now(),
+        ]);
+    }
+
+    public function updateStatus(UpdateOrderStatusRequest $request, Order $order)
+    {
+        $this->orderService->updateStatus(
+            $order,
+            (string) $request->string('status'),
+            $request->user('admin')
+        );
+
+        flash()->success(__('dashboard.status-updated-successfully'));
+
+        return back();
     }
 
     private function resolveAddress(Order $order): array
@@ -74,6 +92,17 @@ class OrdersController extends Controller
             'apartment_number' => $order->address->apartment_number,
             'landmark' => $order->address->landmark,
             'full_address' => $order->address->fullAddress(),
+        ];
+    }
+
+    private function buildOrderViewData(Order $order): array
+    {
+        $order = $this->orderService->getOrderDetails($order);
+
+        return [
+            'order' => $order,
+            'address' => $this->resolveAddress($order),
+            'couponSnapshot' => (array) data_get($order->meta, 'coupon_snapshot', []),
         ];
     }
 }

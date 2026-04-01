@@ -31,9 +31,16 @@
                     <small class="text-muted">{{ __('dashboard.order-number') }}: {{ $order->order_number }}</small>
                 </div>
 
-                <a href="{{ route('dashboard.orders') }}" class="btn btn-outline-primary">
-                    <i data-feather="arrow-left"></i> {{ __('dashboard.back') }}
-                </a>
+                <div class="d-flex flex-wrap gap-1">
+                    <a href="{{ route('dashboard.orders.print', $order) }}" target="_blank" rel="noopener noreferrer"
+                        class="btn btn-primary">
+                        <i data-feather="printer"></i> {{ __('dashboard.print-invoice') }}
+                    </a>
+
+                    <a href="{{ route('dashboard.orders') }}" class="btn btn-outline-primary">
+                        <i data-feather="arrow-left"></i> {{ __('dashboard.back') }}
+                    </a>
+                </div>
             </div>
         </div>
 
@@ -68,6 +75,35 @@
                                 </span>
                             </div>
                         </div>
+
+                        @if ($canChangeStatus)
+                            <hr>
+
+                            <div>
+                                <span class="fw-bolder d-block mb-50">{{ __('dashboard.change-status') }}</span>
+
+                                @if ($allowedNextStatuses !== [])
+                                    <form action="{{ route('dashboard.orders.status.update', $order) }}" method="POST"
+                                        class="d-flex flex-column gap-75">
+                                        @csrf
+                                        <select name="status" class="form-select" required>
+                                            <option value="" selected disabled>{{ __('dashboard.next-status') }}</option>
+                                            @foreach ($allowedNextStatuses as $nextStatus)
+                                                <option value="{{ $nextStatus }}">
+                                                    {{ __('dashboard.order-status-' . str_replace('_', '-', $nextStatus)) }}
+                                                </option>
+                                            @endforeach
+                                        </select>
+
+                                        <button type="submit" class="btn btn-primary">
+                                            {{ __('dashboard.change-status') }}
+                                        </button>
+                                    </form>
+                                @else
+                                    <p class="text-muted mb-0">{{ __('dashboard.no-available-status-changes') }}</p>
+                                @endif
+                            </div>
+                        @endif
 
                         <hr>
 
@@ -263,8 +299,12 @@
                                                     <span>{{ $order->walletTransaction->reference ?: '-' }}</span>
                                                 </li>
                                                 <li class="mb-75">
+                                                    <span class="fw-bolder me-25">{{ __('dashboard.transaction-direction') }}:</span>
+                                                    <span>{{ __('dashboard.transaction-direction-' . $order->walletTransaction->type) }}</span>
+                                                </li>
+                                                <li class="mb-75">
                                                     <span class="fw-bolder me-25">{{ __('dashboard.transaction-type') }}:</span>
-                                                    <span>{{ $order->walletTransaction->transaction_type ?: '-' }}</span>
+                                                    <span>{{ __('dashboard.wallet-transaction-type-' . str_replace('_', '-', $order->walletTransaction->transaction_type)) }}</span>
                                                 </li>
                                                 <li class="mb-75">
                                                     <span class="fw-bolder me-25">{{ __('dashboard.amount') }}:</span>
@@ -382,6 +422,64 @@
                                         @endforelse
                                     </tbody>
                                 </table>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="col-12">
+                        <div class="card card-user-timeline">
+                            <div class="card-header d-flex justify-content-between align-items-center">
+                                <h4 class="card-title mb-0">{{ __('dashboard.order-timeline') }}</h4>
+                                <span class="badge bg-light-primary">{{ $order->statusLogs->count() }}</span>
+                            </div>
+                            <div class="card-body">
+                                @if ($order->statusLogs->isNotEmpty())
+                                    <ul class="timeline ms-50 mb-0">
+                                        @foreach ($order->statusLogs as $index => $log)
+                                            <li class="timeline-item">
+                                                <span class="timeline-point timeline-point-indicator"></span>
+                                                <div class="timeline-event">
+                                                    <div class="d-flex justify-content-between flex-sm-row flex-column mb-50 gap-50">
+                                                        <div>
+                                                            <h6 class="mb-25">{{ $log->title ?: ($log->old_status ? __('dashboard.order-status-updated') : __('dashboard.order-created')) }}</h6>
+                                                            @if ($index === 0)
+                                                                <span class="badge bg-light-success">{{ __('dashboard.latest-update') }}</span>
+                                                            @endif
+                                                        </div>
+                                                        <span class="timeline-event-time">{{ $log->created_at?->format('Y-m-d H:i:s') ?? '-' }}</span>
+                                                    </div>
+
+                                                    <div class="mb-50">
+                                                        @if ($log->old_status)
+                                                            <div class="d-flex flex-wrap align-items-center gap-50">
+                                                                <span class="text-muted">{{ __('dashboard.old-status') }}:</span>
+                                                                <span class="badge bg-light-secondary">{{ __('dashboard.order-status-' . str_replace('_', '-', $log->old_status)) }}</span>
+                                                                <span class="text-muted">{{ __('dashboard.new-status') }}:</span>
+                                                                <span class="badge bg-light-{{ $orderStatusClasses[$log->new_status] ?? 'secondary' }}">{{ __('dashboard.order-status-' . str_replace('_', '-', $log->new_status)) }}</span>
+                                                            </div>
+                                                        @else
+                                                            <div class="d-flex flex-wrap align-items-center gap-50">
+                                                                <span class="text-muted">{{ __('dashboard.new-status') }}:</span>
+                                                                <span class="badge bg-light-{{ $orderStatusClasses[$log->new_status] ?? 'secondary' }}">{{ __('dashboard.order-status-' . str_replace('_', '-', $log->new_status)) }}</span>
+                                                            </div>
+                                                        @endif
+                                                    </div>
+
+                                                    <div class="mb-50 text-muted">
+                                                        {{ __('dashboard.changed-by') }}:
+                                                        {{ $log->changedByAdmin?->name ?? __('dashboard.system') }}
+                                                    </div>
+
+                                                    @if ($log->description)
+                                                        <p class="mb-0 text-muted">{{ $log->description }}</p>
+                                                    @endif
+                                                </div>
+                                            </li>
+                                        @endforeach
+                                    </ul>
+                                @else
+                                    <p class="text-muted mb-0">{{ __('dashboard.order-timeline-empty') }}</p>
+                                @endif
                             </div>
                         </div>
                     </div>

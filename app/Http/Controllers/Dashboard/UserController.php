@@ -7,30 +7,26 @@ use App\Services\Dashboard\UserService;
 
 class UserController extends Controller
 {
-
     protected $userService;
+
     public function __construct(UserService $userService)
     {
         $this->userService = $userService;
     }
-
-
 
     public function index()
     {
         return view('dashboard.users.index');
     }
 
-
     public function userProfile($id)
     {
-        $user = $this->userService->getUser($id);
+        $profileData = $this->userService->getProfileData((int) $id);
 
-        if (!$user instanceof \App\Models\User) {
-            return redirect()->route('users.index')->with('error', __('dashboard.user-not-found'));
+        if (! $profileData) {
+            return redirect()->route('dashboard.users.index')->with('error', __('dashboard.user-not-found'));
         }
 
-        return view('dashboard.users.profile', compact(['user']));
+        return view('dashboard.users.profile', $profileData);
     }
-
 }

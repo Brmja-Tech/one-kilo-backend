@@ -1,4 +1,4 @@
-<?php
+﻿<?php
 
 return [
     'dashboard'             => 'إدارة لوحة التحكم',
@@ -11,6 +11,7 @@ return [
     'categories'            => 'إدارة الأقسام',
     'products'              => 'إدارة المنتجات',
     'orders'                => 'إدارة الطلبات',
+    'orders_change_status'  => 'تغيير حالة الطلب',
     'coupons'               => 'إدارة الكوبونات',
     'contacts'              => 'إدارة الرسائل',
 ];
