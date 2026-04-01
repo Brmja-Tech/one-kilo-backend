@@ -9,6 +9,7 @@ return [
     'settings'              => 'Manage Settings',
     'countries'             => 'Manage Countries',
     'categories'            => 'Manage Categories',
+    'products'              => 'Manage Products',
     'coupons'               => 'Manage Coupons',
     'contacts'              => 'Manage Contacts',
 ];

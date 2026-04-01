@@ -97,6 +97,13 @@
                 </li>
             @endcan
 
+            @can('products')
+                <li class="nav-item @yield('products-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.products') }}"><i data-feather='package'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.products') }}</span></a>
+                </li>
+            @endcan
+
             @can('contacts')
                 <li class="nav-item @yield('contacts-active')"><a class="d-flex align-items-center"
                         href="{{ route('dashboard.contacts') }}"><i data-feather='message-square'></i><span

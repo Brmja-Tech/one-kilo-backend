@@ -9,6 +9,7 @@ use App\Http\Controllers\Dashboard\ContactsController;
 use App\Http\Controllers\Dashboard\CountriesController;
 use App\Http\Controllers\Dashboard\CouponsController;
 use App\Http\Controllers\Dashboard\ProfileController;
+use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Dashboard\UserController;
@@ -81,6 +82,10 @@ Route::group([
         ############################### CATEGORIES Routes ############################################
         Route::get('categories',    [CategoriesController::class, 'index'])->middleware('can:categories')->name('categories');
         ############################### End CATEGORIES Routes ############################################
+
+        ############################### PRODUCTS Routes ############################################
+        Route::get('products',      [ProductsController::class, 'index'])->middleware('can:products')->name('products');
+        ############################### End PRODUCTS Routes ############################################
 
         ############################### COUPONS Routes ############################################
         Route::get('coupons',       [CouponsController::class, 'index'])->middleware('can:coupons')->name('coupons');
