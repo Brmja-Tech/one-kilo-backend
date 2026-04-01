@@ -174,7 +174,7 @@
             url: url,
             type: 'GET',
             success: function(response) {
-                if (response.status ==true) {
+                if (response.status == true) {
                     Swal.fire({
                         position: 'top-start',
                         icon: 'success',
@@ -293,3 +293,67 @@
     // });
 </script>
 {{-- End optimize modal in livewire to open and close --}}
+
+
+
+<script>
+    const Toast = Swal.mixin({
+        toast: false,
+        position: 'center',
+        showConfirmButton: false,
+        timer: 1500,
+        timerProgressBar: false,
+    });
+
+    // Plays sound when a new notification arrives (triggered from Livewire)
+    window.addEventListener('dashboard-new-notification', () => {
+        const audio = document.getElementById('dashboard-notify-audio');
+        if (audio) {
+            try {
+                audio.currentTime = 0;
+                audio.play();
+            } catch (e) {
+                // Ignore autoplay restrictions
+            }
+        }
+
+        // Optional toast
+        Toast.fire({
+            icon: 'info',
+            title: @json(__('dashboard.new-notification-received'))
+        });
+    });
+
+    window.addEventListener('notify', (event) => {
+        const {
+            type = 'info', // success | error | warning | info | question
+                message = '', // نص الرسالة
+                title = '', // عنوان اختياري
+                toast = true, // لو true هنستخدم Toast
+                position = 'center', // موضع التوست
+                timer = 2500, // مدة الإغلاق التلقائي
+                showConfirmButton = false // إظهار زر OK
+        } = event.detail || {};
+
+        if (toast) {
+            Toast.update({
+                position: position,
+                timer: timer,
+                showConfirmButton: showConfirmButton,
+            });
+            Toast.fire({
+                icon: type,
+                title: message || title || ''
+            });
+        } else {
+            Swal.fire({
+                icon: type,
+                title: title || undefined,
+                text: message || undefined,
+                position: position,
+                showConfirmButton: showConfirmButton,
+                timer: timer,
+            });
+        }
+    });
+</script>

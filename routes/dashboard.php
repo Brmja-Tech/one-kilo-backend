@@ -1,16 +1,19 @@
 <?php
 
-use Livewire\Livewire;
-use Illuminate\Support\Facades\Route;
-use App\Http\Controllers\Dashboard\RoleController;
-use App\Http\Controllers\Dashboard\UserController;
 use App\Http\Controllers\Dashboard\AdminController;
-use App\Http\Controllers\Dashboard\ProfileController;
-use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Dashboard\Auth\AuthController;
 use App\Http\Controllers\Dashboard\Auth\ForgotController;
-use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 use App\Http\Controllers\Dashboard\Auth\ResetPasswordController;
+use App\Http\Controllers\Dashboard\ContactsController;
+use App\Http\Controllers\Dashboard\CountriesController;
+use App\Http\Controllers\Dashboard\CouponsController;
+use App\Http\Controllers\Dashboard\ProfileController;
+use App\Http\Controllers\Dashboard\RoleController;
+use App\Http\Controllers\Dashboard\SettingsController;
+use App\Http\Controllers\Dashboard\UserController;
+use Illuminate\Support\Facades\Route;
+use Livewire\Livewire;
+use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
 
 
 
@@ -69,6 +72,18 @@ Route::group([
         Route::get('user/profile/{id}',      [UserController::class, 'userProfile'])->middleware('can:users')->name('user.profile');
         ############################### End Users Routes #########################################
 
+
+        ############################### COUNTRIES Routes ############################################
+        Route::get('countries',     [CountriesController::class, 'index'])->middleware('can:countries')->name('countries');
+        ############################### COUNTRIES Routes ############################################
+
+        ############################### COUPONS Routes ############################################
+        Route::get('coupons',       [CouponsController::class, 'index'])->middleware('can:coupons')->name('coupons');
+        ############################### End COUPONS Routes ############################################
+
+        ############################### CONTACTS Routes ############################################
+        Route::get('contacts',      [ContactsController::class, 'index'])->middleware('can:contacts')->name('contacts');
+        ############################### End CONTACTS Routes ############################################
 
 
 

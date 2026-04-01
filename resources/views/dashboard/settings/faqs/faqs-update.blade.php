@@ -1,4 +1,4 @@
-<x-update-modal title="{{ __('dashboard.update-sub-cat') }}">
+<x-update-modal title="{{ __('dashboard.update-faq') }}">
     <div class="row mt-4">
         <div class="col-md-6">
             <div class="col-sm-6">

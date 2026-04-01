@@ -83,6 +83,28 @@
             @endcan
 
 
+            @can('countries')
+                <li class="nav-item @yield('countries-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.countries') }}"><i data-feather='flag'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.countries') }}</span></a>
+                </li>
+            @endcan
+
+            @can('contacts')
+                <li class="nav-item @yield('contacts-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.contacts') }}"><i data-feather='message-square'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.contacts') }}</span></a>
+                </li>
+            @endcan
+
+            @can('coupons')
+                <li class="nav-item @yield('coupons-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.coupons') }}"><i data-feather='gift'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.coupons') }}</span></a>
+                </li>
+            @endcan
+
+
 
             @can('settings')
                 <li class="nav-item @yield('settings-open')"><a class="d-flex align-items-center" href="#">
