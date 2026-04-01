@@ -83,14 +83,13 @@
                             @endif
                         </td>
                         <td>
-                            <div class="fw-semibold">{{ $item->getTranslation('name', 'en') }}</div>
-                            <small class="d-block text-muted">{{ $item->getTranslation('name', 'ar') }}</small>
+                            <div class="fw-semibold">{{ $item->name }}</div>
                             <small class="d-block"><code>{{ $item->slug }}</code></small>
                         </td>
                         <td>{{ $item->sku ?: '-' }}</td>
                         <td>
                             <div>{{ $item->category?->name ?? '-' }}</div>
-                            @if ($item->category && ! $item->category->status)
+                            @if ($item->category && !$item->category->status)
                                 <small class="text-warning">{{ __('dashboard.inactive') }}</small>
                             @endif
                         </td>
