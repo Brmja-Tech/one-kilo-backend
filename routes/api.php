@@ -42,8 +42,6 @@ Route::controller(AuthController::class)->group(function () {
 ## ------------------ AUTH ROUTES ------------------ ##
 
 
-
-
 ## ------------------ Forgot Password ------------------ ##
 Route::post('/forgot/password',         [ForgotController::class, 'forgotPassword'])->middleware('guest');
 Route::post('/forgot/verify-otp',       [ForgotController::class, 'verifyOtp'])->middleware('guest');
