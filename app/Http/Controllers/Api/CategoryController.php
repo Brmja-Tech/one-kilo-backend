@@ -17,7 +17,6 @@ class CategoryController extends ApiController
     {
         $categories = $this->service->paginate($request->filters());
 
-        return $categories ;
         return ApiResponse::sendResponse(
             200,
             __('front.categories-retrieved-successfully'),
