@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Resources\WalletResource;
 use App\Http\Resources\WalletTransactionResource;
 use App\Services\Api\Commerce\WalletService;
 use Illuminate\Http\Request;
 
-class WalletController extends ApiController
+class WalletController extends Controller
 {
     public function __construct(protected WalletService $service)
     {
@@ -36,7 +37,12 @@ class WalletController extends ApiController
             200,
             __('front.wallet-transactions-retrieved-successfully'),
             WalletTransactionResource::collection($transactions),
-            $this->paginationData($transactions)
+            [
+                'total' => $transactions->total(),
+                'current_page' => $transactions->currentPage(),
+                'last_page' => $transactions->lastPage(),
+                'per_page' => $transactions->perPage(),
+            ]
         );
     }
 }

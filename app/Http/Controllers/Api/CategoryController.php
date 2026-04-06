@@ -3,11 +3,12 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Commerce\CategoryIndexRequest;
 use App\Http\Resources\CategoryResource;
 use App\Services\Api\Commerce\CategoryService;
 
-class CategoryController extends ApiController
+class CategoryController extends Controller
 {
     public function __construct(protected CategoryService $service)
     {
@@ -21,7 +22,12 @@ class CategoryController extends ApiController
             200,
             __('front.categories-retrieved-successfully'),
             CategoryResource::collection($categories),
-            $this->paginationData($categories)
+            [
+                'total' => $categories->total(),
+                'current_page' => $categories->currentPage(),
+                'last_page' => $categories->lastPage(),
+                'per_page' => $categories->perPage(),
+            ]
         );
     }
 

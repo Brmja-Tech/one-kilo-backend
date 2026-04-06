@@ -3,17 +3,16 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Commerce\ProductIndexRequest;
 use App\Http\Resources\ProductResource;
 use App\Http\Resources\ProductSummaryResource;
 use App\Services\Api\Commerce\ProductService;
 use Illuminate\Http\Request;
 
-class ProductController extends ApiController
+class ProductController extends Controller
 {
-    public function __construct(protected ProductService $service)
-    {
-    }
+    public function __construct(protected ProductService $service) {}
 
     public function index(ProductIndexRequest $request)
     {
@@ -26,7 +25,12 @@ class ProductController extends ApiController
             200,
             __('front.products-retrieved-successfully'),
             ProductResource::collection($products),
-            $this->paginationData($products)
+            [
+                'total' => $products->total(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+            ]
         );
     }
 
@@ -43,7 +47,12 @@ class ProductController extends ApiController
             200,
             __('front.products-retrieved-successfully'),
             ProductSummaryResource::collection($products),
-            $this->paginationData($products)
+            [
+                'total' => $products->total(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+            ]
         );
     }
 
@@ -70,7 +79,12 @@ class ProductController extends ApiController
             200,
             __('front.products-retrieved-successfully'),
             ProductResource::collection($products),
-            $this->paginationData($products)
+            [
+                'total' => $products->total(),
+                'current_page' => $products->currentPage(),
+                'last_page' => $products->lastPage(),
+                'per_page' => $products->perPage(),
+            ]
         );
     }
 }

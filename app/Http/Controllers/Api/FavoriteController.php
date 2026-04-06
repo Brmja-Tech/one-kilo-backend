@@ -3,12 +3,13 @@
 namespace App\Http\Controllers\Api;
 
 use App\Helpers\ApiResponse;
+use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Commerce\ToggleFavoriteRequest;
 use App\Http\Resources\ProductResource;
 use App\Services\Api\Commerce\FavoriteService;
 use Illuminate\Http\Request;
 
-class FavoriteController extends ApiController
+class FavoriteController extends Controller
 {
     public function __construct(protected FavoriteService $service) {}
 
@@ -23,7 +24,12 @@ class FavoriteController extends ApiController
             200,
             __('front.favorites-retrieved-successfully'),
             ProductResource::collection($favorites),
-            $this->paginationData($favorites)
+            [
+                'total' => $favorites->total(),
+                'current_page' => $favorites->currentPage(),
+                'last_page' => $favorites->lastPage(),
+                'per_page' => $favorites->perPage(),
+            ]
         );
     }
 
