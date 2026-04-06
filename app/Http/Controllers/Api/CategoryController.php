@@ -16,6 +16,7 @@ class CategoryController extends ApiController
     {
         $categories = $this->service->paginate($request->filters());
 
+        Log::info('request', $request->all());
         Log::info('categories', $categories);
         return response()->json($categories);
         // return ApiResponse::sendResponse(
