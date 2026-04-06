@@ -87,14 +87,3 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{reference}', [OrderController::class, 'show']);
 });
-
-
-## ================== FALLBACK ================== ##
-## Catch-all: any undefined /api/* path returns JSON 404
-Route::fallback(function () {
-    return \App\Helpers\ApiResponse::sendResponse(
-        404,
-        __('validation.resource-not-found'),
-        []
-    );
-});

@@ -32,13 +32,17 @@ class FirebaseLoginRequest extends FormRequest
     }
     protected function failedValidation(Validator $validator)
     {
-        throw new HttpResponseException(
-            ApiResponse::sendResponse(
-                422,
-                $validator->errors()->first(),
-                $validator->errors()
-            )
-        );
+        if ($this->expectsJson()) {
+            throw new HttpResponseException(
+                ApiResponse::sendResponse(
+                    422,
+                    $validator->errors()->first(),
+                    $validator->errors()
+                )
+            );
+        }
+
+        parent::failedValidation($validator);
     }
 
     public function attributes(): array
@@ -49,5 +53,4 @@ class FirebaseLoginRequest extends FormRequest
             'fcm_token'   => __('validation.attributes.fcm_token'),
         ];
     }
-
 }
