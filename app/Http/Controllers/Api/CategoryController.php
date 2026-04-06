@@ -17,12 +17,13 @@ class CategoryController extends ApiController
     {
         $categories = $this->service->paginate($request->filters());
 
-        return ApiResponse::sendResponse(
-            200,
-            __('front.categories-retrieved-successfully'),
-            CategoryResource::collection($categories),
-            $this->paginationData($categories)
-        );
+        return response()->json($categories);
+        // return ApiResponse::sendResponse(
+        //     200,
+        //     __('front.categories-retrieved-successfully'),
+        //     CategoryResource::collection($categories),
+        //     $this->paginationData($categories)
+        // );
     }
 
     public function show(string $slug)
