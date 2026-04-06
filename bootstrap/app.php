@@ -19,7 +19,25 @@ return Application::configure(basePath: dirname(__DIR__))
         }
     )
     ->withMiddleware(function (Middleware $middleware) {
+        // Force Accept: application/json on every /api/* request so that
+        // expectsJson() is always true, preventing HTML responses, redirects,
+        // and null exception-handler returns for mobile clients.
+        $middleware->prependToGroup('api', [
+            \App\Http\Middleware\ForceJsonResponse::class,
+        ]);
+
         $middleware->redirectGuestsTo(function () {
+            // API requests must NEVER redirect — the ForceJsonResponse
+            // middleware already sets Accept: application/json, so
+            // Laravel's Authenticate middleware will throw an
+            // AuthenticationException (rendered as 401 JSON by our
+            // ApiExceptionHandler) instead of following this redirect.
+            // This guard is a safety net in case the middleware is
+            // bypassed for any reason.
+            if (request()->is('api/*') || request()->is('api')) {
+                return null;
+            }
+
             if (request()->is('*/dashboard/*')) {
                 return route('dashboard.login');
             } else {

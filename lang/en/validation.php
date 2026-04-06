@@ -299,4 +299,6 @@ return [
     'unauthenticated' => 'Unauthenticated',
     'resource-not-found' => 'Resource not found',
     'server-error' => 'Server error',
+    'forbidden' => 'Forbidden',
+    'throttled' => 'Too many requests, please try again later',
 ];

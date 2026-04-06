@@ -302,4 +302,6 @@ return [
     'unauthenticated' => 'غير مصرح لك',
     'resource-not-found' => 'المورد غير موجود',
     'server-error' => 'خطأ في الخادم',
+    'forbidden' => 'غير مسموح',
+    'throttled' => 'طلبات كثيرة، يرجى المحاولة لاحقاً',
 ];
