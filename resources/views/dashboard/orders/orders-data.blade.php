@@ -1,4 +1,4 @@
-﻿<div>
+<div>
     @php
         $orderStatusClasses = [
             \App\Models\Order::STATUS_PENDING => 'warning',
