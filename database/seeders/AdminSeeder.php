@@ -28,5 +28,19 @@ class AdminSeeder extends Seeder
         $admin->linkedin = 'https://linkedin.com/company/onekiloapp';
         $admin->whatsapp = '+201000000000';
         $admin->save();
+
+
+        $adminOneKilo = Admin::query()->firstOrNew(['email' => 'test@brmja.tech']);
+        $adminOneKilo->image = 'uploads/images/image.png';
+        $adminOneKilo->name = 'One Kilo Admin';
+        $adminOneKilo->email = 'test@brmja.tech';
+        $adminOneKilo->password = bcrypt('Brmja@102030');
+        $adminOneKilo->role_id = $role->id;
+        $adminOneKilo->status = true;
+        $adminOneKilo->facebook = 'https://facebook.com/onekiloapp';
+        $adminOneKilo->x_url = 'https://x.com/onekiloapp';
+        $adminOneKilo->linkedin = 'https://linkedin.com/company/onekiloapp';
+        $adminOneKilo->whatsapp = '+201000000000';
+        $adminOneKilo->save();
     }
 }
