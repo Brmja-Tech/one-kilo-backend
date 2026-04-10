@@ -23,8 +23,7 @@ class CheckoutService
         protected OrderRepository $orderRepository,
         protected WalletService $walletService,
         protected CardPaymentService $cardPaymentService
-    ) {
-    }
+    ) {}
 
     public function checkout(int $userId, array $data): array
     {
@@ -142,6 +141,14 @@ class CheckoutService
         };
     }
 
+    private function shouldConsumeCouponOnPlacement(string $paymentMethod): bool
+    {
+        return in_array($paymentMethod, [
+            Order::PAYMENT_METHOD_CASH_ON_DELIVERY,
+            Order::PAYMENT_METHOD_WALLET,
+        ], true);
+    }
+
     private function buildOrderItemsPayload(Cart $cart): array
     {
         return $cart->items
@@ -203,8 +210,10 @@ class CheckoutService
             );
         }
 
-        if ($coupon->usage_limit_per_user !== null
-            && $this->couponRepository->userUsageCount($coupon->id, $userId) >= $coupon->usage_limit_per_user) {
+        if (
+            $coupon->usage_limit_per_user !== null
+            && $this->couponRepository->userUsageCount($coupon->id, $userId) >= $coupon->usage_limit_per_user
+        ) {
             throw new ApiBusinessException(
                 __('front.coupon-user-usage-limit-reached'),
                 422,
