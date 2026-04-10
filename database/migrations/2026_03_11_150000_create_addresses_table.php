@@ -27,6 +27,11 @@ return new class extends Migration
                 ->constrained('governorates')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('region_id')
+                ->nullable()
+                ->constrained('regions')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->string('city')->nullable();
             $table->string('area')->nullable();
             $table->string('street');

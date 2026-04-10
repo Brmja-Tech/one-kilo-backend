@@ -6,6 +6,7 @@ use App\Helpers\ApiResponse;
 use App\Http\Controllers\Controller;
 use App\Http\Resources\CountryResource;
 use App\Http\Resources\GovernorateResource;
+use App\Http\Resources\RegionResource;
 use App\Services\Api\Location\LocationService;
 use Illuminate\Http\Request;
 
@@ -42,6 +43,21 @@ class LocationController extends Controller
             200,
             __('front.governorates-retrieved-successfully'),
             GovernorateResource::collection($items)
+        );
+    }
+
+    /**
+     * GET /api/governorates/{governorate_id}/regions
+     * Returns active regions for a governorate.
+     */
+    public function regions(Request $request, int $governorate_id)
+    {
+        $items = $this->service->activeRegionsByGovernorate($governorate_id);
+
+        return ApiResponse::sendResponse(
+            200,
+            __('front.regions-retrieved-successfully'),
+            RegionResource::collection($items)
         );
     }
 }

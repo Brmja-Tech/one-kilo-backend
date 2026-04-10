@@ -23,19 +23,25 @@ class UpdateAddressRequest extends ApiFormRequest
             'contact_name' => ['nullable', 'string', 'max:100'],
             'phone' => ['nullable', 'string', 'max:30'],
             'country_id' => [
-                'nullable',
+                'required',
                 'integer',
                 Rule::exists('countries', 'id')->where(fn ($query) => $query->where('status', true)),
             ],
             'governorate_id' => [
-                'nullable',
+                'required',
                 'integer',
                 Rule::exists('governorates', 'id')->where(function ($query) {
                     $query->where('status', true);
 
-                    if ($this->filled('country_id')) {
-                        $query->where('country_id', $this->integer('country_id'));
-                    }
+                    $query->where('country_id', $this->integer('country_id'));
+                }),
+            ],
+            'region_id' => [
+                'required',
+                'integer',
+                Rule::exists('regions', 'id')->where(function ($query) {
+                    $query->where('status', true)
+                        ->where('governorate_id', $this->integer('governorate_id'));
                 }),
             ],
             'city' => ['nullable', 'string', 'max:100'],

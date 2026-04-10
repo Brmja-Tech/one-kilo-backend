@@ -20,4 +20,9 @@ class LocationService
     {
         return $this->repo->getActiveGovernoratesByCountry($countryId);
     }
+
+    public function activeRegionsByGovernorate(int $governorateId): Collection
+    {
+        return $this->repo->getActiveRegionsByGovernorate($governorateId);
+    }
 }

@@ -28,6 +28,7 @@ Route::get('/banners',      [SettingsController::class, 'banners']);
 ## ================== LOOKUPS (Mobile) ================== ##
 Route::get('/countries',                            [LocationController::class, 'countries']);
 Route::get('/countries/{country_id}/governorates',  [LocationController::class, 'governorates']);
+Route::get('/governorates/{governorate_id}/regions',[LocationController::class, 'regions']);
 ## ================== LOOKUPS (Mobile) ==================
 
 ## ------------------ AUTH ROUTES ------------------ ##

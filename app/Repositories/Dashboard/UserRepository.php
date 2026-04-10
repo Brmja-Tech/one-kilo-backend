@@ -41,6 +41,7 @@ class UserRepository
             ->with([
                 'country:id,name',
                 'governorate:id,name',
+                'region:id,governorate_id,name',
                 'wallet:id,user_id,balance,status,created_at',
             ])
             ->withCount([

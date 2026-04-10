@@ -8,24 +8,24 @@ return new class extends Migration
 {
     public function up(): void
     {
-        Schema::create('governorates', function (Blueprint $table) {
+        Schema::create('regions', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('country_id')
-                ->constrained('countries')
+            $table->foreignId('governorate_id')
+                ->constrained('governorates')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
 
             $table->json('name'); // translatable
-            $table->boolean('status')->default(1)->index();
-
+            $table->decimal('shipping_price', 10, 2)->default(0);
+            $table->boolean('status')->default(true)->index();
             $table->timestamps();
 
-            $table->index(['country_id', 'status']);
+            $table->index(['governorate_id', 'status']);
         });
     }
 
     public function down(): void
     {
-        Schema::dropIfExists('governorates');
+        Schema::dropIfExists('regions');
     }
 };

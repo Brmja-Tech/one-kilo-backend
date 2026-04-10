@@ -12,7 +12,7 @@ class AddressRepository
         return Address::query()
             ->where('user_id', $userId)
             ->active()
-            ->with(['country', 'governorate'])
+            ->with(['country', 'governorate', 'region'])
             ->orderByDesc('is_default')
             ->latest('id')
             ->get();
@@ -24,7 +24,7 @@ class AddressRepository
             ->where('user_id', $userId)
             ->active()
             ->whereKey($addressId)
-            ->with(['country', 'governorate'])
+            ->with(['country', 'governorate', 'region'])
             ->firstOrFail();
     }
 
@@ -57,7 +57,7 @@ class AddressRepository
 
     public function loadDetails(Address $address): Address
     {
-        return $address->load(['country', 'governorate']);
+        return $address->load(['country', 'governorate', 'region']);
     }
 
     public function unsetDefaultForUser(int $userId, ?int $exceptAddressId = null): void

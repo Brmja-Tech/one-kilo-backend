@@ -100,6 +100,15 @@
             </div>
 
             <div class="col-md-2">
+                <select class="form-select" wire:model.live="regionFilter">
+                    <option value="all">{{ __('dashboard.all-regions') }}</option>
+                    @foreach ($regions as $region)
+                        <option value="{{ $region['id'] }}">{{ $region['label'] }}</option>
+                    @endforeach
+                </select>
+            </div>
+
+            <div class="col-md-2">
                 <input type="number" min="0" step="0.01" class="form-control" wire:model.live="totalMin"
                     placeholder="{{ __('dashboard.min-total') }}">
             </div>

@@ -210,6 +210,10 @@
                                             <span>{{ data_get($address, 'governorate_name', '-') }}</span>
                                         </li>
                                         <li class="mb-75">
+                                            <span class="fw-bolder me-25">{{ __('dashboard.region') }}:</span>
+                                            <span>{{ data_get($address, 'region_name', '-') }}</span>
+                                        </li>
+                                        <li class="mb-75">
                                             <span class="fw-bolder me-25">{{ __('dashboard.city') }}:</span>
                                             <span>{{ data_get($address, 'city', '-') }}</span>
                                         </li>

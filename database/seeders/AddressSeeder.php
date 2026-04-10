@@ -26,6 +26,7 @@ class AddressSeeder extends Seeder
                 'phone' => $user->phone,
                 'country_id' => $user->country_id,
                 'governorate_id' => $user->governorate_id,
+                'region_id' => $user->region_id,
                 'city' => 'Nasr City',
                 'area' => 'Block 7',
                 'street' => 'Makram Ebeid Street',

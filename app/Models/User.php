@@ -32,6 +32,7 @@ class User extends Authenticatable
         'fcm_token',
         'country_id',
         'governorate_id',
+        'region_id',
         'gender',
         'firebase_uid',
         'auth_provider',
@@ -66,6 +67,11 @@ class User extends Authenticatable
     public function governorate(): BelongsTo
     {
         return $this->belongsTo(Governorate::class);
+    }
+
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
     }
 
     public function favorites(): HasMany

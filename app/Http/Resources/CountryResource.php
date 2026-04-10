@@ -12,7 +12,7 @@ class CountryResource extends JsonResource
         return [
             'id'          => $this->id,
             'name'        => $this->name,
-            'is_active'   => (bool) $this->is_active,
+            'status'      => (bool) $this->status,
             'governorates'=> GovernorateResource::collection($this->whenLoaded('governorates')),
         ];
     }

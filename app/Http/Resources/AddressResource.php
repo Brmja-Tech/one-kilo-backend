@@ -16,6 +16,7 @@ class AddressResource extends JsonResource
             'phone' => $this->phone,
             'country_id' => $this->country_id,
             'governorate_id' => $this->governorate_id,
+            'region_id' => $this->region_id,
             'country' => $this->country ? [
                 'id' => $this->country->id,
                 'name' => $this->country->name,
@@ -23,7 +24,11 @@ class AddressResource extends JsonResource
             'governorate' => $this->governorate ? [
                 'id' => $this->governorate->id,
                 'name' => $this->governorate->name,
-                'shipping_price' => (float) $this->governorate->shipping_price,
+            ] : null,
+            'region' => $this->region ? [
+                'id' => $this->region->id,
+                'name' => $this->region->name,
+                'shipping_price' => round((float) $this->region->shipping_price, 2),
             ] : null,
             'city' => $this->city,
             'area' => $this->area,

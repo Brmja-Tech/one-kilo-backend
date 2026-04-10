@@ -24,6 +24,7 @@
     $addressParts = collect([
         data_get($address, 'country_name'),
         data_get($address, 'governorate_name'),
+        data_get($address, 'region_name'),
         data_get($address, 'city'),
         data_get($address, 'area'),
         data_get($address, 'street'),

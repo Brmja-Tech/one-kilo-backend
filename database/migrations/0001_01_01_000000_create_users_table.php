@@ -34,6 +34,12 @@ return new class extends Migration
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
 
+            $table->foreignId('region_id')
+                ->nullable()
+                ->constrained('regions')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+
             $table->string('phone')->unique()->nullable();
             $table->boolean('status')->default(1);
             $table->string('email')->unique()->nullable();

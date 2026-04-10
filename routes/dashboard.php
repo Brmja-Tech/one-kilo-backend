@@ -8,6 +8,7 @@ use App\Http\Controllers\Dashboard\CategoriesController;
 use App\Http\Controllers\Dashboard\ContactsController;
 use App\Http\Controllers\Dashboard\CountriesController;
 use App\Http\Controllers\Dashboard\CouponsController;
+use App\Http\Controllers\Dashboard\GovernoratesController;
 use App\Http\Controllers\Dashboard\OrdersController;
 use App\Http\Controllers\Dashboard\ProfileController;
 use App\Http\Controllers\Dashboard\ProductsController;
@@ -79,6 +80,8 @@ Route::group([
 
         ############################### COUNTRIES Routes ############################################
         Route::get('countries',     [CountriesController::class, 'index'])->middleware('can:countries')->name('countries');
+        Route::get('countries/{country}/governorates', [CountriesController::class, 'governorates'])->middleware('can:countries')->name('countries.governorates');
+        Route::get('governorates/{governorate}/regions', [GovernoratesController::class, 'regions'])->middleware('can:countries')->name('governorates.regions');
         ############################### COUNTRIES Routes ############################################
 
         ############################### CATEGORIES Routes ############################################

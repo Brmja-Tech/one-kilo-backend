@@ -6,6 +6,7 @@ use Illuminate\Foundation\Http\FormRequest;
 use Illuminate\Contracts\Validation\Validator;
 use Illuminate\Http\Exceptions\HttpResponseException;
 use App\Helpers\ApiResponse;
+use Illuminate\Validation\Rule;
 
 class RegisterRequest extends FormRequest
 {
@@ -52,8 +53,35 @@ class RegisterRequest extends FormRequest
             'birth_date'        => 'nullable|date_format:Y-m-d',
             'password'          => 'required|string|min:8|confirmed',
             'image'             => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:2048',
-            'country_id'        => 'nullable|exists:countries,id',
-            'governorate_id'    => 'nullable|exists:governorates,id',
+            'country_id'        => [
+                'nullable',
+                'integer',
+                'required_with:governorate_id,region_id',
+                Rule::exists('countries', 'id')->where(fn ($query) => $query->where('status', true)),
+            ],
+            'governorate_id'    => [
+                'nullable',
+                'integer',
+                'required_with:region_id',
+                Rule::exists('governorates', 'id')->where(function ($query) {
+                    $query->where('status', true);
+
+                    if ($this->filled('country_id')) {
+                        $query->where('country_id', $this->integer('country_id'));
+                    }
+                }),
+            ],
+            'region_id' => [
+                'nullable',
+                'integer',
+                Rule::exists('regions', 'id')->where(function ($query) {
+                    $query->where('status', true);
+
+                    if ($this->filled('governorate_id')) {
+                        $query->where('governorate_id', $this->integer('governorate_id'));
+                    }
+                }),
+            ],
 
         ];
     }

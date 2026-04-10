@@ -16,6 +16,7 @@ class Address extends Model
         'phone',
         'country_id',
         'governorate_id',
+        'region_id',
         'city',
         'area',
         'street',
@@ -59,6 +60,11 @@ class Address extends Model
         return $this->belongsTo(Governorate::class);
     }
 
+    public function region(): BelongsTo
+    {
+        return $this->belongsTo(Region::class);
+    }
+
     public function orders(): HasMany
     {
         return $this->hasMany(Order::class);
@@ -73,6 +79,7 @@ class Address extends Model
             $this->apartment_number ? 'Apt ' . $this->apartment_number : null,
             $this->area,
             $this->city,
+            $this->region?->name,
             $this->governorate?->name,
             $this->country?->name,
             $this->landmark ? 'Landmark: ' . $this->landmark : null,

@@ -13,8 +13,7 @@ class GovernorateResource extends JsonResource
             'id'             => $this->id,
             'country_id'     => $this->country_id,
             'name'           => $this->name,
-            'shipping_price' => (float) $this->shipping_price,
-            'is_active'      => (bool) $this->is_active,
+            'status'         => (bool) $this->status,
         ];
     }
 }

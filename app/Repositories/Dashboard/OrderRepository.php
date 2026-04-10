@@ -11,9 +11,10 @@ class OrderRepository
     {
         return $order->load([
             'user:id,name,email,phone',
-            'address:id,country_id,governorate_id,label,contact_name,phone,city,area,street,building_number,floor,apartment_number,landmark,status',
+            'address:id,country_id,governorate_id,region_id,label,contact_name,phone,city,area,street,building_number,floor,apartment_number,landmark,status',
             'address.country:id,name',
-            'address.governorate:id,country_id,name,shipping_price',
+            'address.governorate:id,country_id,name',
+            'address.region:id,governorate_id,name,shipping_price',
             'coupon:id,code',
             'walletTransaction:id,wallet_id,user_id,order_id,type,transaction_type,amount,balance_before,balance_after,reference,notes,status,created_at',
             'items:id,order_id,product_id,product_name,product_image,unit_price,quantity,line_total',

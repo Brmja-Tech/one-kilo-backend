@@ -11,7 +11,7 @@ class OrderRepository
     {
         $query = Order::query()
             ->where('user_id', $userId)
-            ->with(['address.country', 'address.governorate'])
+            ->with(['address.country', 'address.governorate', 'address.region'])
             ->withSum('items as items_count', 'quantity')
             ->latest('id');
 
@@ -47,6 +47,7 @@ class OrderRepository
                 'items',
                 'address.country',
                 'address.governorate',
+                'address.region',
                 'walletTransaction',
             ])
             ->withSum('items as items_count', 'quantity');
@@ -87,6 +88,7 @@ class OrderRepository
             'items',
             'address.country',
             'address.governorate',
+            'address.region',
             'walletTransaction',
         ]);
     }

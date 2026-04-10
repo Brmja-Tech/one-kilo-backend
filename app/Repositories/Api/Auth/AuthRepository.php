@@ -31,6 +31,7 @@ class AuthRepository
             'image'             => $credentials['image'] ?? null,
             'country_id'        => $credentials['country_id'] ?? null,
             'governorate_id'    => $credentials['governorate_id'] ?? null,
+            'region_id'         => $credentials['region_id'] ?? null,
         ]);
         return $user;
     } // End method register

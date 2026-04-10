@@ -29,11 +29,6 @@ class CountriesData extends Component
         $this->dispatch('countryUpdate', id: $id)->to(CountryUpdate::class);
     }
 
-    public function manageGovernorates(int $id): void
-    {
-        $this->dispatch('governoratesManage', id: $id)->to(Governorates::class);
-    }
-
     public function confirmDelete(int $id): void
     {
         $this->dispatch('countryDelete', id: $id);

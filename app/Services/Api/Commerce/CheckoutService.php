@@ -39,6 +39,7 @@ class CheckoutService
                 );
             }
 
+            $this->assertAddressIsReadyForCheckout($address);
             $this->assertCartIsReadyForCheckout($cart);
 
             $coupon = $this->resolveCheckoutCoupon($cart, $userId);
@@ -175,7 +176,7 @@ class CheckoutService
     {
         $subtotal = round($cart->subtotal(), 2);
         $discountAmount = $coupon ? $coupon->calculateDiscount($subtotal) : 0.0;
-        $deliveryFee = round((float) ($address->governorate?->shipping_price ?? 0), 2);
+        $deliveryFee = round((float) ($address->region?->shipping_price ?? 0), 2);
         $total = round(max($subtotal - $discountAmount + $deliveryFee, 0), 2);
 
         return [
@@ -230,6 +231,28 @@ class CheckoutService
         }
 
         return $coupon;
+    }
+
+    private function assertAddressIsReadyForCheckout(Address $address): void
+    {
+        $locationMismatch = ! $address->country
+            || ! $address->country->status
+            || ! $address->governorate
+            || ! $address->governorate->status
+            || (int) $address->governorate->country_id !== (int) $address->country_id
+            || ! $address->region
+            || ! $address->region->status
+            || (int) $address->region->governorate_id !== (int) $address->governorate_id;
+
+        if (! $locationMismatch) {
+            return;
+        }
+
+        throw new ApiBusinessException(
+            __('front.invalid-address-location'),
+            422,
+            ['address_id' => [__('front.invalid-address-location')]]
+        );
     }
 
     private function assertCartIsReadyForCheckout(Cart $cart): void
@@ -316,6 +339,9 @@ class CheckoutService
             'country_name' => $address->country?->name,
             'governorate_id' => $address->governorate_id,
             'governorate_name' => $address->governorate?->name,
+            'region_id' => $address->region_id,
+            'region_name' => $address->region?->name,
+            'region_shipping_price' => $address->region ? round((float) $address->region->shipping_price, 2) : null,
             'city' => $address->city,
             'area' => $address->area,
             'street' => $address->street,

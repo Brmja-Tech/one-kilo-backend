@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Relations\BelongsTo;
 use Illuminate\Database\Eloquent\Relations\HasMany;
 use Spatie\Translatable\HasTranslations;
 
-class Governorate extends Model
+class Region extends Model
 {
     use HasTranslations;
 
@@ -16,27 +16,24 @@ class Governorate extends Model
     ];
 
     protected $fillable = [
-        'country_id',
+        'governorate_id',
         'name',
+        'shipping_price',
         'status',
     ];
 
     protected $casts = [
-        'status'      => 'boolean',
+        'shipping_price' => 'decimal:2',
+        'status' => 'boolean',
     ];
 
-    public function country(): BelongsTo
+    public function governorate(): BelongsTo
     {
-        return $this->belongsTo(Country::class);
+        return $this->belongsTo(Governorate::class);
     }
 
     public function addresses(): HasMany
     {
         return $this->hasMany(Address::class);
-    }
-
-    public function regions(): HasMany
-    {
-        return $this->hasMany(Region::class);
     }
 }

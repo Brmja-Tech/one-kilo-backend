@@ -5,6 +5,7 @@ namespace App\Livewire\Dashboard\Orders;
 use App\Models\Country;
 use App\Models\Governorate;
 use App\Models\Order;
+use App\Models\Region;
 use App\Models\User;
 use Illuminate\Database\Eloquent\Builder;
 use Livewire\Component;
@@ -30,6 +31,8 @@ class OrdersData extends Component
 
     public string $governorateFilter = 'all';
 
+    public string $regionFilter = 'all';
+
     public ?string $dateFrom = null;
 
     public ?string $dateTo = null;
@@ -50,6 +53,7 @@ class OrdersData extends Component
             'customerFilter',
             'countryFilter',
             'governorateFilter',
+            'regionFilter',
             'dateFrom',
             'dateTo',
             'totalMin',
@@ -63,6 +67,13 @@ class OrdersData extends Component
     public function updatedCountryFilter(): void
     {
         $this->governorateFilter = 'all';
+        $this->regionFilter = 'all';
+        $this->resetPage();
+    }
+
+    public function updatedGovernorateFilter(): void
+    {
+        $this->regionFilter = 'all';
         $this->resetPage();
     }
 
@@ -110,6 +121,27 @@ class OrdersData extends Component
             ->all();
     }
 
+    protected function regionOptions(): array
+    {
+        return Region::query()
+            ->select(['id', 'governorate_id', 'name', 'status'])
+            ->when(
+                $this->governorateFilter !== 'all',
+                fn (Builder $query) => $query->where('governorate_id', (int) $this->governorateFilter)
+            )
+            ->when(
+                $this->governorateFilter === 'all' && $this->countryFilter !== 'all',
+                fn (Builder $query) => $query->whereHas('governorate', fn (Builder $govQuery) => $govQuery->where('country_id', (int) $this->countryFilter))
+            )
+            ->orderBy('id')
+            ->get()
+            ->map(fn (Region $region) => [
+                'id' => $region->id,
+                'label' => $region->name . ($region->status ? '' : ' (' . __('dashboard.inactive') . ')'),
+            ])
+            ->all();
+    }
+
     protected function parseAmount(?string $value): ?float
     {
         if ($value === null) {
@@ -134,9 +166,10 @@ class OrdersData extends Component
         $items = Order::query()
             ->with([
                 'user:id,name,email,phone',
-                'address:id,country_id,governorate_id,contact_name,phone,city,area,street',
+                'address:id,country_id,governorate_id,region_id,contact_name,phone,city,area,street',
                 'address.country:id,name',
                 'address.governorate:id,name,country_id',
+                'address.region:id,name,governorate_id',
                 'walletTransaction:id,reference',
             ])
             ->withCount('items')
@@ -170,7 +203,8 @@ class OrdersData extends Component
                                 ->orWhere('meta->address_snapshot->street', 'like', $term)
                                 ->orWhere('meta->address_snapshot->full_address', 'like', $term)
                                 ->orWhere('meta->address_snapshot->country_name', 'like', $term)
-                                ->orWhere('meta->address_snapshot->governorate_name', 'like', $term);
+                                ->orWhere('meta->address_snapshot->governorate_name', 'like', $term)
+                                ->orWhere('meta->address_snapshot->region_name', 'like', $term);
                         })
                         ->orWhereHas('address', function (Builder $addressQuery) use ($term) {
                             $addressQuery->where('contact_name', 'like', $term)
@@ -213,6 +247,14 @@ class OrdersData extends Component
                         ->orWhereHas('address', fn (Builder $addressQuery) => $addressQuery->where('governorate_id', $governorateId));
                 });
             })
+            ->when($this->regionFilter !== 'all', function (Builder $query) {
+                $regionId = (int) $this->regionFilter;
+
+                $query->where(function (Builder $subQuery) use ($regionId) {
+                    $subQuery->where('meta->address_snapshot->region_id', $regionId)
+                        ->orWhereHas('address', fn (Builder $addressQuery) => $addressQuery->where('region_id', $regionId));
+                });
+            })
             ->when(
                 filled($this->dateFrom),
                 fn (Builder $query) => $query->whereDate('placed_at', '>=', $this->dateFrom)
@@ -232,6 +274,7 @@ class OrdersData extends Component
             'customers' => $this->customerOptions(),
             'countries' => $this->countryOptions(),
             'governorates' => $this->governorateOptions(),
+            'regions' => $this->regionOptions(),
             'statuses' => Order::statuses(),
             'paymentStatuses' => Order::paymentStatuses(),
             'paymentMethods' => Order::paymentMethods(),

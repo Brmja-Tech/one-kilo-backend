@@ -79,6 +79,10 @@
                                 <span class="fw-bolder me-25">{{ __('dashboard.governorate') }}:</span>
                                 <span>{{ $user->governorate?->name ?? '-' }}</span>
                             </li>
+                            <li class="mb-75">
+                                <span class="fw-bolder me-25">{{ __('dashboard.region') }}:</span>
+                                <span>{{ $user->region?->name ?? '-' }}</span>
+                            </li>
                             <li>
                                 <span class="fw-bolder me-25">{{ __('dashboard.member-since') }}:</span>
                                 <span>{{ $user->created_at?->format('Y-m-d H:i') ?? '-' }}</span>

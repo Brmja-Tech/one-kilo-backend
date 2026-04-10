@@ -26,8 +26,8 @@
                                 {{ $item->governorates_count }}
                             </span>
 
-                            <a class="btn btn-sm btn-info waves-effect waves-float waves-light" href="#"
-                                wire:click.prevent="manageGovernorates({{ $item->id }})"
+                            <a class="btn btn-sm btn-info waves-effect waves-float waves-light"
+                                href="{{ route('dashboard.countries.governorates', $item) }}"
                                 title="{{ __('dashboard.manage-governorates') }}">
                                 <i class="fa-regular fa-pen-to-square"></i>
                                 {{ __('dashboard.manage') }}
