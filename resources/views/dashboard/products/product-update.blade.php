@@ -30,7 +30,8 @@
 
         <div class="col-md-6">
             <label class="col-form-label">{{ __('dashboard.sku') }}</label>
-            <input type="text" wire:model="sku" placeholder="{{ __('dashboard.sku') }}" class="form-control">
+            <input type="text" wire:model="sku" placeholder="{{ __('dashboard.sku') }}" class="form-control"
+                @disabled($has_variants)>
             @include('dashboard.includes.error', ['property' => 'sku'])
         </div>
     </div>
@@ -71,14 +72,14 @@
         <div class="col-md-4">
             <label class="col-form-label">{{ __('dashboard.price') }}</label>
             <input type="number" step="0.01" min="0" wire:model="price" class="form-control"
-                placeholder="{{ __('dashboard.price') }}">
+                placeholder="{{ __('dashboard.price') }}" @disabled($has_variants)>
             @include('dashboard.includes.error', ['property' => 'price'])
         </div>
 
         <div class="col-md-4">
             <label class="col-form-label">{{ __('dashboard.stock') }}</label>
             <input type="number" min="0" wire:model="stock" class="form-control"
-                placeholder="{{ __('dashboard.stock') }}">
+                placeholder="{{ __('dashboard.stock') }}" @disabled($has_variants)>
             @include('dashboard.includes.error', ['property' => 'stock'])
         </div>
 
@@ -218,6 +219,37 @@
             @endif
         </div>
     </div>
+
+    <div class="row mt-1">
+        <div class="col-md-4">
+            <label class="col-form-label d-block">{{ __('dashboard.has-variants') }}</label>
+            <div class="d-flex align-items-center gap-2 pt-50">
+                <div class="form-check form-switch m-0">
+                    <input class="form-check-input" type="checkbox" role="switch" wire:model.live="has_variants">
+                </div>
+                <span class="fw-semibold">
+                    {{ $has_variants ? __('dashboard.yes') : __('dashboard.no') }}
+                </span>
+            </div>
+            @include('dashboard.includes.error', ['property' => 'has_variants'])
+        </div>
+    </div>
+
+    @if ($has_variants)
+        <div class="row mt-2">
+            <div class="col-12">
+                <div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap gap-1">
+                    <span>{{ __('dashboard.variant-product-sku-note') }}</span>
+                    @if ($productSlug)
+                        <a href="{{ route('dashboard.products.skus', ['product' => $productSlug]) }}"
+                            class="btn btn-sm btn-primary" target="_blank">
+                            <i data-feather="layers"></i> {{ __('dashboard.manage-skus') }}
+                        </a>
+                    @endif
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="row mt-2">
         <div class="col-md-6">

@@ -30,7 +30,8 @@ class CartController extends ApiController
         $cart = $this->service->addItem(
             auth('sanctum')->user()->id,
             $request->validated('product_slug'),
-            (int) $request->validated('quantity')
+            (int) $request->validated('quantity'),
+            $request->validated('sku_id')
         );
 
         return ApiResponse::sendResponse(

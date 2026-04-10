@@ -6,6 +6,7 @@ use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\ProductSku;
 use App\Models\User;
 use Illuminate\Database\Seeder;
 
@@ -26,37 +27,48 @@ class CartSeeder extends Seeder
             ['coupon_id' => $couponId]
         );
 
+        CartItem::query()->where('cart_id', $cart->id)->delete();
+
         $items = [
-            'mango-juice-1l' => 2,
-            'butter-croissant' => 1,
-            'full-cream-milk-1l' => 1,
+            ['product_slug' => 'mango-juice-1l', 'quantity' => 2],
+            ['product_slug' => 'butter-croissant', 'quantity' => 1],
+            ['product_slug' => 'full-cream-milk-1l', 'quantity' => 1],
+            // Variant product example (ensures variant cart rules are exercised).
+            ['product_slug' => 'tomatoes', 'quantity' => 1, 'sku_code' => 'TOM-500GM'],
         ];
 
         $productIds = Product::query()
-            ->whereIn('slug', array_keys($items))
+            ->whereIn('slug', collect($items)->pluck('product_slug')->all())
             ->pluck('id', 'slug');
 
-        foreach ($items as $slug => $quantity) {
-            $productId = $productIds[$slug] ?? null;
+        foreach ($items as $item) {
+            $productId = $productIds[$item['product_slug']] ?? null;
 
             if (! $productId) {
                 continue;
             }
 
-            CartItem::query()->updateOrCreate(
-                [
-                    'cart_id' => $cart->id,
-                    'product_id' => $productId,
-                ],
-                [
-                    'quantity' => $quantity,
-                ]
-            );
-        }
+            $productSkuId = null;
 
-        CartItem::query()
-            ->where('cart_id', $cart->id)
-            ->whereNotIn('product_id', $productIds->values())
-            ->delete();
+            if (! empty($item['sku_code'])) {
+                $sku = ProductSku::query()
+                    ->where('sku', $item['sku_code'])
+                    ->where('product_id', $productId)
+                    ->first();
+
+                if (! $sku) {
+                    continue;
+                }
+
+                $productSkuId = $sku->id;
+            }
+
+            CartItem::query()->create([
+                'cart_id' => $cart->id,
+                'product_id' => $productId,
+                'product_sku_id' => $productSkuId,
+                'quantity' => (int) $item['quantity'],
+            ]);
+        }
     }
 }

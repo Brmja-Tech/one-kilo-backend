@@ -14,6 +14,7 @@ use App\Http\Controllers\Dashboard\ProductsController;
 use App\Http\Controllers\Dashboard\RoleController;
 use App\Http\Controllers\Dashboard\SettingsController;
 use App\Http\Controllers\Dashboard\UserController;
+use App\Http\Controllers\Dashboard\VariantsController;
 use Illuminate\Support\Facades\Route;
 use Livewire\Livewire;
 use Mcamara\LaravelLocalization\Facades\LaravelLocalization;
@@ -86,7 +87,12 @@ Route::group([
 
         ############################### PRODUCTS Routes ############################################
         Route::get('products',      [ProductsController::class, 'index'])->middleware('can:products')->name('products');
+        Route::get('products/{product}/skus', [ProductsController::class, 'skus'])->middleware('can:products')->name('products.skus');
         ############################### End PRODUCTS Routes ############################################
+
+        ############################### VARIANTS Routes ############################################
+        Route::get('variants',      [VariantsController::class, 'index'])->middleware('can:variants')->name('variants');
+        ############################### End VARIANTS Routes ############################################
 
         ############################### ORDERS Routes ############################################
         Route::get('orders',        [OrdersController::class, 'index'])->middleware('can:orders')->name('orders');

@@ -104,6 +104,13 @@
                 </li>
             @endcan
 
+            @can('variants')
+                <li class="nav-item @yield('variants-active')"><a class="d-flex align-items-center"
+                        href="{{ route('dashboard.variants') }}"><i data-feather='layers'></i><span
+                            class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.variants') }}</span></a>
+                </li>
+            @endcan
+
             @can('orders')
                 <li class="nav-item @yield('orders-active')"><a class="d-flex align-items-center"
                         href="{{ route('dashboard.orders') }}"><i data-feather='shopping-bag'></i><span

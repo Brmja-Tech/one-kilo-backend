@@ -10,6 +10,7 @@ class CartItem extends Model
     protected $fillable = [
         'cart_id',
         'product_id',
+        'product_sku_id',
         'quantity',
     ];
 
@@ -30,10 +31,20 @@ class CartItem extends Model
         return $this->belongsTo(Product::class);
     }
 
+    public function sku(): BelongsTo
+    {
+        return $this->belongsTo(ProductSku::class, 'product_sku_id');
+    }
+
     public function unitPrice(): float
     {
-        $product = $this->relationLoaded('product') ? $this->product : $this->product()->first();
+        if ($this->product_sku_id) {
+            $sku = $this->relationLoaded('sku') ? $this->sku : $this->sku()->with('product')->first();
 
+            return $sku?->priceAfterDiscount() ?? 0.0;
+        }
+
+        $product = $this->relationLoaded('product') ? $this->product : $this->product()->first();
         return $product?->priceAfterDiscount() ?? 0.0;
     }
 

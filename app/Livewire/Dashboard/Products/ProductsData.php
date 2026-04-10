@@ -187,8 +187,17 @@ class ProductsData extends Component
             ->with([
                 'category:id,name,status,parent_id',
                 'images:id,product_id,image,sort_order',
+                'activeSkus' => fn ($query) => $query->select([
+                    'id',
+                    'product_id',
+                    'signature',
+                    'price',
+                    'quantity',
+                    'status',
+                    'sort_order',
+                ]),
             ])
-            ->withCount('images')
+            ->withCount(['images', 'skus', 'activeSkus'])
             ->when($search !== '', function (Builder $query) use ($search) {
                 $term = '%' . $search . '%';
 
@@ -215,8 +224,40 @@ class ProductsData extends Component
             )
             ->when($this->featuredFilter === 'featured', fn (Builder $query) => $query->where('is_featured', true))
             ->when($this->featuredFilter === 'regular', fn (Builder $query) => $query->where('is_featured', false))
-            ->when($this->stockFilter === 'in_stock', fn (Builder $query) => $query->where('stock', '>', 0))
-            ->when($this->stockFilter === 'out_of_stock', fn (Builder $query) => $query->where('stock', '<=', 0))
+            ->when($this->stockFilter === 'in_stock', function (Builder $query) {
+                $query->where(function (Builder $subQuery) {
+                    $subQuery->where(function (Builder $simpleQuery) {
+                        $simpleQuery
+                            ->where('has_variants', false)
+                            ->where('stock', '>', 0);
+                    })->orWhere(function (Builder $variantQuery) {
+                        $variantQuery
+                            ->where('has_variants', true)
+                            ->whereHas('skus', function (Builder $skuStockQuery) {
+                                $skuStockQuery
+                                    ->where('status', true)
+                                    ->where('quantity', '>', 0);
+                            });
+                    });
+                });
+            })
+            ->when($this->stockFilter === 'out_of_stock', function (Builder $query) {
+                $query->where(function (Builder $subQuery) {
+                    $subQuery->where(function (Builder $simpleQuery) {
+                        $simpleQuery
+                            ->where('has_variants', false)
+                            ->where('stock', '<=', 0);
+                    })->orWhere(function (Builder $variantQuery) {
+                        $variantQuery
+                            ->where('has_variants', true)
+                            ->whereDoesntHave('skus', function (Builder $skuStockQuery) {
+                                $skuStockQuery
+                                    ->where('status', true)
+                                    ->where('quantity', '>', 0);
+                            });
+                    });
+                });
+            })
             ->latest('id')
             ->paginate($this->perPage);
 

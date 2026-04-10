@@ -6,6 +6,7 @@ use App\Exceptions\ApiBusinessException;
 use App\Models\Cart;
 use App\Models\Coupon;
 use App\Models\Product;
+use App\Models\ProductSku;
 use App\Repositories\Api\Commerce\CartRepository;
 use App\Repositories\Api\Commerce\CouponRepository;
 
@@ -15,8 +16,7 @@ class CartService
         protected CartRepository $cartRepository,
         protected ProductService $productService,
         protected CouponRepository $couponRepository
-    ) {
-    }
+    ) {}
 
     public function current(int $userId): Cart
     {
@@ -25,16 +25,41 @@ class CartService
         return $this->syncCouponState($cart, $userId);
     }
 
-    public function addItem(int $userId, string $productSlug, int $quantity): Cart
+    public function addItem(int $userId, string $productSlug, int $quantity, ?int $skuId = null): Cart
     {
         $product = $this->productService->findActiveBySlugForCart($productSlug);
         $cart = $this->cartRepository->getOrCreateForUser($userId);
 
-        $existingQuantity = $cart->items
-            ->firstWhere('product_id', $product->id)?->quantity ?? 0;
+        if ($product->hasVariants()) {
+            if (! $skuId) {
+                throw new ApiBusinessException(
+                    __('front.sku-required'),
+                    422,
+                    ['sku_id' => [__('front.sku-required')]]
+                );
+            }
 
-        $this->assertProductIsPurchasable($product, $existingQuantity + $quantity);
-        $this->cartRepository->addOrIncrementItem($cart, $product, $quantity);
+            $sku = $this->productService->findActiveSkuForProduct($skuId, $product->id);
+            $existingQuantity = $cart->items
+                ->firstWhere('product_sku_id', $skuId)?->quantity ?? 0;
+
+            $this->assertSkuIsPurchasable($sku, $existingQuantity + $quantity);
+            $this->cartRepository->addOrIncrementSkuItem($cart, $product, $sku, $quantity);
+        } else {
+            if ($skuId) {
+                throw new ApiBusinessException(
+                    __('front.sku-not-allowed'),
+                    422,
+                    ['sku_id' => [__('front.sku-not-allowed')]]
+                );
+            }
+
+            $existingQuantity = $cart->items
+                ->firstWhere('product_id', $product->id)?->quantity ?? 0;
+
+            $this->assertProductIsPurchasable($product, $existingQuantity + $quantity);
+            $this->cartRepository->addOrIncrementItem($cart, $product, $quantity);
+        }
 
         return $this->syncCouponState(
             $this->cartRepository->getOrCreateForUser($userId),
@@ -45,7 +70,23 @@ class CartService
     public function updateItem(int $userId, int $itemId, int $quantity): Cart
     {
         $item = $this->cartRepository->findUserItem($userId, $itemId);
-        $this->assertProductIsPurchasable($item->product, $quantity);
+
+        if ($item->product_sku_id) {
+            $sku = $item->relationLoaded('sku') ? $item->sku : $item->sku()->with('product')->first();
+
+            if (! $sku) {
+                throw new ApiBusinessException(
+                    __('front.cart-sku-not-available'),
+                    422,
+                    ['sku_id' => [__('front.cart-sku-not-available')]]
+                );
+            }
+
+            $this->assertSkuIsPurchasable($sku, $quantity);
+        } else {
+            $this->assertProductIsPurchasable($item->product, $quantity);
+        }
+
         $this->cartRepository->updateItemQuantity($item, $quantity);
 
         return $this->syncCouponState(
@@ -127,6 +168,33 @@ class CartService
         }
     }
 
+    private function assertSkuIsPurchasable(ProductSku $sku, int $requestedQuantity): void
+    {
+        if (! $sku->status) {
+            throw new ApiBusinessException(
+                __('front.cart-sku-not-available'),
+                422,
+                ['sku_id' => [__('front.cart-sku-not-available')]]
+            );
+        }
+
+        if ($sku->quantity < 1) {
+            throw new ApiBusinessException(
+                __('front.cart-sku-out-of-stock'),
+                422,
+                ['sku_id' => [__('front.cart-sku-out-of-stock')]]
+            );
+        }
+
+        if ($requestedQuantity > $sku->quantity) {
+            throw new ApiBusinessException(
+                __('front.cart-insufficient-sku-stock'),
+                422,
+                ['quantity' => [__('front.cart-insufficient-sku-stock')]]
+            );
+        }
+    }
+
     private function assertCouponCanBeApplied(Coupon $coupon, Cart $cart, int $userId): void
     {
         if ($cart->itemsCount() === 0) {
@@ -153,8 +221,10 @@ class CartService
             );
         }
 
-        if ($coupon->usage_limit_per_user !== null
-            && $this->couponRepository->userUsageCount($coupon->id, $userId) >= $coupon->usage_limit_per_user) {
+        if (
+            $coupon->usage_limit_per_user !== null
+            && $this->couponRepository->userUsageCount($coupon->id, $userId) >= $coupon->usage_limit_per_user
+        ) {
             throw new ApiBusinessException(
                 __('front.coupon-user-usage-limit-reached'),
                 422,

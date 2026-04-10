@@ -18,10 +18,15 @@ return new class extends Migration
                 ->constrained('products')
                 ->cascadeOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('product_sku_id')
+                ->nullable()
+                ->constrained('product_skus')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->unsignedInteger('quantity')->default(1);
             $table->timestamps();
 
-            $table->unique(['cart_id', 'product_id']);
+            $table->unique(['cart_id', 'product_id', 'product_sku_id']);
         });
     }
 

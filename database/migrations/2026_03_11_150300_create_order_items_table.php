@@ -19,6 +19,12 @@ return new class extends Migration
                 ->constrained('products')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('product_sku_id')
+                ->nullable()
+                ->constrained('product_skus')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
+            $table->string('sku_label')->nullable();
             $table->string('product_name');
             $table->string('product_image')->nullable();
             $table->decimal('unit_price', 12, 2);

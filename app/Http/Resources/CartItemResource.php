@@ -12,7 +12,9 @@ class CartItemResource extends JsonResource
         return [
             'id' => $this->id,
             'quantity' => (int) $this->quantity,
-            'product' => $this->whenLoaded('product', fn () => new ProductSummaryResource($this->product)),
+            'product' => $this->whenLoaded('product', fn() => new ProductSummaryResource($this->product)),
+            'sku_id' => $this->product_sku_id,
+            'sku' => $this->whenLoaded('sku', fn () => $this->sku ? new ProductSkuResource($this->sku) : null),
             'unit_price' => $this->unitPrice(),
             'line_total' => $this->lineTotal(),
         ];

@@ -28,6 +28,8 @@ class ProductUpdate extends Component
 
     public ?int $productId = null;
 
+    public ?string $productSlug = null;
+
     public $category_id = '';
 
     public string $name_ar = '';
@@ -70,6 +72,8 @@ class ProductUpdate extends Component
 
     public bool $status = true;
 
+    public bool $has_variants = false;
+
     public function boot(ImageManger $imageManger): void
     {
         $this->imageManger = $imageManger;
@@ -99,7 +103,8 @@ class ProductUpdate extends Component
             'gallery_images' => ['nullable', 'array', 'max:10'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,gif,webp,avif,bmp,svg', 'max:2048'],
             'currentGallery.*.sort_order' => ['nullable', 'integer', 'min:0'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'has_variants' => ['required', 'boolean'],
+            'price' => [$this->has_variants ? 'nullable' : 'required', 'numeric', 'min:0'],
             'discount_type' => [
                 'nullable',
                 'required_with:discount_value,discount_starts_at,discount_ends_at',
@@ -109,7 +114,7 @@ class ProductUpdate extends Component
             'discount_starts_at' => ['nullable', 'date'],
             'discount_ends_at' => ['nullable', 'date', 'after_or_equal:discount_starts_at'],
             'sku' => ['nullable', 'string', 'max:255', Rule::unique('products', 'sku')->ignore($this->productId)],
-            'stock' => ['required', 'integer', 'min:0'],
+            'stock' => [$this->has_variants ? 'nullable' : 'required', 'integer', 'min:0'],
             'is_featured' => ['required', 'boolean'],
             'status' => ['required', 'boolean'],
         ];
@@ -128,6 +133,7 @@ class ProductUpdate extends Component
         }
 
         $this->productId = $item->id;
+        $this->productSlug = $item->slug;
         $this->category_id = $item->category_id;
         $this->name_ar = $item->getTranslation('name', 'ar') ?? '';
         $this->name_en = $item->getTranslation('name', 'en') ?? '';
@@ -140,17 +146,25 @@ class ProductUpdate extends Component
         $this->gallery_images = [];
         $this->currentGallery = $this->mapGallery($item->images);
         $this->removedGalleryImageIds = [];
-        $this->price = (string) $item->price;
+
+        $this->price = $item->price ? (string) $item->price : '';
         $this->discount_type = $item->discount_type ?? '';
         $this->discount_value = $item->discount_value !== null ? (string) $item->discount_value : '';
         $this->discount_starts_at = $item->discount_starts_at?->format('Y-m-d\\TH:i') ?? '';
         $this->discount_ends_at = $item->discount_ends_at?->format('Y-m-d\\TH:i') ?? '';
         $this->sku = $item->sku ?? '';
-        $this->stock = (string) $item->stock;
+        $this->stock = (string) ($item->stock ?? 0);
         $this->is_featured = (bool) $item->is_featured;
         $this->status = (bool) $item->status;
-        $this->resetValidation();
+        $this->has_variants = (bool) $item->has_variants;
 
+        if ($this->has_variants) {
+            $this->price = '';
+            $this->sku = '';
+            $this->stock = '0';
+        }
+
+        $this->resetValidation();
         $this->dispatch('updateModalToggle');
     }
 
@@ -289,6 +303,15 @@ class ProductUpdate extends Component
         $this->dispatch('refreshData')->to(ProductsData::class);
     }
 
+    protected function hydrateFromProduct(Product $product): void
+    {
+        $this->productId = $product->id;
+        $this->productSlug = $product->slug;
+        $this->currentImage = $product->image;
+        $this->currentGallery = $this->mapGallery($product->images);
+        $this->removedGalleryImageIds = [];
+    }
+
     protected function payload(?string $newMainImagePath = null): array
     {
         $data = [
@@ -305,15 +328,16 @@ class ProductUpdate extends Component
                 'ar' => $this->description_ar,
                 'en' => $this->description_en,
             ],
-            'price' => round((float) $this->price, 2),
+            'price' => $this->has_variants ? null : round((float) $this->price, 2),
             'discount_type' => $this->discount_type ?: null,
             'discount_value' => $this->discount_type ? round((float) $this->discount_value, 2) : null,
             'discount_starts_at' => $this->discount_type ? $this->nullableDateTime($this->discount_starts_at) : null,
             'discount_ends_at' => $this->discount_type ? $this->nullableDateTime($this->discount_ends_at) : null,
-            'sku' => $this->sku ?: null,
-            'stock' => (int) $this->stock,
+            'sku' => $this->has_variants ? null : ($this->sku ?: null),
+            'stock' => $this->has_variants ? 0 : (int) $this->stock,
             'is_featured' => $this->is_featured,
             'status' => $this->status,
+            'has_variants' => $this->has_variants,
         ];
 
         if ($newMainImagePath) {
@@ -337,50 +361,53 @@ class ProductUpdate extends Component
         return true;
     }
 
-    protected function hydrateFromProduct(Product $product): void
-    {
-        $this->currentImage = $product->image;
-        $this->image = null;
-        $this->gallery_images = [];
-        $this->currentGallery = $this->mapGallery($product->images);
-        $this->removedGalleryImageIds = [];
-    }
-
-    protected function mapGallery($images): array
-    {
-        return $images->map(fn (ProductImage $image) => [
-            'id' => $image->id,
-            'image' => $image->image,
-            'sort_order' => $image->sort_order,
-        ])->values()->all();
-    }
-
     protected function normalizeFormState(): void
     {
         $this->category_id = $this->normalizeNullableInteger($this->category_id);
+
         $this->name_ar = trim($this->name_ar);
         $this->name_en = trim($this->name_en);
         $this->short_description_ar = $this->normalizeNullableString($this->short_description_ar);
         $this->short_description_en = $this->normalizeNullableString($this->short_description_en);
         $this->description_ar = $this->normalizeNullableString($this->description_ar);
         $this->description_en = $this->normalizeNullableString($this->description_en);
-        $this->price = trim($this->price);
+
         $this->discount_type = $this->normalizeNullableString($this->discount_type);
         $this->discount_value = $this->normalizeNullableString($this->discount_value);
         $this->discount_starts_at = $this->normalizeNullableString($this->discount_starts_at);
         $this->discount_ends_at = $this->normalizeNullableString($this->discount_ends_at);
+
         $this->sku = $this->normalizeNullableString($this->sku);
         $this->sku = $this->sku ? Str::upper($this->sku) : null;
-        $this->stock = trim($this->stock);
+
+        $this->price = trim((string) $this->price);
+        $this->stock = trim((string) $this->stock);
+
         $this->currentGallery = array_values(array_map(function (array $image): array {
             $image['sort_order'] = $this->normalizeNullableInteger($image['sort_order'] ?? null);
 
             return $image;
         }, $this->currentGallery));
+
         $this->removedGalleryImageIds = array_values(array_unique(array_map(
             fn ($id) => (int) $id,
             $this->removedGalleryImageIds
         )));
+
+        if ($this->has_variants) {
+            $this->price = '';
+            $this->stock = '0';
+            $this->sku = null;
+        }
+    }
+
+    protected function mapGallery($images): array
+    {
+        return collect($images)->map(fn (ProductImage $image) => [
+            'id' => $image->id,
+            'image' => $image->image,
+            'sort_order' => $image->sort_order,
+        ])->values()->all();
     }
 
     protected function normalizeNullableInteger($value): ?int
@@ -454,5 +481,4 @@ class ProductUpdate extends Component
         ]);
     }
 }
-
 

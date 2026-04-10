@@ -54,6 +54,7 @@
                     <th>#</th>
                     <th>{{ __('dashboard.image') }}</th>
                     <th>{{ __('dashboard.product') }}</th>
+                    <th>{{ __('dashboard.type') }}</th>
                     <th>{{ __('dashboard.sku') }}</th>
                     <th>{{ __('dashboard.category') }}</th>
                     <th>{{ __('dashboard.price') }}</th>
@@ -85,6 +86,18 @@
                         <td>
                             <div class="fw-semibold">{{ $item->name }}</div>
                             <small class="d-block"><code>{{ $item->slug }}</code></small>
+                            @if ($item->has_variants)
+                                <small class="d-block text-primary">
+                                    {{ $item->skus_count }} {{ __('dashboard.skus') }}
+                                </small>
+                            @endif
+                        </td>
+                        <td>
+                            @if ($item->has_variants)
+                                <span class="badge bg-light-info">{{ __('dashboard.variant-product') }}</span>
+                            @else
+                                <span class="badge bg-light-secondary">{{ __('dashboard.simple-product') }}</span>
+                            @endif
                         </td>
                         <td>{{ $item->sku ?: '-' }}</td>
                         <td>
@@ -94,27 +107,65 @@
                             @endif
                         </td>
                         <td>
-                            <div class="fw-semibold">{{ number_format((float) $item->priceAfterDiscount(), 2) }}</div>
-                            @if ($item->hasActiveDiscount())
-                                <small class="d-block text-muted text-decoration-line-through">
-                                    {{ number_format((float) $item->priceBeforeDiscount(), 2) }}
-                                </small>
-                                <small class="badge bg-light-warning">
-                                    @if ($item->discount_type === 'percentage')
-                                        {{ rtrim(rtrim(number_format((float) $item->discount_value, 2), '0'), '.') }}%
+                            @if ($item->has_variants)
+                                @php
+                                    $prices = $item->activeSkus
+                                        ->map(fn ($sku) => $sku->priceAfterDiscount())
+                                        ->filter(fn ($price) => $price !== null)
+                                        ->values();
+
+                                    $minPrice = $prices->min();
+                                    $maxPrice = $prices->max();
+                                @endphp
+                                @if ($prices->isNotEmpty())
+                                    @if ($minPrice === $maxPrice)
+                                        <div class="fw-semibold">{{ number_format((float) $minPrice, 2) }}</div>
                                     @else
-                                        -{{ number_format((float) $item->discount_value, 2) }}
+                                        <div class="fw-semibold">{{ number_format((float) $minPrice, 2) }} - {{ number_format((float) $maxPrice, 2) }}</div>
                                     @endif
-                                </small>
+                                @else
+                                    <span class="text-muted">{{ __('dashboard.no-price') }}</span>
+                                @endif
                             @else
-                                <small class="text-muted">{{ __('dashboard.no-discount') }}</small>
+                                <div class="fw-semibold">{{ number_format((float) $item->priceAfterDiscount(), 2) }}</div>
+                                @if ($item->hasActiveDiscount())
+                                    <small class="d-block text-muted text-decoration-line-through">
+                                        {{ number_format((float) $item->priceBeforeDiscount(), 2) }}
+                                    </small>
+                                    <small class="badge bg-light-warning">
+                                        @if ($item->discount_type === 'percentage')
+                                            {{ rtrim(rtrim(number_format((float) $item->discount_value, 2), '0'), '.') }}%
+                                        @else
+                                            -{{ number_format((float) $item->discount_value, 2) }}
+                                        @endif
+                                    </small>
+                                @else
+                                    <small class="text-muted">{{ __('dashboard.no-discount') }}</small>
+                                @endif
                             @endif
                         </td>
                         <td>
-                            <span class="badge {{ $item->stock > 0 ? 'bg-light-success' : 'bg-light-danger' }}">
-                                {{ $item->stock > 0 ? __('dashboard.in-stock') : __('dashboard.out-of-stock') }}
-                            </span>
-                            <small class="d-block text-muted">{{ __('dashboard.qty') }}: {{ $item->stock }}</small>
+                            @if ($item->has_variants)
+                                @php
+                                    $totalStock = $item->activeSkus->sum('quantity');
+                                    $inStockSkus = $item->activeSkus->where('quantity', '>', 0)->count();
+                                    $activeSkusCount = (int) ($item->active_skus_count ?? $item->activeSkus->count());
+                                @endphp
+                                <span class="badge {{ $totalStock > 0 ? 'bg-light-success' : 'bg-light-danger' }}">
+                                    {{ $totalStock > 0 ? __('dashboard.in-stock') : __('dashboard.out-of-stock') }}
+                                </span>
+                                <small class="d-block text-muted">
+                                    {{ __('dashboard.total') }}: {{ $totalStock }}
+                                    @if ($activeSkusCount > 0)
+                                        ({{ $inStockSkus }}/{{ $activeSkusCount }})
+                                    @endif
+                                </small>
+                            @else
+                                <span class="badge {{ $item->stock > 0 ? 'bg-light-success' : 'bg-light-danger' }}">
+                                    {{ $item->stock > 0 ? __('dashboard.in-stock') : __('dashboard.out-of-stock') }}
+                                </span>
+                                <small class="d-block text-muted">{{ __('dashboard.qty') }}: {{ $item->stock }}</small>
+                            @endif
                         </td>
                         <td style="min-width: 150px">
                             <div class="form-check form-switch form-check-warning">
@@ -139,6 +190,13 @@
                         <td>{{ $item->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
                         <td>
                             <div class="d-flex gap-1">
+                                @if ($item->has_variants)
+                                    <a href="{{ route('dashboard.products.skus', $item) }}" class="btn btn-sm btn-info"
+                                        title="{{ __('dashboard.manage-skus') }}">
+                                        <i class="fa-solid fa-layer-group"></i>
+                                    </a>
+                                @endif
+
                                 <button type="button" class="btn btn-sm btn-primary"
                                     title="{{ __('dashboard.update-product') }}"
                                     wire:click="editProduct({{ $item->id }})">
@@ -155,7 +213,7 @@
                     </tr>
                 @empty
                     <tr>
-                        <td colspan="11" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
+                        <td colspan="12" class="text-center text-muted py-2">{{ __('dashboard.no-data') }}</td>
                     </tr>
                 @endforelse
             </tbody>

@@ -59,6 +59,8 @@ class ProductCreate extends Component
 
     public bool $is_featured = false;
 
+    public bool $has_variants = false;
+
     public bool $status = true;
 
     public function boot(ImageManger $imageManger): void
@@ -79,7 +81,8 @@ class ProductCreate extends Component
             'image' => ['required', 'image', 'mimes:jpg,jpeg,png,gif,webp,avif,bmp,svg', 'max:2048'],
             'gallery_images' => ['nullable', 'array', 'max:10'],
             'gallery_images.*' => ['image', 'mimes:jpg,jpeg,png,gif,webp,avif,bmp,svg', 'max:2048'],
-            'price' => ['required', 'numeric', 'min:0'],
+            'has_variants' => ['required', 'boolean'],
+            'price' => [$this->has_variants ? 'nullable' : 'required', 'numeric', 'min:0'],
             'discount_type' => [
                 'nullable',
                 'required_with:discount_value,discount_starts_at,discount_ends_at',
@@ -88,8 +91,8 @@ class ProductCreate extends Component
             'discount_value' => ['nullable', 'required_with:discount_type', 'numeric', 'gt:0'],
             'discount_starts_at' => ['nullable', 'date'],
             'discount_ends_at' => ['nullable', 'date', 'after_or_equal:discount_starts_at'],
-            'sku' => ['nullable', 'string', 'max:255', Rule::unique('products', 'sku')],
-            'stock' => ['required', 'integer', 'min:0'],
+            'sku' => [$this->has_variants ? 'nullable' : 'nullable', 'string', 'max:255', Rule::unique('products', 'sku')],
+            'stock' => [$this->has_variants ? 'nullable' : 'required', 'integer', 'min:0'],
             'is_featured' => ['required', 'boolean'],
             'status' => ['required', 'boolean'],
         ];
@@ -182,15 +185,16 @@ class ProductCreate extends Component
                 'en' => $this->description_en,
             ],
             'image' => $mainImagePath,
-            'price' => round((float) $this->price, 2),
+            'price' => $this->has_variants ? null : round((float) $this->price, 2),
             'discount_type' => $this->discount_type ?: null,
             'discount_value' => $this->discount_type ? round((float) $this->discount_value, 2) : null,
             'discount_starts_at' => $this->discount_type ? $this->nullableDateTime($this->discount_starts_at) : null,
             'discount_ends_at' => $this->discount_type ? $this->nullableDateTime($this->discount_ends_at) : null,
-            'sku' => $this->sku ?: null,
-            'stock' => (int) $this->stock,
+            'sku' => $this->has_variants ? null : ($this->sku ?: null),
+            'stock' => $this->has_variants ? 0 : (int) $this->stock,
             'is_featured' => $this->is_featured,
             'status' => $this->status,
+            'has_variants' => $this->has_variants,
         ];
     }
 
@@ -211,20 +215,30 @@ class ProductCreate extends Component
     protected function normalizeFormState(): void
     {
         $this->category_id = $this->normalizeNullableInteger($this->category_id);
+
         $this->name_ar = trim($this->name_ar);
         $this->name_en = trim($this->name_en);
         $this->short_description_ar = $this->normalizeNullableString($this->short_description_ar);
         $this->short_description_en = $this->normalizeNullableString($this->short_description_en);
         $this->description_ar = $this->normalizeNullableString($this->description_ar);
         $this->description_en = $this->normalizeNullableString($this->description_en);
-        $this->price = trim($this->price);
+
         $this->discount_type = $this->normalizeNullableString($this->discount_type);
         $this->discount_value = $this->normalizeNullableString($this->discount_value);
         $this->discount_starts_at = $this->normalizeNullableString($this->discount_starts_at);
         $this->discount_ends_at = $this->normalizeNullableString($this->discount_ends_at);
+
         $this->sku = $this->normalizeNullableString($this->sku);
         $this->sku = $this->sku ? Str::upper($this->sku) : null;
-        $this->stock = trim($this->stock);
+
+        $this->price = trim((string) $this->price);
+        $this->stock = trim((string) $this->stock);
+
+        if ($this->has_variants) {
+            $this->price = '';
+            $this->stock = '0';
+            $this->sku = null;
+        }
     }
 
     protected function normalizeNullableInteger($value): ?int
@@ -312,11 +326,13 @@ class ProductCreate extends Component
             'stock',
             'is_featured',
             'status',
+            'has_variants',
         ]);
 
         $this->stock = '0';
         $this->is_featured = false;
         $this->status = true;
+        $this->has_variants = false;
     }
 
     public function render()
@@ -326,5 +342,4 @@ class ProductCreate extends Component
         ]);
     }
 }
-
 

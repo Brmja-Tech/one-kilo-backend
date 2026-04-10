@@ -4,266 +4,363 @@ namespace Database\Seeders;
 
 use App\Models\Category;
 use App\Models\Product;
+use App\Models\ProductSku;
+use App\Models\Variant;
+use App\Models\VariantItem;
 use Illuminate\Database\Seeder;
-use Illuminate\Support\Str;
+use Illuminate\Support\Collection;
 
 class ProductSeeder extends Seeder
 {
     public function run(): void
     {
+        $categoryIds = Category::query()->pluck('id', 'slug');
+        $variantIds = Variant::query()->pluck('id', 'key');
+        $variantItemIds = $this->buildVariantItemIdMap();
+
         $products = [
+            // Existing demo products referenced by other seeders (favorites/cart/images).
             [
-                'category' => 'Juice',
-                'name' => [
-                    'en' => 'Mango Juice 1L',
-                    'ar' => 'عصير المانجو 1 لتر',
-                ],
-                'short_description' => [
-                    'en' => 'Refreshing mango juice in a convenient 1-liter bottle.',
-                    'ar' => 'عصير مانجو منعش في زجاجة سعة 1 لتر.',
-                ],
-                'description' => [
-                    'en' => 'A family-size mango juice bottle made for breakfast tables and quick refreshment.',
-                    'ar' => 'زجاجة عصير مانجو بحجم العائلة مصنوعة للكتاب والإنجاز السريع.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/03.jpg',
-                'price' => 42,
-                'discount_type' => 'amount',
-                'discount_value' => 5,
-                'discount_starts_at' => now()->subDays(2),
-                'discount_ends_at' => now()->addDays(5),
-                'sku' => 'JUICE-MANGO-1L',
-                'stock' => 40,
-                'is_featured' => true,
-                'status' => true,
-            ],
-            [
-                'category' => 'Soda',
-                'name' => [
-                    'en' => 'Cola Can 330ml',
-                    'ar' => 'علبة كولا 330 مل',
-                ],
-                'short_description' => [
-                    'en' => 'Classic sparkling cola can.',
-                    'ar' => 'علبة كولا مغليه كلاسيكي.',
-                ],
-                'description' => [
-                    'en' => 'Single chilled cola can for grab-and-go orders.',
-                    'ar' => 'علبة كولا مبردة واحدة للطلبات السريعة.',
-                ],
+                'slug' => 'mango-juice-1l',
+                'category_slug' => 'juice',
+                'has_variants' => false,
+                'name' => ['en' => 'Mango Juice 1L', 'ar' => 'عصير مانجو 1 لتر'],
+                'short_description' => ['en' => 'Refreshing mango juice.', 'ar' => 'عصير مانجو منعش.'],
+                'description' => ['en' => 'Chilled mango juice, perfect for any time.', 'ar' => 'عصير مانجو بارد مناسب لأي وقت.'],
                 'image' => 'dashboard/app-assets/images/slider/04.jpg',
-                'price' => 18,
-                'sku' => 'SODA-COLA-330',
-                'stock' => 0,
-                'is_featured' => false,
+                'price' => 45,
+                'stock' => 120,
+                'sku' => 'JUICE-MANGO-1L',
+                'is_featured' => true,
                 'status' => true,
             ],
             [
-                'category' => 'Bakery',
-                'name' => [
-                    'en' => 'Butter Croissant',
-                    'ar' => 'كرواسون الزبدة',
-                ],
-                'short_description' => [
-                    'en' => 'Freshly baked croissant with a buttery finish.',
-                    'ar' => 'كرواسون مخبوز حديثاً مع إنهاء زبدي.',
-                ],
-                'description' => [
-                    'en' => 'Soft layers and a light crisp shell, ideal for breakfast or coffee breaks.',
-                    'ar' => 'طبقات ناعمة وقشرة مقرمشة خفيفة، مثالية للإفطار أو استراحة القهوة.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/05.jpg',
-                'price' => 12,
-                'discount_type' => 'percentage',
-                'discount_value' => 10,
-                'discount_starts_at' => now()->subDays(10),
-                'discount_ends_at' => now()->subDays(5),
-                'sku' => 'BAK-CROISSANT',
-                'stock' => 25,
-                'is_featured' => false,
-                'status' => true,
-            ],
-            [
-                'category' => 'Snacks',
-                'name' => [
-                    'en' => 'Sea Salt Chips',
-                    'ar' => ' Chips الملح البحري',
-                ],
-                'short_description' => [
-                    'en' => 'Crunchy potato chips with a light sea salt finish.',
-                    'ar' => ' Chips البطاطا المقرمشة مع إنهاء ملح بحري خفيف.',
-                ],
-                'description' => [
-                    'en' => 'A pantry staple snack with a clean salty flavor and crisp texture.',
-                    'ar' => 'وجبة خفيفة أساسية في الخزانة مع طعم مالح نقي ونسيج مقرمش.',
-                ],
+                'slug' => 'sea-salt-chips',
+                'category_slug' => 'snacks',
+                'has_variants' => false,
+                'name' => ['en' => 'Sea Salt Chips', 'ar' => 'شيبسي ملح البحر'],
+                'short_description' => ['en' => 'Crunchy and lightly salted.', 'ar' => 'مقرمش ومملح قليلاً.'],
+                'description' => ['en' => 'Classic chips with sea salt.', 'ar' => 'شيبسي بطعم ملح البحر.'],
                 'image' => 'dashboard/app-assets/images/slider/06.jpg',
-                'price' => 20,
-                'discount_type' => 'percentage',
-                'discount_value' => 15,
-                'discount_starts_at' => now()->subDay(),
-                'discount_ends_at' => now()->addDays(7),
-                'sku' => 'SNACK-CHIPS-SS',
-                'stock' => 60,
-                'is_featured' => true,
-                'status' => true,
-            ],
-            [
-                'category' => 'Dairy',
-                'name' => [
-                    'en' => 'Full Cream Milk 1L',
-                    'ar' => 'حليب كريم كامل 1 لتر',
-                ],
-                'short_description' => [
-                    'en' => 'Fresh full cream milk for daily use.',
-                    'ar' => 'حليب كريم كامل طازج للاستخدام اليومي.',
-                ],
-                'description' => [
-                    'en' => 'Suitable for coffee, cereals, baking, and everyday household use.',
-                    'ar' => 'مناسب للقهوة، والأرز، والخبز، والاستخدامات المنزلية اليومية.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/07.jpg',
-                'price' => 34,
-                'sku' => 'DAIRY-MILK-1L',
-                'stock' => 80,
+                'price' => 25,
+                'stock' => 200,
+                'sku' => 'SNACK-CHIPS-SEA-SALT',
                 'is_featured' => false,
                 'status' => true,
             ],
             [
-                'category' => 'Dairy',
-                'name' => [
-                    'en' => 'Greek Yogurt',
-                    'ar' => 'زبادي اليوناني',
-                ],
-                'short_description' => [
-                    'en' => 'Rich and creamy yogurt cup.',
-                    'ar' => 'كوب زبادي غني وكريمي.',
-                ],
-                'description' => [
-                    'en' => 'High-protein yogurt with a thick texture for breakfast bowls and snacks.',
-                    'ar' => 'زبادي عالي البروتين مع نسيج سميك لطبقات الإفطار والوجبات الخفيفة.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/08.jpg',
-                'price' => 28,
-                'discount_type' => 'amount',
-                'discount_value' => 3,
-                'discount_starts_at' => now()->addDay(),
-                'discount_ends_at' => now()->addDays(7),
-                'sku' => 'DAIRY-YOGURT-GR',
-                'stock' => 30,
-                'is_featured' => false,
-                'status' => true,
-            ],
-            [
-                'category' => 'Citrus',
-                'name' => [
-                    'en' => 'Fresh Lemons 1kg',
-                    'ar' => 'برتقال طازج 1 كجم',
-                ],
-                'short_description' => [
-                    'en' => 'Bright and juicy lemons sold by the kilo.',
-                    'ar' => 'برتقال بارز وجذاب مباع بالكيلو.',
-                ],
-                'description' => [
-                    'en' => 'Ideal for juices, marinades, tea, and everyday kitchen prep.',
-                    'ar' => 'مثالي للعصائر، والمرشحات، والشاي، واستخدامات المطبخ اليومية.',
-                ],
+                'slug' => 'butter-croissant',
+                'category_slug' => 'bakery',
+                'has_variants' => false,
+                'name' => ['en' => 'Butter Croissant', 'ar' => 'كرواسون زبدة'],
+                'short_description' => ['en' => 'Freshly baked croissant.', 'ar' => 'كرواسون طازج.'],
+                'description' => ['en' => 'Buttery, flaky croissant baked daily.', 'ar' => 'كرواسون هش بالزبدة مخبوز يوميًا.'],
                 'image' => 'dashboard/app-assets/images/slider/09.jpg',
-                'price' => 15,
-                'sku' => 'FRUIT-LEMON-1KG',
-                'stock' => 100,
-                'is_featured' => false,
-                'status' => true,
-            ],
-            [
-                'category' => 'Imported Fruits',
-                'name' => [
-                    'en' => 'Imported Avocado',
-                    'ar' => 'أوكادو المستورد',
-                ],
-                'short_description' => [
-                    'en' => 'Premium imported avocados.',
-                    'ar' => 'أوكادو مستورد عالي الجودة.',
-                ],
-                'description' => [
-                    'en' => 'Creamy imported avocados suitable for salads, sandwiches, and healthy bowls.',
-                    'ar' => 'أوكادو مستورد كريمي مناسب للسلطات، والساندويتشات، والطبقات الصحية.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/10.jpg',
-                'price' => 49,
-                'discount_type' => 'percentage',
-                'discount_value' => 20,
-                'discount_starts_at' => now()->subDays(3),
-                'discount_ends_at' => now()->addDays(4),
-                'sku' => 'FRUIT-AVOCADO-IMP',
-                'stock' => 18,
+                'price' => 18,
+                'stock' => 80,
+                'sku' => 'BAKERY-CROISSANT-BUTTER',
                 'is_featured' => true,
                 'status' => true,
             ],
             [
-                'category' => 'Leafy Greens',
-                'name' => [
-                    'en' => 'Baby Spinach',
-                    'ar' => 'سبانخ الرضيع',
-                ],
-                'short_description' => [
-                    'en' => 'Fresh baby spinach leaves.',
-                    'ar' => 'أوراق سبانخ الرضيع الطازجة.',
-                ],
-                'description' => [
-                    'en' => 'Tender leafy greens ready for salads, sauteing, or smoothie prep.',
-                    'ar' => 'خضروات عليا ناعمة جاهزة للسلطات، والطهي، أو إعداد العصائر.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/01.jpg',
+                'slug' => 'full-cream-milk-1l',
+                'category_slug' => 'dairy',
+                'has_variants' => false,
+                'name' => ['en' => 'Full Cream Milk 1L', 'ar' => 'حليب كامل الدسم 1 لتر'],
+                'short_description' => ['en' => 'Rich full cream milk.', 'ar' => 'حليب كامل الدسم غني.'],
+                'description' => ['en' => 'Full cream milk 1 liter.', 'ar' => 'حليب كامل الدسم سعة 1 لتر.'],
+                'image' => 'dashboard/app-assets/images/slider/08.jpg',
+                'price' => 35,
+                'stock' => 140,
+                'sku' => 'DAIRY-MILK-FULL-1L',
+                'is_featured' => true,
+                'status' => true,
+            ],
+            [
+                'slug' => 'greek-yogurt',
+                'category_slug' => 'dairy',
+                'has_variants' => false,
+                'name' => ['en' => 'Greek Yogurt', 'ar' => 'زبادي يوناني'],
+                'short_description' => ['en' => 'Creamy greek yogurt.', 'ar' => 'زبادي يوناني كريمي.'],
+                'description' => ['en' => 'High-protein greek yogurt.', 'ar' => 'زبادي يوناني عالي البروتين.'],
+                'image' => 'dashboard/app-assets/images/slider/05.jpg',
                 'price' => 22,
-                'sku' => 'VEG-SPINACH-BABY',
-                'stock' => 35,
+                'stock' => 90,
+                'sku' => 'DAIRY-YOGURT-GREEK',
                 'is_featured' => false,
                 'status' => true,
             ],
             [
-                'category' => 'Cleaning Supplies',
-                'name' => [
-                    'en' => 'Laundry Detergent 2.5L',
-                    'ar' => 'مغسلة للغسيل 2.5 لتر',
-                ],
-                'short_description' => [
-                    'en' => 'Concentrated detergent for everyday loads.',
-                    'ar' => 'مغسلة مركزة للغسيل اليومي.',
-                ],
-                'description' => [
-                    'en' => 'Large-format detergent for colored and mixed fabrics with fresh fragrance.',
-                    'ar' => 'مغسلة بتنسيق كبير للنسيج الملون والمتداخل مع عطر طازج.',
-                ],
-                'image' => 'dashboard/app-assets/images/slider/02.jpg',
-                'price' => 95,
-                'discount_type' => 'amount',
-                'discount_value' => 10,
-                'discount_starts_at' => now()->subDays(1),
-                'discount_ends_at' => now()->addDays(10),
+                'slug' => 'imported-avocado',
+                'category_slug' => 'imported-fruits',
+                'has_variants' => false,
+                'name' => ['en' => 'Imported Avocado', 'ar' => 'أفوكادو مستورد'],
+                'short_description' => ['en' => 'Fresh imported avocado.', 'ar' => 'أفوكادو مستورد طازج.'],
+                'description' => ['en' => 'Perfect for salads and toast.', 'ar' => 'مناسب للسلطات والتوست.'],
+                'image' => 'dashboard/app-assets/images/slider/03.jpg',
+                'price' => 60,
+                'stock' => 60,
+                'sku' => 'FRUIT-AVOCADO-IMPORTED',
+                'is_featured' => false,
+                'status' => true,
+            ],
+            [
+                'slug' => 'laundry-detergent-25l',
+                'category_slug' => 'cleaning-supplies',
+                'has_variants' => false,
+                'name' => ['en' => 'Laundry Detergent 2.5L', 'ar' => 'منظف غسيل 2.5 لتر'],
+                'short_description' => ['en' => 'Fresh scent detergent.', 'ar' => 'منظف برائحة منعشة.'],
+                'description' => ['en' => 'Powerful laundry detergent 2.5L.', 'ar' => 'منظف غسيل قوي سعة 2.5 لتر.'],
+                'image' => 'dashboard/app-assets/images/slider/10.jpg',
+                'price' => 120,
+                'stock' => 40,
                 'sku' => 'CLEAN-DETERGENT-25L',
-                'stock' => 12,
-                'is_featured' => true,
+                'is_featured' => false,
+                'status' => true,
+            ],
+
+            // FIX-style variants examples.
+            [
+                'slug' => 'tomatoes',
+                'category_slug' => 'vegetables',
+                'has_variants' => true,
+                'name' => ['en' => 'Tomatoes', 'ar' => 'طماطم'],
+                'short_description' => ['en' => 'Fresh red tomatoes.', 'ar' => 'طماطم حمراء طازجة.'],
+                'description' => ['en' => 'Locally sourced tomatoes.', 'ar' => 'طماطم من مصادر محلية.'],
+                'image' => 'dashboard/app-assets/images/slider/04.jpg',
+                'status' => true,
+                'sku_setup' => [
+                    ['sku' => 'TOM-250GM', 'sort_order' => 1, 'price' => 14.99, 'quantity' => 80, 'attributes' => ['weight' => '250 gm']],
+                    ['sku' => 'TOM-500GM', 'sort_order' => 2, 'price' => 27.99, 'quantity' => 60, 'attributes' => ['weight' => '500 gm']],
+                    ['sku' => 'TOM-1KG', 'sort_order' => 3, 'price' => 49.99, 'quantity' => 40, 'attributes' => ['weight' => '1 kg']],
+                ],
+            ],
+            [
+                'slug' => 'bananas',
+                'category_slug' => 'fruits',
+                'has_variants' => true,
+                'name' => ['en' => 'Bananas', 'ar' => 'موز'],
+                'short_description' => ['en' => 'Sweet ripe bananas.', 'ar' => 'موز ناضج حلو.'],
+                'description' => ['en' => 'Perfect for snacks and smoothies.', 'ar' => 'مناسب للسناكس والعصائر.'],
+                'image' => 'dashboard/app-assets/images/slider/02.jpg',
+                'status' => true,
+                'sku_setup' => [
+                    ['sku' => 'BAN-500GM', 'sort_order' => 1, 'price' => 24.99, 'quantity' => 70, 'attributes' => ['weight' => '500 gm']],
+                    ['sku' => 'BAN-1KG', 'sort_order' => 2, 'price' => 44.99, 'quantity' => 50, 'attributes' => ['weight' => '1 kg']],
+                ],
+            ],
+            [
+                'slug' => 'eggs',
+                'category_slug' => 'dairy',
+                'has_variants' => true,
+                'name' => ['en' => 'Eggs', 'ar' => 'بيض'],
+                'short_description' => ['en' => 'Farm fresh eggs.', 'ar' => 'بيض طازج من المزرعة.'],
+                'description' => ['en' => 'Choose the pack size that suits you.', 'ar' => 'اختر حجم العبوة المناسب لك.'],
+                'image' => 'dashboard/app-assets/images/slider/07.jpg',
+                'status' => true,
+                'sku_setup' => [
+                    ['sku' => 'EGG-6PCS', 'sort_order' => 1, 'price' => 39.99, 'quantity' => 100, 'attributes' => ['package' => '6 pcs']],
+                    ['sku' => 'EGG-12PCS', 'sort_order' => 2, 'price' => 74.99, 'quantity' => 60, 'attributes' => ['package' => '12 pcs']],
+                    ['sku' => 'EGG-TRAY', 'sort_order' => 3, 'price' => 199.99, 'quantity' => 30, 'attributes' => ['package' => 'Tray']],
+                ],
+            ],
+            [
+                'slug' => 'water',
+                'category_slug' => 'beverages',
+                'has_variants' => true,
+                'name' => ['en' => 'Mineral Water', 'ar' => 'مياه معدنية'],
+                'short_description' => ['en' => 'Clean and refreshing.', 'ar' => 'نقية ومنعشة.'],
+                'description' => ['en' => 'Different packages for home and on-the-go.', 'ar' => 'عبوات مختلفة للبيت وللتنقل.'],
+                'image' => 'dashboard/app-assets/images/slider/01.jpg',
+                'status' => true,
+                'sku_setup' => [
+                    ['sku' => 'WATER-BOTTLE', 'sort_order' => 1, 'price' => 7.99, 'quantity' => 300, 'attributes' => ['package' => 'Bottle']],
+                    ['sku' => 'WATER-PACK', 'sort_order' => 2, 'price' => 39.99, 'quantity' => 120, 'attributes' => ['package' => 'Pack']],
+                    ['sku' => 'WATER-CARTON', 'sort_order' => 3, 'price' => 74.99, 'quantity' => 70, 'attributes' => ['package' => 'Carton']],
+                ],
+            ],
+            [
+                'slug' => 'fresh-milk',
+                'category_slug' => 'dairy',
+                'has_variants' => false,
+                'name' => ['en' => 'Fresh Milk', 'ar' => 'حليب طازج'],
+                'short_description' => ['en' => 'Daily fresh milk.', 'ar' => 'حليب طازج يوميًا.'],
+                'description' => ['en' => 'Simple product example (no variants).', 'ar' => 'مثال لمنتج بسيط (بدون خيارات).'],
+                'image' => 'dashboard/app-assets/images/slider/08.jpg',
+                'price' => 29.99,
+                'stock' => 100,
+                'sku' => 'DAIRY-FRESH-MILK',
+                'is_featured' => false,
                 'status' => true,
             ],
         ];
 
         foreach ($products as $productData) {
-            $category = Category::query()
-                ->where('slug', Str::slug($productData['category']))
-                ->firstOrFail();
+            $categorySlug = $productData['category_slug'];
+            unset($productData['category_slug']);
 
-            $product = Product::query()->firstOrNew([
-                'slug' => Str::slug($productData['name']['en']),
-            ]);
+            $skuSetup = $productData['sku_setup'] ?? [];
+            unset($productData['sku_setup']);
 
-            unset($productData['category']);
+            $product = Product::query()->updateOrCreate(
+                ['slug' => $productData['slug']],
+                [
+                    'category_id' => $this->resolveCategoryId($categoryIds, $categorySlug),
+                    'name' => $productData['name'],
+                    'short_description' => $productData['short_description'] ?? null,
+                    'description' => $productData['description'] ?? null,
+                    'image' => $productData['image'],
+                    'price' => $productData['has_variants'] ? null : ($productData['price'] ?? null),
+                    'discount_type' => $productData['discount_type'] ?? null,
+                    'discount_value' => $productData['discount_value'] ?? null,
+                    'discount_starts_at' => $productData['discount_starts_at'] ?? null,
+                    'discount_ends_at' => $productData['discount_ends_at'] ?? null,
+                    'sku' => $productData['has_variants'] ? null : ($productData['sku'] ?? null),
+                    'stock' => $productData['has_variants'] ? 0 : ($productData['stock'] ?? 0),
+                    'is_featured' => (bool) ($productData['is_featured'] ?? false),
+                    'has_variants' => (bool) ($productData['has_variants'] ?? false),
+                    'status' => (bool) ($productData['status'] ?? true),
+                ]
+            );
 
-            $product->fill([
-                ...$productData,
-                'category_id' => $category->id,
-            ]);
-            $product->save();
+            if (! $product->has_variants) {
+                ProductSku::query()->where('product_id', $product->id)->delete();
+                continue;
+            }
+
+            $this->syncProductSkus($product, $skuSetup, $variantIds, $variantItemIds);
         }
+    }
+
+    /**
+     * @param  Collection<string, int>  $categoryIds
+     */
+    private function resolveCategoryId(Collection $categoryIds, string $slug): int
+    {
+        $id = $categoryIds->get($slug);
+
+        if ($id) {
+            return (int) $id;
+        }
+
+        return (int) Category::query()->where('slug', $slug)->value('id');
+    }
+
+    private function buildVariantItemIdMap(): array
+    {
+        $items = VariantItem::query()
+            ->select(['variant_items.id', 'variant_items.variant_id', 'variant_items.name_plain'])
+            ->with('variant:id,key')
+            ->get();
+
+        $map = [];
+
+        foreach ($items as $item) {
+            $variantKey = $item->variant?->key;
+            $namePlain = trim((string) ($item->name_plain ?? ''));
+
+            if (! $variantKey || $namePlain === '') {
+                continue;
+            }
+
+            $map[$variantKey][strtolower($namePlain)] = (int) $item->id;
+        }
+
+        return $map;
+    }
+
+    /**
+     * @param  Collection<string, int>  $variantIds
+     */
+    private function syncProductSkus(
+        Product $product,
+        array $skuSetup,
+        Collection $variantIds,
+        array $variantItemIds
+    ): void {
+        $signatures = [];
+
+        foreach ($skuSetup as $skuData) {
+            if (! is_array($skuData) || empty($skuData['attributes'])) {
+                continue;
+            }
+
+            $attributesPayload = [];
+
+            foreach ((array) $skuData['attributes'] as $variantKey => $itemPlain) {
+                $variantKey = trim((string) $variantKey);
+                $itemPlain = trim((string) $itemPlain);
+
+                if ($variantKey === '' || $itemPlain === '') {
+                    continue;
+                }
+
+                $variantId = (int) ($variantIds->get($variantKey) ?? 0);
+
+                if (! $variantId) {
+                    $variantId = (int) Variant::query()->where('key', $variantKey)->value('id');
+                }
+
+                if (! $variantId) {
+                    continue;
+                }
+
+                $itemId = (int) ($variantItemIds[$variantKey][strtolower($itemPlain)] ?? 0);
+
+                if (! $itemId) {
+                    $itemId = (int) VariantItem::query()
+                        ->where('variant_id', $variantId)
+                        ->where('name_plain', $itemPlain)
+                        ->value('id');
+                }
+
+                if (! $itemId) {
+                    continue;
+                }
+
+                $attributesPayload[] = [
+                    'variant_id' => $variantId,
+                    'variant_item_id' => $itemId,
+                ];
+            }
+
+            $signature = ProductSku::signatureFromAttributes($attributesPayload);
+
+            if ($signature === '') {
+                continue;
+            }
+
+            $sku = ProductSku::query()->updateOrCreate(
+                [
+                    'product_id' => $product->id,
+                    'signature' => $signature,
+                ],
+                [
+                    'sku' => $skuData['sku'] ?? null,
+                    'image' => null,
+                    'price' => round((float) ($skuData['price'] ?? 0), 2),
+                    'quantity' => (int) ($skuData['quantity'] ?? 0),
+                    'status' => true,
+                    'sort_order' => (int) ($skuData['sort_order'] ?? 0),
+                ]
+            );
+
+            $sku->items()->delete();
+
+            foreach ($attributesPayload as $attribute) {
+                $sku->items()->create($attribute);
+            }
+
+            $signatures[] = $signature;
+        }
+
+        if ($signatures === []) {
+            return;
+        }
+
+        ProductSku::query()
+            ->where('product_id', $product->id)
+            ->whereNotIn('signature', $signatures)
+            ->delete();
     }
 }

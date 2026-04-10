@@ -17,6 +17,7 @@ class AddToCartRequest extends ApiFormRequest
     {
         return [
             'product_slug' => ['required', 'string', 'exists:products,slug'],
+            'sku_id' => ['nullable', 'integer', 'exists:product_skus,id'],
             'quantity' => ['required', 'integer', 'min:1'],
         ];
     }

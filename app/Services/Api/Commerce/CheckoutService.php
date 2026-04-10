@@ -48,6 +48,8 @@ class CheckoutService
 
             $this->orderRepository->createItems($order, $this->buildOrderItemsPayload($cart));
 
+            $this->deductStock($cart);
+
             $wallet = null;
 
             if ($order->payment_method === Order::PAYMENT_METHOD_CARD) {
@@ -144,8 +146,14 @@ class CheckoutService
     {
         return $cart->items
             ->map(function (CartItem $item) {
+                $skuLabel = $item->product_sku_id
+                    ? $item->sku?->label()
+                    : null;
+
                 return [
                     'product_id' => $item->product_id,
+                    'product_sku_id' => $item->product_sku_id,
+                    'sku_label' => $skuLabel,
                     'product_name' => $item->product?->name ?? '',
                     'product_image' => $item->product?->image,
                     'unit_price' => $item->unitPrice(),
@@ -226,6 +234,22 @@ class CheckoutService
                 );
             }
 
+            if ($item->product->hasVariants() && ! $item->product_sku_id) {
+                throw new ApiBusinessException(
+                    __('front.sku-required'),
+                    422,
+                    ['sku_id' => [__('front.sku-required')]]
+                );
+            }
+
+            if (! $item->product->hasVariants() && $item->product_sku_id) {
+                throw new ApiBusinessException(
+                    __('front.sku-not-allowed'),
+                    422,
+                    ['sku_id' => [__('front.sku-not-allowed')]]
+                );
+            }
+
             if ((int) $item->quantity < 1) {
                 throw new ApiBusinessException(
                     __('front.invalid-cart-item-quantity'),
@@ -234,19 +258,39 @@ class CheckoutService
                 );
             }
 
-            if ((int) $item->product->stock < 1) {
+            if ($item->product_sku_id) {
+                if (! $item->sku || ! $item->sku->status || (int) $item->sku->product_id !== (int) $item->product_id) {
+                    throw new ApiBusinessException(
+                        __('front.cart-sku-not-available'),
+                        422,
+                        ['sku_id' => [__('front.cart-sku-not-available')]]
+                    );
+                }
+
+                $availableStock = (int) $item->sku->quantity;
+            } else {
+                $availableStock = (int) $item->product->stock;
+            }
+
+            if ($availableStock < 1) {
                 throw new ApiBusinessException(
-                    __('front.cart-product-out-of-stock'),
+                    $item->product_sku_id
+                        ? __('front.cart-sku-out-of-stock')
+                        : __('front.cart-product-out-of-stock'),
                     422,
-                    ['product' => [__('front.cart-product-out-of-stock')]]
+                    $item->product_sku_id
+                        ? ['sku_id' => [__('front.cart-sku-out-of-stock')]]
+                        : ['product' => [__('front.cart-product-out-of-stock')]]
                 );
             }
 
-            if ((int) $item->quantity > (int) $item->product->stock) {
+            if ((int) $item->quantity > $availableStock) {
                 throw new ApiBusinessException(
-                    __('front.cart-insufficient-stock'),
+                    $item->product_sku_id
+                        ? __('front.cart-insufficient-sku-stock')
+                        : __('front.cart-insufficient-stock'),
                     422,
-                    ['quantity' => [__('front.cart-insufficient-stock')]]
+                    ['quantity' => [$item->product_sku_id ? __('front.cart-insufficient-sku-stock') : __('front.cart-insufficient-stock')]]
                 );
             }
         }
@@ -276,11 +320,14 @@ class CheckoutService
         ];
     }
 
-    private function shouldConsumeCouponOnPlacement(string $paymentMethod): bool
+    private function deductStock(Cart $cart): void
     {
-        return in_array($paymentMethod, [
-            Order::PAYMENT_METHOD_CASH_ON_DELIVERY,
-            Order::PAYMENT_METHOD_WALLET,
-        ], true);
+        foreach ($cart->items as $item) {
+            if ($item->product_sku_id) {
+                $item->sku->decrement('quantity', $item->quantity);
+            } else {
+                $item->product->decrement('stock', $item->quantity);
+            }
+        }
     }
 }

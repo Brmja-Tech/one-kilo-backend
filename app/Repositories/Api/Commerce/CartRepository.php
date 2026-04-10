@@ -5,6 +5,7 @@ namespace App\Repositories\Api\Commerce;
 use App\Models\Cart;
 use App\Models\CartItem;
 use App\Models\Product;
+use App\Models\ProductSku;
 
 class CartRepository
 {
@@ -28,8 +29,12 @@ class CartRepository
     {
         return $cart->load([
             'coupon',
-            'items' => fn ($query) => $query->orderBy('id'),
-            'items.product' => fn ($query) => $query->with('category.parent:id,slug'),
+            'items' => fn($query) => $query->orderBy('id'),
+            'items.product' => fn ($query) => $query
+                ->with('category.parent:id,slug')
+                ->withMin('activeSkus', 'price')
+                ->withMax('activeSkus', 'price'),
+            'items.sku' => fn ($query) => $query->with(['product', 'items.variant', 'items.item']),
         ]);
     }
 
@@ -37,8 +42,15 @@ class CartRepository
     {
         return CartItem::query()
             ->whereKey($itemId)
-            ->whereHas('cart', fn ($query) => $query->where('user_id', $userId))
-            ->with(['product.category.parent:id,slug', 'cart.coupon'])
+            ->whereHas('cart', fn($query) => $query->where('user_id', $userId))
+            ->with([
+                'product' => fn ($query) => $query
+                    ->with('category.parent:id,slug')
+                    ->withMin('activeSkus', 'price')
+                    ->withMax('activeSkus', 'price'),
+                'sku' => fn ($query) => $query->with(['product', 'items.variant', 'items.item']),
+                'cart.coupon',
+            ])
             ->firstOrFail();
     }
 
@@ -47,6 +59,24 @@ class CartRepository
         $item = CartItem::query()->firstOrNew([
             'cart_id' => $cart->id,
             'product_id' => $product->id,
+            'product_sku_id' => null,
+        ]);
+
+        $item->quantity = $item->exists
+            ? $item->quantity + $quantity
+            : $quantity;
+
+        $item->save();
+
+        return $item;
+    }
+
+    public function addOrIncrementSkuItem(Cart $cart, Product $product, ProductSku $sku, int $quantity): CartItem
+    {
+        $item = CartItem::query()->firstOrNew([
+            'cart_id' => $cart->id,
+            'product_id' => $product->id,
+            'product_sku_id' => $sku->id,
         ]);
 
         $item->quantity = $item->exists

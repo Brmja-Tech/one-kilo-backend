@@ -4,6 +4,7 @@ namespace App\Repositories\Api\Commerce;
 
 use App\Models\Order;
 use App\Models\Product;
+use App\Models\ProductSku;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Database\Eloquent\Builder;
 
@@ -13,7 +14,9 @@ class ProductRepository
     {
         $query = Product::query()
             ->select('products.*')
-            ->with(['category.parent:id,slug', 'images']);
+            ->with(['category.parent:id,slug', 'images'])
+            ->withMin('activeSkus', 'price')
+            ->withMax('activeSkus', 'price');
 
         $this->attachFavoriteState($query, $userId);
         $this->applyFilters($query, $filters);
@@ -32,7 +35,18 @@ class ProductRepository
 
         $this->attachFavoriteState($query, $userId);
 
-        return $query->firstOrFail();
+        $product = $query->firstOrFail();
+
+        if ($product->hasVariants()) {
+            $product->load([
+                'activeSkus' => fn ($skuQuery) => $skuQuery
+                    ->with(['product', 'items.variant', 'items.item'])
+                    ->orderBy('sort_order')
+                    ->orderBy('id'),
+            ]);
+        }
+
+        return $product;
     }
 
     public function findActiveBySlugForCart(string $slug): Product
@@ -40,6 +54,16 @@ class ProductRepository
         return Product::query()
             ->active()
             ->where('slug', $slug)
+            ->firstOrFail();
+    }
+
+    public function findActiveSkuForProduct(int $skuId, int $productId): ProductSku
+    {
+        return ProductSku::query()
+            ->whereKey($skuId)
+            ->where('product_id', $productId)
+            ->where('status', true)
+            ->with(['product', 'items.variant', 'items.item'])
             ->firstOrFail();
     }
 
@@ -52,6 +76,8 @@ class ProductRepository
             ->join('orders', 'orders.id', '=', 'order_items.order_id')
             ->active()
             ->with('category.parent:id,slug')
+            ->withMin('activeSkus', 'price')
+            ->withMax('activeSkus', 'price')
             ->whereIn('orders.status', Order::salesStatuses())
             ->groupBy('products.id')
             ->orderByDesc('sold_quantity')
@@ -66,7 +92,7 @@ class ProductRepository
     {
         if ($userId) {
             $query->withExists([
-                'favorites as is_favorite' => fn (Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
+                'favorites as is_favorite' => fn(Builder $favoriteQuery) => $favoriteQuery->where('user_id', $userId),
             ]);
 
             return;
@@ -99,9 +125,45 @@ class ProductRepository
         }
 
         if (array_key_exists('in_stock', $filters)) {
-            $filters['in_stock']
-                ? $query->where('stock', '>', 0)
-                : $query->where('stock', '<=', 0);
+            $query->where(function (Builder $subQuery) use ($filters) {
+                if ($filters['in_stock']) {
+                    $subQuery
+                        ->where(function (Builder $simpleQuery) {
+                            $simpleQuery->where('has_variants', false)->where('stock', '>', 0);
+                        })
+                        ->orWhere(function (Builder $variantQuery) {
+                            $variantQuery
+                                ->where('has_variants', true)
+                                ->whereExists(function ($existsQuery) {
+                                    $existsQuery
+                                        ->selectRaw('1')
+                                        ->from('product_skus')
+                                        ->whereColumn('product_skus.product_id', 'products.id')
+                                        ->where('product_skus.status', true)
+                                        ->where('product_skus.quantity', '>', 0);
+                                });
+                        });
+
+                    return;
+                }
+
+                $subQuery
+                    ->where(function (Builder $simpleQuery) {
+                        $simpleQuery->where('has_variants', false)->where('stock', '<=', 0);
+                    })
+                    ->orWhere(function (Builder $variantQuery) {
+                        $variantQuery
+                            ->where('has_variants', true)
+                            ->whereNotExists(function ($existsQuery) {
+                                $existsQuery
+                                    ->selectRaw('1')
+                                    ->from('product_skus')
+                                    ->whereColumn('product_skus.product_id', 'products.id')
+                                    ->where('product_skus.status', true)
+                                    ->where('product_skus.quantity', '>', 0);
+                            });
+                    });
+            });
         }
 
         if (array_key_exists('has_discount', $filters)) {
@@ -162,12 +224,22 @@ class ProductRepository
     {
         [$activeDiscountSql, $bindings] = $this->activeDiscountSql();
 
+        $minSkuPriceSql = "(SELECT MIN(product_skus.price)
+            FROM product_skus
+            WHERE product_skus.product_id = products.id
+                AND product_skus.status = 1)";
+
+        $basePriceSql = "CASE
+            WHEN has_variants = 1 THEN {$minSkuPriceSql}
+            ELSE price
+        END";
+
         $sql = "CASE
             WHEN ({$activeDiscountSql}) AND discount_type = 'amount'
-                THEN CASE WHEN price - discount_value < 0 THEN 0 ELSE price - discount_value END
+                THEN CASE WHEN {$basePriceSql} - discount_value < 0 THEN 0 ELSE {$basePriceSql} - discount_value END
             WHEN ({$activeDiscountSql}) AND discount_type = 'percentage'
-                THEN CASE WHEN price - (price * discount_value / 100) < 0 THEN 0 ELSE price - (price * discount_value / 100) END
-            ELSE price
+                THEN CASE WHEN {$basePriceSql} - ({$basePriceSql} * discount_value / 100) < 0 THEN 0 ELSE {$basePriceSql} - ({$basePriceSql} * discount_value / 100) END
+            ELSE {$basePriceSql}
         END";
 
         return [$sql, [...$bindings, ...$bindings]];

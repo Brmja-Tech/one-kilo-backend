@@ -12,6 +12,8 @@ class OrderItemResource extends JsonResource
         return [
             'id' => $this->id,
             'product_id' => $this->product_id,
+            'sku_id' => $this->product_sku_id,
+            'sku_label' => $this->sku_label,
             'product_name' => $this->product_name,
             'product_image' => $this->product_image ? asset($this->product_image) : '',
             'unit_price' => round((float) $this->unit_price, 2),

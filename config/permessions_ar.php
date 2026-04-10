@@ -10,6 +10,7 @@ return [
     'countries'             => 'إدارة الدول',
     'categories'            => 'إدارة الأقسام',
     'products'              => 'إدارة المنتجات',
+    'variants'              => 'إدارة الأنواع',
     'orders'                => 'إدارة الطلبات',
     'orders_change_status'  => 'تغيير حالة الطلب',
     'coupons'               => 'إدارة الكوبونات',

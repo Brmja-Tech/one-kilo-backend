@@ -3,6 +3,7 @@
 namespace App\Services\Api\Commerce;
 
 use App\Models\Product;
+use App\Models\ProductSku;
 use App\Repositories\Api\Commerce\CategoryRepository;
 use App\Repositories\Api\Commerce\ProductRepository;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
@@ -12,8 +13,7 @@ class ProductService
     public function __construct(
         protected ProductRepository $productRepository,
         protected CategoryRepository $categoryRepository
-    ) {
-    }
+    ) {}
 
     public function paginate(array $filters, ?int $userId = null): LengthAwarePaginator
     {
@@ -45,6 +45,11 @@ class ProductService
     public function findActiveBySlugForCart(string $slug): Product
     {
         return $this->productRepository->findActiveBySlugForCart($slug);
+    }
+
+    public function findActiveSkuForProduct(int $skuId, int $productId): ProductSku
+    {
+        return $this->productRepository->findActiveSkuForProduct($skuId, $productId);
     }
 
     private function resolveCategoryFilters(array $filters): array

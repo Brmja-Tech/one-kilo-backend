@@ -12,7 +12,7 @@ use Spatie\Translatable\HasTranslations;
 
 class Product extends Model
 {
-    use Sluggable , HasTranslations;
+    use Sluggable, HasTranslations;
 
     public $translatable = [
         'name',
@@ -36,6 +36,7 @@ class Product extends Model
         'stock',
         'is_featured',
         'status',
+        'has_variants',
     ];
 
     protected function casts(): array
@@ -48,6 +49,7 @@ class Product extends Model
             'stock' => 'integer',
             'is_featured' => 'boolean',
             'status' => 'boolean',
+            'has_variants' => 'boolean',
         ];
     }
 
@@ -98,8 +100,24 @@ class Product extends Model
         return $this->hasMany(OrderItem::class);
     }
 
-    public function priceBeforeDiscount(): float
+    public function skus(): HasMany
     {
+        return $this->hasMany(ProductSku::class, 'product_id')
+            ->orderBy('sort_order')
+            ->orderBy('id');
+    }
+
+    public function activeSkus(): HasMany
+    {
+        return $this->skus()->where('status', true);
+    }
+
+    public function priceBeforeDiscount(): ?float
+    {
+        if ($this->price === null) {
+            return null;
+        }
+
         return round((float) $this->price, 2);
     }
 
@@ -107,13 +125,66 @@ class Product extends Model
     {
         $moment ??= now();
         $price = $this->priceBeforeDiscount();
+
+        if ($price === null || $price <= 0) {
+            return false;
+        }
+
+        return $this->discountSettingsAreActive($moment);
+    }
+
+    public function priceAfterDiscount(?CarbonInterface $moment = null): ?float
+    {
+        $price = $this->priceBeforeDiscount();
+
+        if ($price === null) {
+            return null;
+        }
+
+        return $this->priceAfterDiscountForPrice($price, $moment);
+    }
+
+    public function activeDiscountAmount(?CarbonInterface $moment = null): ?float
+    {
+        $price = $this->priceBeforeDiscount();
+
+        if ($price === null) {
+            return null;
+        }
+
+        return $this->discountAmountForPrice($price, $moment);
+    }
+
+    public function discountPercentage(?CarbonInterface $moment = null): ?float
+    {
+        if (! $this->hasActiveDiscount($moment)) {
+            return null;
+        }
+
+        if ($this->discount_type === 'percentage') {
+            return round((float) $this->discount_value, 2);
+        }
+
+        $price = $this->priceBeforeDiscount();
+
+        if ($price === null || $price <= 0) {
+            return null;
+        }
+
+        return round(($this->activeDiscountAmount($moment) / $price) * 100, 2);
+    }
+
+    public function discountSettingsAreActive(?CarbonInterface $moment = null): bool
+    {
+        $moment ??= now();
+
         $discountValue = (float) ($this->discount_value ?? 0);
 
         if (! in_array($this->discount_type, ['amount', 'percentage'], true)) {
             return false;
         }
 
-        if ($discountValue <= 0 || $price <= 0) {
+        if ($discountValue <= 0) {
             return false;
         }
 
@@ -132,44 +203,81 @@ class Product extends Model
         return true;
     }
 
-    public function priceAfterDiscount(?CarbonInterface $moment = null): float
+    public function discountAmountForPrice(float $basePrice, ?CarbonInterface $moment = null): float
     {
-        $price = $this->priceBeforeDiscount();
-
-        if (! $this->hasActiveDiscount($moment)) {
-            return $price;
+        if ($basePrice <= 0 || ! $this->discountSettingsAreActive($moment)) {
+            return 0.0;
         }
 
         $discountValue = (float) $this->discount_value;
 
         if ($this->discount_type === 'amount') {
-            return round(max($price - $discountValue, 0), 2);
+            return round(min($discountValue, $basePrice), 2);
         }
 
-        return round(max($price - ($price * $discountValue / 100), 0), 2);
+        return round(min($basePrice * $discountValue / 100, $basePrice), 2);
     }
 
-    public function activeDiscountAmount(?CarbonInterface $moment = null): float
+    public function priceAfterDiscountForPrice(float $basePrice, ?CarbonInterface $moment = null): float
     {
-        return round(max($this->priceBeforeDiscount() - $this->priceAfterDiscount($moment), 0), 2);
+        return round(max($basePrice - $this->discountAmountForPrice($basePrice, $moment), 0), 2);
     }
 
-    public function discountPercentage(?CarbonInterface $moment = null): ?float
+    public function hasVariants(): bool
     {
-        if (! $this->hasActiveDiscount($moment)) {
-            return null;
+        return $this->has_variants;
+    }
+
+    public function isSimple(): bool
+    {
+        return ! $this->hasVariants();
+    }
+
+    public function isVariantProduct(): bool
+    {
+        return $this->hasVariants();
+    }
+
+    public function requiresVariantSelection(): bool
+    {
+        return $this->hasVariants();
+    }
+
+    public function minVariantPrice(): ?float
+    {
+        if (! $this->hasVariants()) {
+            return $this->priceAfterDiscount();
         }
 
-        if ($this->discount_type === 'percentage') {
-            return round((float) $this->discount_value, 2);
+        $minPrice = $this->getAttribute('active_skus_min_price');
+
+        if ($minPrice === null) {
+            $minPrice = $this->relationLoaded('activeSkus')
+                ? $this->activeSkus->min('price')
+                : $this->activeSkus()->min('price');
         }
 
-        $price = $this->priceBeforeDiscount();
+        return $minPrice !== null
+            ? $this->priceAfterDiscountForPrice((float) $minPrice)
+            : null;
+    }
 
-        if ($price <= 0) {
-            return null;
+    public function maxVariantPrice(): ?float
+    {
+        if (! $this->hasVariants()) {
+            return $this->priceAfterDiscount();
         }
 
-        return round(($this->activeDiscountAmount($moment) / $price) * 100, 2);
+        $maxPrice = $this->getAttribute('active_skus_max_price');
+
+        if ($maxPrice === null) {
+            $maxPrice = $this->relationLoaded('activeSkus')
+                ? $this->activeSkus->max('price')
+                : $this->activeSkus()->max('price');
+        }
+
+        return $maxPrice !== null
+            ? $this->priceAfterDiscountForPrice((float) $maxPrice)
+            : null;
     }
 }
