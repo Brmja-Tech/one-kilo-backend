@@ -178,8 +178,11 @@
 
                                 <label class="col-form-label">{{ __('dashboard.image-sort-order') }}</label>
                                 <input type="number" min="0"
-                                    wire:model="currentGallery.{{ $index }}.sort_order" class="form-control mb-1">
-                                @include('dashboard.includes.error', ['property' => 'currentGallery.' . $index . '.sort_order'])
+                                    wire:model="currentGallery.{{ $index }}.sort_order"
+                                    class="form-control mb-1">
+                                @include('dashboard.includes.error', [
+                                    'property' => 'currentGallery.' . $index . '.sort_order',
+                                ])
 
                                 <button type="button" class="btn btn-sm btn-outline-danger w-100"
                                     wire:click="removeExistingGalleryImage({{ $galleryImage['id'] }})">

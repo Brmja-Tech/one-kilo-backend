@@ -39,7 +39,7 @@ class ProductRepository
 
         if ($product->hasVariants()) {
             $product->load([
-                'activeSkus' => fn ($skuQuery) => $skuQuery
+                'activeSkus' => fn($skuQuery) => $skuQuery
                     ->with(['product', 'items.variant', 'items.item'])
                     ->orderBy('sort_order')
                     ->orderBy('id'),

@@ -171,7 +171,7 @@ class ProductUpdate extends Component
     public function removeExistingGalleryImage(int $imageId): void
     {
         $exists = collect($this->currentGallery)->contains(
-            fn (array $image) => (int) $image['id'] === $imageId
+            fn(array $image) => (int) $image['id'] === $imageId
         );
 
         if (! $exists) {
@@ -184,7 +184,7 @@ class ProductUpdate extends Component
 
         $this->currentGallery = array_values(array_filter(
             $this->currentGallery,
-            fn (array $image) => (int) $image['id'] !== $imageId
+            fn(array $image) => (int) $image['id'] !== $imageId
         ));
     }
 
@@ -257,12 +257,12 @@ class ProductUpdate extends Component
                 if ($newGalleryPaths !== []) {
                     $startOrder = collect($this->currentGallery)
                         ->pluck('sort_order')
-                        ->filter(fn ($value) => $value !== null)
-                        ->map(fn ($value) => (int) $value)
+                        ->filter(fn($value) => $value !== null)
+                        ->map(fn($value) => (int) $value)
                         ->max() ?? 0;
 
                     ProductImage::query()->insert(
-                        collect($newGalleryPaths)->values()->map(fn (string $path, int $index) => [
+                        collect($newGalleryPaths)->values()->map(fn(string $path, int $index) => [
                             'product_id' => $product->id,
                             'image' => $path,
                             'sort_order' => $startOrder + $index + 1,
@@ -390,7 +390,7 @@ class ProductUpdate extends Component
         }, $this->currentGallery));
 
         $this->removedGalleryImageIds = array_values(array_unique(array_map(
-            fn ($id) => (int) $id,
+            fn($id) => (int) $id,
             $this->removedGalleryImageIds
         )));
 
@@ -403,7 +403,7 @@ class ProductUpdate extends Component
 
     protected function mapGallery($images): array
     {
-        return collect($images)->map(fn (ProductImage $image) => [
+        return collect($images)->map(fn(ProductImage $image) => [
             'id' => $image->id,
             'image' => $image->image,
             'sort_order' => $image->sort_order,
@@ -447,7 +447,7 @@ class ProductUpdate extends Component
             ->orderBy('id')
             ->get();
 
-        $grouped = $categories->groupBy(fn (Category $category) => $category->parent_id ?? 0);
+        $grouped = $categories->groupBy(fn(Category $category) => $category->parent_id ?? 0);
 
         return $this->flattenCategoryOptions($grouped, 0);
     }
@@ -481,4 +481,3 @@ class ProductUpdate extends Component
         ]);
     }
 }
-

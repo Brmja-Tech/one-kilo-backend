@@ -605,7 +605,7 @@ return [
     'no-recent-users' => 'No recent users found.',
     'analytics-wallet-note' => 'Latest wallet activity across users and linked orders.',
     'system' => 'System',
-    
+
     // Variants Module
     'all-variants' => 'All Variants',
     'values-count' => 'Values Count',
@@ -618,7 +618,7 @@ return [
     'deleted-successfully' => 'Deleted successfully',
     'are-you-sure' => 'Are you sure?',
     'no-data-available' => 'No data available',
-    
+
     // Product Variants
     'select-variant-groups' => 'Select Variant Groups',
     'select-variant-values' => 'Select Variant Values',

@@ -110,8 +110,8 @@
                             @if ($item->has_variants)
                                 @php
                                     $prices = $item->activeSkus
-                                        ->map(fn ($sku) => $sku->priceAfterDiscount())
-                                        ->filter(fn ($price) => $price !== null)
+                                        ->map(fn($sku) => $sku->priceAfterDiscount())
+                                        ->filter(fn($price) => $price !== null)
                                         ->values();
 
                                     $minPrice = $prices->min();
@@ -121,13 +121,15 @@
                                     @if ($minPrice === $maxPrice)
                                         <div class="fw-semibold">{{ number_format((float) $minPrice, 2) }}</div>
                                     @else
-                                        <div class="fw-semibold">{{ number_format((float) $minPrice, 2) }} - {{ number_format((float) $maxPrice, 2) }}</div>
+                                        <div class="fw-semibold">{{ number_format((float) $minPrice, 2) }} -
+                                            {{ number_format((float) $maxPrice, 2) }}</div>
                                     @endif
                                 @else
                                     <span class="text-muted">{{ __('dashboard.no-price') }}</span>
                                 @endif
                             @else
-                                <div class="fw-semibold">{{ number_format((float) $item->priceAfterDiscount(), 2) }}</div>
+                                <div class="fw-semibold">{{ number_format((float) $item->priceAfterDiscount(), 2) }}
+                                </div>
                                 @if ($item->hasActiveDiscount())
                                     <small class="d-block text-muted text-decoration-line-through">
                                         {{ number_format((float) $item->priceBeforeDiscount(), 2) }}
@@ -164,7 +166,8 @@
                                 <span class="badge {{ $item->stock > 0 ? 'bg-light-success' : 'bg-light-danger' }}">
                                     {{ $item->stock > 0 ? __('dashboard.in-stock') : __('dashboard.out-of-stock') }}
                                 </span>
-                                <small class="d-block text-muted">{{ __('dashboard.qty') }}: {{ $item->stock }}</small>
+                                <small class="d-block text-muted">{{ __('dashboard.qty') }}:
+                                    {{ $item->stock }}</small>
                             @endif
                         </td>
                         <td style="min-width: 150px">

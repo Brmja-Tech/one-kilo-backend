@@ -132,7 +132,7 @@ class ProductsData extends Component
 
         $galleryPaths = $item->images
             ->pluck('image')
-            ->filter(fn (?string $path) => $this->shouldDeleteManagedImage($path))
+            ->filter(fn(?string $path) => $this->shouldDeleteManagedImage($path))
             ->values();
 
         $mainImagePath = $this->shouldDeleteManagedImage($item->image) ? $item->image : null;
@@ -172,7 +172,7 @@ class ProductsData extends Component
             ->orderBy('sort_order')
             ->orderBy('id')
             ->get()
-            ->map(fn (Category $category) => [
+            ->map(fn(Category $category) => [
                 'id' => $category->id,
                 'label' => $category->name . ($category->status ? '' : ' (' . __('dashboard.inactive') . ')'),
             ])
@@ -187,7 +187,7 @@ class ProductsData extends Component
             ->with([
                 'category:id,name,status,parent_id',
                 'images:id,product_id,image,sort_order',
-                'activeSkus' => fn ($query) => $query->select([
+                'activeSkus' => fn($query) => $query->select([
                     'id',
                     'product_id',
                     'signature',
@@ -216,14 +216,14 @@ class ProductsData extends Component
                         });
                 });
             })
-            ->when($this->statusFilter === 'active', fn (Builder $query) => $query->where('status', true))
-            ->when($this->statusFilter === 'inactive', fn (Builder $query) => $query->where('status', false))
+            ->when($this->statusFilter === 'active', fn(Builder $query) => $query->where('status', true))
+            ->when($this->statusFilter === 'inactive', fn(Builder $query) => $query->where('status', false))
             ->when(
                 $this->categoryFilter !== 'all',
-                fn (Builder $query) => $query->where('category_id', (int) $this->categoryFilter)
+                fn(Builder $query) => $query->where('category_id', (int) $this->categoryFilter)
             )
-            ->when($this->featuredFilter === 'featured', fn (Builder $query) => $query->where('is_featured', true))
-            ->when($this->featuredFilter === 'regular', fn (Builder $query) => $query->where('is_featured', false))
+            ->when($this->featuredFilter === 'featured', fn(Builder $query) => $query->where('is_featured', true))
+            ->when($this->featuredFilter === 'regular', fn(Builder $query) => $query->where('is_featured', false))
             ->when($this->stockFilter === 'in_stock', function (Builder $query) {
                 $query->where(function (Builder $subQuery) {
                     $subQuery->where(function (Builder $simpleQuery) {

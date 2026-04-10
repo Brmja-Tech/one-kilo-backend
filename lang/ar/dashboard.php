@@ -618,7 +618,7 @@ return [
     'deleted-successfully' => 'تم الحذف بنجاح',
     'are-you-sure' => 'هل أنت متأكد؟',
     'no-data-available' => 'لا توجد بيانات متاحة',
-    
+
     // Product Variants
     'select-variant-groups' => 'اختر مجموعات الأنواع',
     'select-variant-values' => 'اختر قيم الأنواع',

@@ -136,7 +136,7 @@ class ProductCreate extends Component
 
                 if ($galleryPaths !== []) {
                     ProductImage::query()->insert(
-                        collect($galleryPaths)->values()->map(fn (string $path, int $index) => [
+                        collect($galleryPaths)->values()->map(fn(string $path, int $index) => [
                             'product_id' => $product->id,
                             'image' => $path,
                             'sort_order' => $index + 1,
@@ -278,7 +278,7 @@ class ProductCreate extends Component
             ->orderBy('id')
             ->get();
 
-        $grouped = $categories->groupBy(fn (Category $category) => $category->parent_id ?? 0);
+        $grouped = $categories->groupBy(fn(Category $category) => $category->parent_id ?? 0);
 
         return $this->flattenCategoryOptions($grouped, 0);
     }
@@ -342,4 +342,3 @@ class ProductCreate extends Component
         ]);
     }
 }
-
