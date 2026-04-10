@@ -821,7 +821,6 @@
 @endpush
 
 @push('js')
-    <script src="{{ asset('dashboard') }}/app-assets/vendors/js/charts/apexcharts.min.js"></script>
     <script>
         window.addEventListener('load', function() {
             if (typeof ApexCharts === 'undefined') {
