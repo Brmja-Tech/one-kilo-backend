@@ -13,7 +13,7 @@
 
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-variant') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-variant') }}
                     </button>
 
                     @livewire('dashboard.variants.variant-create')

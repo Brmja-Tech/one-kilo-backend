@@ -14,7 +14,7 @@
             <div class="input-group input-group-merge form-password-toggle">
                 <input type="password" class="form-control form-control-merge" name="password"
                     placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
-                <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
+                <span class="input-group-text cursor-pointer"><i class="fa-solid fa-eye"></i></span>
             </div>
         </div>
         @error('password')
@@ -27,7 +27,7 @@
             <div class="input-group input-group-merge form-password-toggle">
                 <input type="password" class="form-control form-control-merge" name="password_confirmation"
                     placeholder="&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;&#xb7;" />
-                <span class="input-group-text cursor-pointer"><i data-feather="eye"></i></span>
+                <span class="input-group-text cursor-pointer"><i class="fa-solid fa-eye"></i></span>
             </div>
         </div>
         <button type="submit" class="btn btn-primary w-100">{{ __('auth.send') }}</button>

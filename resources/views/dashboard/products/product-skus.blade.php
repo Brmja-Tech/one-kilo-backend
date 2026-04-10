@@ -12,7 +12,7 @@
 
         <button type="button" class="btn btn-primary" wire:click="resetForm" data-bs-toggle="modal"
             data-bs-target="#createModal" @disabled(!$product || !$product->has_variants)>
-            <i data-feather='plus'></i> {{ __('dashboard.add-sku') }}
+            <i class="fa-solid fa-plus"></i> {{ __('dashboard.add-sku') }}
         </button>
     </div>
 
@@ -116,7 +116,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="col-form-label m-0">{{ __('dashboard.attributes') }}</label>
                     <button type="button" class="btn btn-sm btn-info" wire:click="addAttributeRow">
-                        <i data-feather="plus"></i> {{ __('dashboard.add-attribute') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.add-attribute') }}
                     </button>
                 </div>
 
@@ -159,7 +159,7 @@
                         <div class="col-md-1 d-flex justify-content-end">
                             <button type="button" class="btn btn-sm btn-outline-danger"
                                 wire:click="removeAttributeRow({{ $index }})" @disabled(count($skuAttributes) <= 1)>
-                                <i data-feather="trash"></i>
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </div>
@@ -218,7 +218,7 @@
                 <div class="d-flex justify-content-between align-items-center mb-1">
                     <label class="col-form-label m-0">{{ __('dashboard.attributes') }}</label>
                     <button type="button" class="btn btn-sm btn-info" wire:click="addAttributeRow">
-                        <i data-feather="plus"></i> {{ __('dashboard.add-attribute') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.add-attribute') }}
                     </button>
                 </div>
 
@@ -262,7 +262,7 @@
                         <div class="col-md-1 d-flex justify-content-end">
                             <button type="button" class="btn btn-sm btn-outline-danger"
                                 wire:click="removeAttributeRow({{ $index }})" @disabled(count($skuAttributes) <= 1)>
-                                <i data-feather="trash"></i>
+                                <i class="fa-solid fa-trash"></i>
                             </button>
                         </div>
                     </div>

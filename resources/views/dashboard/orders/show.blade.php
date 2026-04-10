@@ -34,11 +34,11 @@
                 <div class="d-flex flex-wrap gap-1">
                     <a href="{{ route('dashboard.orders.print', $order) }}" target="_blank" rel="noopener noreferrer"
                         class="btn btn-primary">
-                        <i data-feather="printer"></i> {{ __('dashboard.print-invoice') }}
+                        <i class="fa-solid fa-print"></i> {{ __('dashboard.print-invoice') }}
                     </a>
 
                     <a href="{{ route('dashboard.orders') }}" class="btn btn-outline-primary">
-                        <i data-feather="arrow-left"></i> {{ __('dashboard.back') }}
+                        <i class="fa-solid fa-arrow-left"></i> {{ __('dashboard.back') }}
                     </a>
                 </div>
             </div>

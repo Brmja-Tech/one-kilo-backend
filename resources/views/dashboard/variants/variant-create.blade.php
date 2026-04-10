@@ -45,7 +45,7 @@
             <div class="d-flex justify-content-between align-items-center mb-2">
                 <label class="col-form-label m-0">{{ __('dashboard.items') }}</label>
                 <button type="button" class="btn btn-sm btn-info" wire:click="addItem">
-                    <i data-feather="plus"></i>
+                    <i class="fa-solid fa-plus"></i>
                     {{ __('dashboard.add-item') }}
                 </button>
             </div>
@@ -94,7 +94,7 @@
                                     <td class="text-end">
                                         <button type="button" class="btn btn-sm btn-danger"
                                             wire:click="removeItem({{ $index }})">
-                                            <i data-feather="trash"></i>
+                                            <i class="fa-solid fa-trash"></i>
                                         </button>
                                     </td>
                                 </tr>

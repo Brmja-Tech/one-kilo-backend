@@ -11,7 +11,7 @@
                     <h4 class="card-title">{{ __('dashboard.users') }}</h4>
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-user') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-user') }}
                     </button>
                     @livewire('dashboard.users.user-create')
                 </div>

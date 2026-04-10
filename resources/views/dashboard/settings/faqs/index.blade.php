@@ -9,7 +9,7 @@
                     <h4 class="card-title">{{ __('dashboard.faqs-settings') }}</h4>
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-faq') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-faq') }}
                     </button>
                 </div>
                 @livewire('dashboard.settings.faqs.faqs-create')

@@ -243,12 +243,12 @@
             <div class="col-12">
                 <div class="alert alert-info d-flex justify-content-between align-items-center flex-wrap gap-1">
                     <span>{{ __('dashboard.variant-product-sku-note') }}</span>
-                    @if ($productSlug)
+                    {{-- @if ($productSlug)
                         <a href="{{ route('dashboard.products.skus', ['product' => $productSlug]) }}"
                             class="btn btn-sm btn-primary" target="_blank">
-                            <i data-feather="layers"></i> {{ __('dashboard.manage-skus') }}
+                            <i class="fa-solid fa-layer-group"></i> {{ __('dashboard.manage-skus') }}
                         </a>
-                    @endif
+                    @endif --}}
                 </div>
             </div>
         </div>

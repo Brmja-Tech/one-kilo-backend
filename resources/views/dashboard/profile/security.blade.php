@@ -12,14 +12,14 @@
                         <!-- account -->
                         <li class="nav-item">
                             <a class="nav-link @yield('profile-active')" href="{{ route('dashboard.profile') }}">
-                                <i data-feather="user" class="font-medium-3 me-50"></i>
+                                <i class="font-medium-3 me-50 fa-solid fa-user"></i>
                                 <span class="fw-bold">{{ __('dashboard.account') }}</span>
                             </a>
                         </li>
                         <!-- security -->
                         <li class="nav-item">
                             <a class="nav-link @yield('security-active')" href="{{ route('dashboard.security') }}">
-                                <i data-feather="lock" class="font-medium-3 me-50"></i>
+                                <i class="font-medium-3 me-50 fa-solid fa-lock"></i>
                                 <span class="fw-bold">{{ __('dashboard.security') }}</span>
                             </a>
                         </li>
@@ -42,7 +42,7 @@
                                                 name="current_password" placeholder="{{ __('dashboard.current-password') }}"
                                                 required />
                                             <div class="input-group-text cursor-pointer">
-                                                <i data-feather="eye"></i>
+                                                <i class="fa-solid fa-eye"></i>
                                             </div>
                                             @include('dashboard.includes.error' , ['property' => 'current_password'])
                                         </div>
@@ -58,7 +58,7 @@
                                                 class="form-control" placeholder="{{ __('dashboard.new-password') }}"
                                                 required />
                                             <div class="input-group-text cursor-pointer">
-                                                <i data-feather="eye"></i>
+                                                <i class="fa-solid fa-eye"></i>
                                             </div>
                                         </div>
                                     </div>
@@ -71,7 +71,7 @@
                                                 name="new_password_confirmation"
                                                 placeholder="{{ __('dashboard.confirm-new-password') }}" required />
                                             <div class="input-group-text cursor-pointer">
-                                                <i data-feather="eye"></i>
+                                                <i class="fa-solid fa-eye"></i>
                                             </div>
                                         </div>
                                     </div>

@@ -48,12 +48,12 @@
                                                 <a href="{{ route('dashboard.admins.edit', $item->id) }}"
                                                     title="{{ __('dashboard.update') }}"
                                                     class="btn btn-info waves-effect waves-float waves-light">
-                                                    <i data-feather='edit'></i>
+                                                    <i class="fa-solid fa-pen"></i>
                                                 </a>
                                                 <a href="javascript:void(0);" title="{{ __('dashboard.delete') }}"
                                                     class="btn btn-danger waves-effect waves-float waves-light"
                                                     id="confirm-delete-text" data-form-id="delete-form-{{ $item->id }}">
-                                                    <i data-feather='trash'></i>
+                                                    <i class="fa-solid fa-trash"></i>
                                                 </a>
                                                 <form id="delete-form-{{ $item->id }}"
                                                     action="{{ route('dashboard.admins.destroy', $item->id) }}"

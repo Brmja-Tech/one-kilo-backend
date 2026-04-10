@@ -74,7 +74,7 @@
                 <li class="nav-item d-none d-lg-block">
                     {{-- <a class="nav-link" href="#" data-bs-toggle="tooltip"
                         data-bs-placement="bottom" title="{{__('dashboard.back')}}">
-                        <i class="ficon" data-feather="arrow-{{ Config::get('app.locale') == 'ar' ? 'right' : 'left' }}"></i>
+                        <i class="ficon fa-solid fa-arrow-{{-Config::get('app.locale')-==-'ar'-?-'right'-:-'left'-}}"></i>
                     </a> --}}
                 </li>
             </ul>
@@ -149,12 +149,7 @@
 
     <script>
         $(window).on('load', function() {
-            if (feather) {
-                feather.replace({
-                    width: 14,
-                    height: 14
-                });
-            }
+            /* feather.replace removed */
         })
     </script>
     {{-- {!! NoCaptcha::renderJs() !!} --}}

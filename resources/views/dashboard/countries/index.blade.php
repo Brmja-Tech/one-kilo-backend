@@ -10,7 +10,7 @@
                     <h4 class="card-title">{{ __('dashboard.countries') }}</h4>
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-country') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-country') }}
                     </button>
                     @livewire('dashboard.countries.country-create')
                 </div>

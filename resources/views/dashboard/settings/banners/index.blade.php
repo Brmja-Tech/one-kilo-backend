@@ -9,7 +9,7 @@
                     <h4 class="card-title">{{ __('dashboard.banners') }}</h4>
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-banner') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-banner') }}
                     </button>
                 </div>
                 @livewire('dashboard.settings.banners.banner-create')

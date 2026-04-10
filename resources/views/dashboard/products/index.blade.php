@@ -10,7 +10,7 @@
 
                     <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"
                         data-bs-target="#createModal">
-                        <i data-feather='plus'></i> {{ __('dashboard.create-product') }}
+                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-product') }}
                     </button>
 
                     @livewire('dashboard.products.product-create')

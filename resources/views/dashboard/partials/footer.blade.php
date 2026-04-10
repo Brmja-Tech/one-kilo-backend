@@ -3,4 +3,4 @@
                 class="ms-25" href="https://brmja.tech" target="_blank">Brmja.tech</a><span
                 class="d-none d-sm-inline-block">, All rights Reserved</span></span></p>
 </footer>
-<button class="btn btn-primary btn-icon scroll-top" type="button"><i data-feather="arrow-up"></i></button>
+<button class="btn btn-primary btn-icon scroll-top" type="button"><i class="fa-solid fa-arrow-up"></i></button>

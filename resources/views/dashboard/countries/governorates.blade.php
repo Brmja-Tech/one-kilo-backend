@@ -6,7 +6,7 @@
             <small class="text-muted">{{ __('dashboard.manage-governorates') }}</small>
         </div>
         <button type="button" class="btn btn-sm btn-primary" wire:click="addRow">
-            <i data-feather='plus'></i> {{ __('dashboard.add') }}
+            <i class="fa-solid fa-plus"></i> {{ __('dashboard.add') }}
         </button>
     </div>
 

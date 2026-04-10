@@ -135,7 +135,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-primary text-primary"><i data-feather="users"></i></span>
+                            <span class="analytics-icon bg-light-primary text-primary"><i class="fa-solid fa-users"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.users') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['users_total']) }}</h3>
@@ -152,7 +152,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-warning text-warning"><i data-feather="shopping-bag"></i></span>
+                            <span class="analytics-icon bg-light-warning text-warning"><i class="fa-solid fa-bag-shopping"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.orders') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['orders_total']) }}</h3>
@@ -169,7 +169,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-success text-success"><i data-feather="dollar-sign"></i></span>
+                            <span class="analytics-icon bg-light-success text-success"><i class="fa-solid fa-dollar-sign"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.total-revenue') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['sales_revenue_total'], 2) }}</h3>
@@ -186,7 +186,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-danger text-danger"><i data-feather="package"></i></span>
+                            <span class="analytics-icon bg-light-danger text-danger"><i class="fa-solid fa-box"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.products') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['products_total']) }}</h3>
@@ -199,7 +199,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-info text-info"><i data-feather="grid"></i></span>
+                            <span class="analytics-icon bg-light-info text-info"><i class="fa-solid fa-th-large"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.categories') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['categories_total']) }}</h3>
@@ -212,7 +212,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-secondary text-secondary"><i data-feather="credit-card"></i></span>
+                            <span class="analytics-icon bg-light-secondary text-secondary"><i class="fa-solid fa-credit-card"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.wallet-balance-snapshot') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['wallet_balance_total'], 2) }}</h3>
@@ -225,7 +225,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-danger text-danger"><i data-feather="heart"></i></span>
+                            <span class="analytics-icon bg-light-danger text-danger"><i class="fa-solid fa-heart"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.favorites-count') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['favorites_total']) }}</h3>
@@ -238,7 +238,7 @@
                 <div class="card analytics-stat-card h-100 mb-0">
                     <div class="card-body">
                         <div class="analytics-stat-top">
-                            <span class="analytics-icon bg-light-primary text-primary"><i data-feather="mail"></i></span>
+                            <span class="analytics-icon bg-light-primary text-primary"><i class="fa-solid fa-envelope"></i></span>
                             <span class="analytics-stat-label">{{ __('dashboard.contacts') }}</span>
                         </div>
                         <h3 class="analytics-stat-value">{{ $formatNumber($kpis['contacts_total']) }}</h3>
@@ -282,7 +282,7 @@
                             </div>
                         @else
                             <div class="analytics-empty-state">
-                                <i data-feather="pie-chart"></i>
+                                <i class="fa-solid fa-chart-pie"></i>
                                 <p class="mb-0">{{ __('dashboard.no-analytics-data') }}</p>
                             </div>
                         @endif
@@ -325,7 +325,7 @@
                             </div>
                         @else
                             <div class="analytics-empty-state">
-                                <i data-feather="credit-card"></i>
+                                <i class="fa-solid fa-credit-card"></i>
                                 <p class="mb-0">{{ __('dashboard.no-analytics-data') }}</p>
                             </div>
                         @endif
@@ -349,7 +349,7 @@
                             <div id="top-products-chart" class="analytics-chart-lg"></div>
                         @else
                             <div class="analytics-empty-state tall">
-                                <i data-feather="bar-chart-2"></i>
+                                <i class="fa-solid fa-chart-bar"></i>
                                 <p class="mb-0">{{ __('dashboard.no-top-products') }}</p>
                             </div>
                         @endif
@@ -386,7 +386,7 @@
                             </div>
                         @empty
                             <div class="analytics-empty-state">
-                                <i data-feather="grid"></i>
+                                <i class="fa-solid fa-th-large"></i>
                                 <p class="mb-0">{{ __('dashboard.no-top-categories') }}</p>
                             </div>
                         @endforelse
@@ -467,7 +467,7 @@
                             </div>
                         @else
                             <div class="analytics-empty-state tall">
-                                <i data-feather="shopping-cart"></i>
+                                <i class="fa-solid fa-cart-shopping"></i>
                                 <p class="mb-0">{{ __('dashboard.no-orders-found') }}</p>
                             </div>
                         @endif
@@ -489,7 +489,7 @@
                                         class="analytics-product-thumb rounded-3">
                                 @else
                                     <div class="analytics-product-thumb placeholder-thumb rounded-3">
-                                        <i data-feather="package"></i>
+                                        <i class="fa-solid fa-box"></i>
                                     </div>
                                 @endif
 
@@ -510,7 +510,7 @@
                             </div>
                         @empty
                             <div class="analytics-empty-state">
-                                <i data-feather="package"></i>
+                                <i class="fa-solid fa-box"></i>
                                 <p class="mb-0">{{ __('dashboard.no-top-products') }}</p>
                             </div>
                         @endforelse
@@ -541,7 +541,7 @@
                             </div>
                         @empty
                             <div class="analytics-empty-state">
-                                <i data-feather="user-plus"></i>
+                                <i class="fa-solid fa-user-plus"></i>
                                 <p class="mb-0">{{ __('dashboard.no-recent-users') }}</p>
                             </div>
                         @endforelse
@@ -596,7 +596,7 @@
                             </div>
                         @else
                             <div class="analytics-empty-state tall">
-                                <i data-feather="credit-card"></i>
+                                <i class="fa-solid fa-credit-card"></i>
                                 <p class="mb-0">{{ __('dashboard.no-wallet-transactions') }}</p>
                             </div>
                         @endif

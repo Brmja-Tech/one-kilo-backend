@@ -14,7 +14,7 @@
                     </div>
 
                     <a href="{{ route('dashboard.products') }}" class="btn btn-outline-secondary">
-                        <i data-feather="arrow-left"></i> {{ __('dashboard.back') }}
+                        <i class="fa-solid fa-arrow-left"></i> {{ __('dashboard.back') }}
                     </a>
                 </div>
 
