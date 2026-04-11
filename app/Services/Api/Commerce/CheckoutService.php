@@ -48,7 +48,9 @@ class CheckoutService
 
             $this->orderRepository->createItems($order, $this->buildOrderItemsPayload($cart));
 
-            $this->deductStock($cart);
+            if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
+                $this->deductStock($cart);
+            }
 
             $wallet = null;
 
@@ -70,7 +72,9 @@ class CheckoutService
                 $this->couponRepository->registerUsage($coupon, $userId, $order->id, $totals['discount_amount']);
             }
 
-            $this->cartRepository->clear($cart);
+            if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
+                $this->cartRepository->clear($cart);
+            }
 
             return [
                 'order' => $this->orderRepository->loadDetails($order->fresh()),
@@ -112,6 +116,12 @@ class CheckoutService
                     'code' => $coupon->code,
                     'discount_amount' => $totals['discount_amount'],
                 ] : null,
+                // For card payments, we defer stock deduction and cart clearing until payment is confirmed.
+                // This flag makes the post-payment finalization step safe and idempotent, and prevents
+                // double-deducting stock for legacy orders created before this rule existed.
+                'card_payment_finalization' => $data['payment_method'] === Order::PAYMENT_METHOD_CARD
+                    ? ['required' => true]
+                    : null,
             ],
         ]);
     }

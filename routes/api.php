@@ -9,6 +9,7 @@ use App\Http\Controllers\Api\CategoryController;
 use App\Http\Controllers\Api\FavoriteController;
 use App\Http\Controllers\Api\LocationController;
 use App\Http\Controllers\Api\OrderController;
+use App\Http\Controllers\Api\Payments\KashierController as KashierPaymentsController;
 use App\Http\Controllers\Api\ProductController;
 use App\Http\Controllers\Api\SettingsController;
 use App\Http\Controllers\Api\WalletController;
@@ -59,6 +60,13 @@ Route::get('/products', [ProductController::class, 'index']);
 Route::get('/products/best-selling', [ProductController::class, 'bestSelling']);
 Route::get('/products/{slug}', [ProductController::class, 'show']);
 ## ================== COMMERCE ================== ##
+
+## ================== PAYMENTS (Public) ================== ##
+Route::get('/payments/kashier/callback', [KashierPaymentsController::class, 'callback'])
+    ->name('api.payments.kashier.callback');
+Route::post('/payments/kashier/webhook', [KashierPaymentsController::class, 'webhook'])
+    ->name('api.payments.kashier.webhook');
+## ================== PAYMENTS (Public) ================== ##
 
 
 Route::middleware('auth:sanctum')->group(function () {

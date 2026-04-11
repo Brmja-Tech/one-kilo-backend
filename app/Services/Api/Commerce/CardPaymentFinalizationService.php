@@ -1,0 +1,137 @@
+<?php
+
+namespace App\Services\Api\Commerce;
+
+use App\Models\Cart;
+use App\Models\Order;
+use App\Models\OrderItem;
+use App\Models\Payment;
+use App\Models\Product;
+use App\Models\ProductSku;
+use App\Repositories\Api\Commerce\CartRepository;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Log;
+
+class CardPaymentFinalizationService
+{
+    public function __construct(protected CartRepository $cartRepository)
+    {
+    }
+
+    public function finalizeSuccessfulCardPayment(Order $order, Payment $payment): void
+    {
+        if ($order->payment_method !== Order::PAYMENT_METHOD_CARD) {
+            return;
+        }
+
+        if ($order->payment_status !== Order::PAYMENT_STATUS_PAID) {
+            return;
+        }
+
+        $now = now();
+
+        DB::transaction(function () use ($order, $payment, $now) {
+            $lockedOrder = Order::query()
+                ->whereKey($order->id)
+                ->lockForUpdate()
+                ->firstOrFail();
+
+            if ($lockedOrder->payment_method !== Order::PAYMENT_METHOD_CARD) {
+                return;
+            }
+
+            if ($lockedOrder->payment_status !== Order::PAYMENT_STATUS_PAID) {
+                return;
+            }
+
+            if (! $this->shouldFinalize($lockedOrder)) {
+                return;
+            }
+
+            $items = $lockedOrder->items()
+                ->get(['id', 'product_id', 'product_sku_id', 'quantity']);
+
+            $this->deductStockForItems($items);
+            $this->clearUserCart((int) $lockedOrder->user_id);
+
+            $meta = is_array($lockedOrder->meta) ? $lockedOrder->meta : [];
+            $meta['card_payment_finalization'] = [
+                'required' => true,
+                'finalized_at' => $now->toIso8601String(),
+                'payment_id' => $payment->id,
+                'gateway' => $payment->gateway,
+                'session_id' => $payment->session_id,
+            ];
+
+            $lockedOrder->update([
+                'meta' => $meta,
+            ]);
+
+            Log::channel((string) config('kashier.log_channel', 'stack'))
+                ->info('Card order finalized after successful payment', [
+                    'order_id' => $lockedOrder->id,
+                    'order_number' => $lockedOrder->order_number,
+                    'payment_id' => $payment->id,
+                    'gateway' => $payment->gateway,
+                ]);
+        });
+    }
+
+    protected function shouldFinalize(Order $order): bool
+    {
+        if ($this->isOrderFinalized($order)) {
+            return false;
+        }
+
+        return data_get($order->meta, 'card_payment_finalization.required') === true;
+    }
+
+    protected function isOrderFinalized(Order $order): bool
+    {
+        $finalizedAt = data_get($order->meta, 'card_payment_finalization.finalized_at');
+
+        return is_string($finalizedAt) && trim($finalizedAt) !== '';
+    }
+
+    /**
+     * @param  iterable<int, OrderItem>  $items
+     */
+    protected function deductStockForItems(iterable $items): void
+    {
+        foreach ($items as $item) {
+            $quantity = (int) $item->quantity;
+
+            if ($quantity < 1) {
+                continue;
+            }
+
+            if ($item->product_sku_id) {
+                ProductSku::query()
+                    ->whereKey($item->product_sku_id)
+                    ->lockForUpdate()
+                    ->firstOrFail()
+                    ->decrement('quantity', $quantity);
+            } else {
+                Product::query()
+                    ->whereKey($item->product_id)
+                    ->lockForUpdate()
+                    ->firstOrFail()
+                    ->decrement('stock', $quantity);
+            }
+        }
+    }
+
+    protected function clearUserCart(int $userId): void
+    {
+        $cart = Cart::query()
+            ->where('user_id', $userId)
+            ->lockForUpdate()
+            ->first();
+
+        if (! $cart) {
+            return;
+        }
+
+        $this->cartRepository->clear($cart);
+    }
+}

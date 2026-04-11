@@ -203,6 +203,11 @@ class Order extends Model
         return $this->hasMany(WalletTransaction::class);
     }
 
+    public function payments(): HasMany
+    {
+        return $this->hasMany(Payment::class);
+    }
+
     public function itemsCount(): int
     {
         $items = $this->relationLoaded('items') ? $this->items : $this->items()->get();
