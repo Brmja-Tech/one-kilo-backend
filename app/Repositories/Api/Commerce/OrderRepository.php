@@ -38,10 +38,102 @@ class OrderRepository
         return $query->paginate($filters['per_page'] ?? 15)->withQueryString();
     }
 
+
+    public function paginateCurrentForDelivery(int $userId, array $filters): LengthAwarePaginator
+    {
+        $query = Order::query()
+            ->where('delivery_id', $userId)
+            ->whereIn('status', ['out_for_delivery', 'preparing', 'confirmed', 'picked_up'])
+            ->with(['address.country', 'address.governorate', 'address.region'])
+            ->withSum('items as items_count', 'quantity')
+            ->latest('id');
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['payment_status'])) {
+            $query->where('payment_status', $filters['payment_status']);
+        }
+
+        if (! empty($filters['payment_method'])) {
+            $query->where('payment_method', $filters['payment_method']);
+        }
+
+        if (! empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (! empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        return $query->paginate($filters['per_page'] ?? 15)->withQueryString();
+    }
+
+    public function paginatePastForDelivery(int $userId, array $filters): LengthAwarePaginator
+    {
+        $query = Order::query()
+            ->where('delivery_id', $userId)
+            ->whereIn('status', ['delivered'])
+            ->with(['address.country', 'address.governorate', 'address.region'])
+            ->withSum('items as items_count', 'quantity')
+            ->latest('id');
+
+        if (! empty($filters['status'])) {
+            $query->where('status', $filters['status']);
+        }
+
+        if (! empty($filters['payment_status'])) {
+            $query->where('payment_status', $filters['payment_status']);
+        }
+
+        if (! empty($filters['payment_method'])) {
+            $query->where('payment_method', $filters['payment_method']);
+        }
+
+        if (! empty($filters['date_from'])) {
+            $query->whereDate('created_at', '>=', $filters['date_from']);
+        }
+
+        if (! empty($filters['date_to'])) {
+            $query->whereDate('created_at', '<=', $filters['date_to']);
+        }
+
+        return $query->paginate($filters['per_page'] ?? 15)->withQueryString();
+    }
+
     public function findForUser(int $userId, string $reference): Order
     {
         $query = Order::query()
             ->where('user_id', $userId)
+            ->with([
+                'coupon',
+                'items',
+                'address.country',
+                'address.governorate',
+                'address.region',
+                'walletTransaction',
+            ])
+            ->withSum('items as items_count', 'quantity');
+
+        if (ctype_digit($reference)) {
+            $query->where(function ($builder) use ($reference) {
+                $builder->whereKey((int) $reference)
+                    ->orWhere('order_number', $reference);
+            });
+        } else {
+            $query->where('order_number', $reference);
+        }
+
+        return $query->firstOrFail();
+    }
+
+
+    public function findForDelivery(int $userId, string $reference): Order
+    {
+        $query = Order::query()
+            ->where('delivery_id', $userId)
             ->with([
                 'coupon',
                 'items',
@@ -103,4 +195,11 @@ class OrderRepository
 
         return $orderNumber;
     }
+
+    public function updateStatusForDelivery($reference,$request){
+        $order = Order::find($reference);
+        $order->status = $request->status;
+        $order->update();
+        return $order;
+       }
 }

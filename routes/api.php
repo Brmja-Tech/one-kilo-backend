@@ -118,4 +118,13 @@ Route::prefix('delivery')->group(function () {
     Route::post('/logout', [DeliveryAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::post('/firebase-login', [DeliveryAuthController::class, 'firebaseLogin']);
 
+
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::get('/current-orders', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'currentOrders']);
+        Route::get('/past-orders', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'pastOrders']);
+        Route::get('/orders/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'show']);
+        Route::post('/orders/updateStatus/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'updateStatus']);
+    });
+
+
 });

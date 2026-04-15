@@ -21,4 +21,24 @@ class OrderService
     {
         return $this->orderRepository->findForUser($userId, $reference);
     }
+
+    public function showForDelivery(int $userId, string $reference): Order
+    {
+        return $this->orderRepository->findForDelivery($userId, $reference);
+    }
+
+    public function currentOrders(int $userId, array $filters): LengthAwarePaginator
+    {
+        return $this->orderRepository->paginateCurrentForDelivery($userId, $filters);
+    }
+
+    public function pastOrders(int $userId, array $filters): LengthAwarePaginator
+    {
+        return $this->orderRepository->paginatePastForDelivery($userId, $filters);
+    }
+
+    public function updateStatus(string $orderId,$request)
+    {
+        return $this->orderRepository->updateStatusForDelivery($orderId,$request);
+    }
 }
