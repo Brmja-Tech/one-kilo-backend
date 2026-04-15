@@ -38,6 +38,8 @@ return new class extends Migration
                 // Status
                 $table->enum('status', ['pending', 'approved', 'rejected'])->default('pending');
 
+                $table->boolean('login_status')->default(1);
+
                 $table->timestamps();
             });
     }

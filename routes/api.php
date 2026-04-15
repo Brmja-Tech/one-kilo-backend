@@ -1,6 +1,8 @@
 <?php
 
 use App\Http\Controllers\Api\Auth\AuthController;
+use App\Http\Controllers\Api\Auth\DeliveryForgotController;
+use App\Http\Controllers\Api\Auth\DeliveryAuthController;
 use App\Http\Controllers\Api\Auth\ForgotController;
 use App\Http\Controllers\Api\AddressController;
 use App\Http\Controllers\Api\CartController;
@@ -96,4 +98,24 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{reference}', [OrderController::class, 'show']);
+});
+
+
+Route::prefix('delivery')->group(function () {
+
+    Route::middleware('guest')->group(function () {
+        Route::post('/register',     [DeliveryAuthController::class, 'register']);
+        Route::post('/verify-otp',   [DeliveryAuthController::class, 'verifyOtp']);
+        Route::post('/resend-otp',   [DeliveryAuthController::class, 'resendOtp']);
+        Route::post('/login',        [DeliveryAuthController::class, 'login']);
+
+        Route::post('/forgot/password',       [DeliveryForgotController::class, 'forgotPassword']);
+        Route::post('/forgot/verify-otp',     [DeliveryForgotController::class, 'verifyOtp']);
+        Route::post('/forgot/resend-otp',     [DeliveryForgotController::class, 'resendOtp']);
+        Route::post('/forgot/reset-password', [DeliveryForgotController::class, 'resetPassword']);
+    });
+
+    Route::post('/logout', [DeliveryAuthController::class, 'logout'])->middleware('auth:sanctum');
+    Route::post('/firebase-login', [DeliveryAuthController::class, 'firebaseLogin']);
+
 });

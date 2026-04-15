@@ -20,6 +20,11 @@ class Delivery extends Authenticatable
      *
      * @var array<int, string>
      */
+
+    const STATUS_PENDING  = 'pending';
+    const STATUS_APPROVED = 'approved';
+    const STATUS_REJECTED = 'rejected';
+
     protected $fillable = [
         'full_name',
         'phone',
@@ -34,7 +39,8 @@ class Delivery extends Authenticatable
         'national_id_image',
         'license_image',
         'vehicle_license_image',
-        'status'
+        'status',
+        'login_status'
     ];
 
     /**

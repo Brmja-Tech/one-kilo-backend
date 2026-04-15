@@ -2,6 +2,7 @@
 
 namespace Database\Seeders;
 
+use App\Models\Delivery;
 use Illuminate\Database\Seeder;
 
 class DatabaseSeeder extends Seeder
@@ -28,6 +29,7 @@ class DatabaseSeeder extends Seeder
             FavoriteSeeder::class,
             CartSeeder::class,
             WorkingHoursSeeder::class,
+            DeliveryStatusSeeder::class,
         ]);
     }
 }
