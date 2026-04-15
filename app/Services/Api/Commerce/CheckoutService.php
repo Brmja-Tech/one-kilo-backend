@@ -34,7 +34,6 @@ class CheckoutService
             $cart = $this->cartRepository->findForUser($userId);
 
           $open_status = $this->workingHoursRepository->checkStatus();
-          dd($open_status);
 
             if (! $cart || $cart->itemsCount() === 0) {
                 throw new ApiBusinessException(

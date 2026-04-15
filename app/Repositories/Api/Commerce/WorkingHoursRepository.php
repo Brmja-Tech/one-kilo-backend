@@ -12,6 +12,8 @@ class WorkingHoursRepository
     {
         $now = now('Africa/Cairo');
         $time = $now->format('H:i:s');
+
+      //  dd($time);
         $day  = $now->dayOfWeek; // 0 - 6
 
        // dd($day);
@@ -33,6 +35,8 @@ class WorkingHoursRepository
                 });
             })
             ->first();
+
+        return $working;
     }
 
 }
