@@ -314,6 +314,7 @@ return [
     'about-ar' => 'من نحن بالعربية',
     'about-en' => 'من نحن بالانجليزية',
     'Settings-retrieved-successfully' => 'تم استرداد الإعدادات بنجاح',
+    'workingHours-retrieved-successfully' => 'تم استرداد ساعات العمل بنجاح',
     'somthing-went-wrong' => 'حصل خطأ ما',
     'server-error'                              => 'خطأ في الخادم',
     'internal-error-text'                       => 'عذراً، حدث خطأ داخلي في الخادم. نحن نعمل على إصلاح المشكلة حالياً',

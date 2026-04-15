@@ -28,7 +28,10 @@ class SettingsController extends Controller
         return view('dashboard.settings.faqs.index');
     } //End faqs method
 
-
+    public function workingHours()
+    {
+        return view('dashboard.settings.workingHours.index');
+    } //End workingHours method
 
     public function privacy()
     {

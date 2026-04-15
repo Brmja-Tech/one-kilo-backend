@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Api;
 
+use App\Http\Resources\WorkingHoursResource;
 use App\Models\Faq;
 use App\Models\About;
 use App\Models\Terms;
@@ -10,6 +11,7 @@ use App\Models\Contact;
 use App\Models\Privacy;
 use App\Models\Setting;
 use App\Helpers\ApiResponse;
+use App\Models\WorkingHour;
 use Illuminate\Http\Request;
 use App\Http\Resources\FaqResource;
 use App\Http\Controllers\Controller;
@@ -18,6 +20,7 @@ use App\Http\Resources\TermsResource;
 use App\Http\Resources\BannerResource;
 use App\Http\Resources\PrivacyResource;
 use App\Http\Resources\SettingsResource;
+use Illuminate\Http\Resources\Json\JsonResource;
 use Illuminate\Support\Facades\Validator;
 
 class SettingsController extends Controller
@@ -71,7 +74,14 @@ class SettingsController extends Controller
             'per_page'     => $faq->perPage(),
         ]);
     }
-
+    public function workingHours()
+    {
+        $workingHours = WorkingHour::all();
+        if (!$workingHours) {
+            return ApiResponse::sendResponse(200, __('dashboard.somthing-went-wrong'), []);
+        }
+        return ApiResponse::sendResponse(200, __('dashboard.workingHours-retrieved-successfully'), WorkingHoursResource::collection($workingHours));
+    }
     public function contact(Request $request)
     {
         $validator = Validator::make($request->all(), [

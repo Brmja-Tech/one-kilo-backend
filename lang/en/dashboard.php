@@ -314,6 +314,7 @@ return [
     'about-ar' => 'About In Arabic',
     'about-en' => 'About In English',
     'Settings-retrieved-successfully' => 'Settings Retrieved Successfully',
+    'workingHours-retrieved-successfully' => 'WorkingHours Retrieved Successfully',
     'somthing-went-wrong' => 'Somthing Went Wrong',
     'server-error'                          => 'Server Error',
     'internal-error-text'                   => 'Sorry, an internal server error occurred. We\'re working to fix the issue.',

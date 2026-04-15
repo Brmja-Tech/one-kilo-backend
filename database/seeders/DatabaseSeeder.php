@@ -27,6 +27,7 @@ class DatabaseSeeder extends Seeder
             CouponSeeder::class,
             FavoriteSeeder::class,
             CartSeeder::class,
+            WorkingHoursSeeder::class,
         ]);
     }
 }
