@@ -10,24 +10,25 @@ class WorkingHoursRepository
 
     public function checkStatus()
     {
-        $now = now();
+        $now = now('Africa/Cairo');
         $time = $now->format('H:i:s');
         $day  = $now->dayOfWeek; // 0 - 6
 
-        $working = WorkingHour::where('day_of_week', $day)
+       // dd($day);
+
+        $working = WorkingHour::query()
+            ->where('day_of_week', $day)
             ->where('status', 'open')
             ->where(function ($query) use ($time) {
                 $query->where(function ($q) use ($time) {
-                    // same-day shift
                     $q->whereColumn('open_time', '<=', 'close_time')
-                        ->whereTime('open_time', '<=', $time)
-                        ->whereTime('close_time', '>=', $time);
+                        ->where('open_time', '<=', $time)
+                        ->where('close_time', '>=', $time);
                 })->orWhere(function ($q) use ($time) {
-                    // overnight shift
                     $q->whereColumn('open_time', '>', 'close_time')
                         ->where(function ($q2) use ($time) {
-                            $q2->whereTime('open_time', '<=', $time)
-                                ->orWhereTime('close_time', '>=', $time);
+                            $q2->where('open_time', '<=', $time)
+                                ->orWhere('close_time', '>=', $time);
                         });
                 });
             })

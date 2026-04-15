@@ -24,7 +24,7 @@ return new class extends Migration
                 $table->string('firebase_uid')->nullable()->unique();
                 // Profile
                 $table->string('image')->nullable();
-
+                $table->timestamp('email_verified_at')->nullable();
                 // Vehicle Info
                 $table->string('vehicle_type')->nullable(); // car / bike
                 $table->string('vehicle_model')->nullable();

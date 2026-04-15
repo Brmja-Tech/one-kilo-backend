@@ -40,7 +40,8 @@ class Delivery extends Authenticatable
         'license_image',
         'vehicle_license_image',
         'status',
-        'login_status'
+        'login_status',
+        'email_verified_at',
     ];
 
     /**

@@ -19,6 +19,11 @@ return new class extends Migration
                 ->constrained('addresses')
                 ->nullOnDelete()
                 ->cascadeOnUpdate();
+            $table->foreignId('delivery_id')
+                ->nullable()
+                ->constrained('deliveries')
+                ->nullOnDelete()
+                ->cascadeOnUpdate();
             $table->foreignId('coupon_id')
                 ->nullable()
                 ->constrained('coupons')

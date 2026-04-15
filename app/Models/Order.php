@@ -13,6 +13,7 @@ class Order extends Model
     public const STATUS_CONFIRMED = 'confirmed';
     public const STATUS_PREPARING = 'preparing';
     public const STATUS_OUT_FOR_DELIVERY = 'out_for_delivery';
+    public const STATUS_PICKED_UP = 'picked_up';
     public const STATUS_DELIVERED = 'delivered';
     public const STATUS_CANCELED = 'canceled';
     public const STATUS_FAILED = 'failed';
@@ -31,6 +32,7 @@ class Order extends Model
         'user_id',
         'address_id',
         'coupon_id',
+        'delivery_id',
         'wallet_transaction_id',
         'order_number',
         'status',
@@ -85,6 +87,7 @@ class Order extends Model
             self::STATUS_CONFIRMED,
             self::STATUS_PREPARING,
             self::STATUS_OUT_FOR_DELIVERY,
+            self::STATUS_PICKED_UP,
             self::STATUS_DELIVERED,
             self::STATUS_CANCELED,
             self::STATUS_FAILED,
@@ -135,6 +138,11 @@ class Order extends Model
             ],
             self::STATUS_OUT_FOR_DELIVERY => [
                 self::STATUS_DELIVERED,
+                self::STATUS_PICKED_UP,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_PICKED_UP => [
+                self::STATUS_DELIVERED,
                 self::STATUS_CANCELED,
             ],
             self::STATUS_DELIVERED => [],
@@ -154,6 +162,7 @@ class Order extends Model
             self::STATUS_CONFIRMED,
             self::STATUS_PREPARING,
             self::STATUS_OUT_FOR_DELIVERY,
+            self::STATUS_PICKED_UP,
             self::STATUS_DELIVERED,
         ];
     }
@@ -181,6 +190,11 @@ class Order extends Model
     public function coupon(): BelongsTo
     {
         return $this->belongsTo(Coupon::class);
+    }
+
+    public function delivery(): BelongsTo
+    {
+        return $this->belongsTo(Delivery::class);
     }
 
     public function walletTransaction(): BelongsTo

@@ -103,7 +103,14 @@ class DeliveryAuthRepository
                 'data' => []
             ];
         }
-
+        if ($delivery->email_verified_at == null) {
+            $delivery->notify(new SendOtpNotify($delivery->phone));
+            return [
+                'status' => 415,
+                'message' => __('front.verify-account-first'),
+                'data' => ['phone' => $delivery->phone]
+            ];
+        }
         if ($delivery->status ==  Delivery::STATUS_PENDING || $delivery->status ==  Delivery::STATUS_REJECTED) {
             return [
                 'status' => 422,
