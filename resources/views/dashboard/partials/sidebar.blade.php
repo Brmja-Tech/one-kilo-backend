@@ -181,6 +181,14 @@
                                     data-i18n="Roles">{{ __('dashboard.faqs-settings') }}</span></a>
                         </li>
                     </ul>
+
+                    <ul class="menu-content">
+                        <li><a class="@yield('workingHours-active') d-flex align-items-center"
+                               href="{{ route('dashboard.workingHours.setting') }}"><i class="fa-solid fa-circle"></i><span
+                                    class="menu-item text-truncate"
+                                    data-i18n="Roles">{{ __('dashboard.workingHours-settings') }}</span></a>
+                        </li>
+                    </ul>
                 </li>
             @endcan
 

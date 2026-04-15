@@ -32,17 +32,17 @@ class WorkingHoursUpdate extends Component
                 'required',
                 'string',
                 'min:5',
-                UniqueTranslationRule::for('workingHours', 'day_name')->ignore($this->workingHours->id),
+                UniqueTranslationRule::for('working_hours', 'day_name')->ignore($this->workingHours->id),
             ],
             'day_name_en' => [
                 'required',
                 'string',
                 'min:5',
-                UniqueTranslationRule::for('workingHours', 'day_name')->ignore($this->workingHours->id),
+                UniqueTranslationRule::for('working_hours', 'day_name')->ignore($this->workingHours->id),
             ],
 
-            'open_time'          => 'required|date_format:H:i',
-            'close_time'          => 'required|date_format:H:i',
+            'open_time'          => 'required',
+            'close_time'          => 'required|after:open_time',
             'status'             => 'required|in:open,close,busy',
         ];
     }
@@ -61,7 +61,7 @@ class WorkingHoursUpdate extends Component
             'ar' => $this->day_name_ar,
             'en' => $this->day_name_en,
         ];
-        $this->WorkingHours->update($data);
+        $this->workingHours->update($data);
         // Hide modal
         $this->dispatch('workingHoursUpdateMS');
         // Reset form fields

@@ -9,10 +9,10 @@
                     <h4 class="card-title">{{ __('dashboard.workingHours-settings') }}</h4>
 <!--                    <button type="button" class="btn btn-primary waves-effect" data-bs-toggle="modal"-->
 <!--                        data-bs-target="#createModal">-->
-<!--                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-faq') }}-->
+<!--                        <i class="fa-solid fa-plus"></i> {{ __('dashboard.create-workingHours') }}-->
 <!--                    </button>-->
                 </div>
-                @livewire('dashboard.settings.workingHours.workingHours-create')
+
                 <div class="card-body">
                     @livewire('dashboard.settings.workingHours.workingHours-data')
                 </div>
@@ -25,7 +25,7 @@
     {{-- Scripts from livewire success msg --}}
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            Livewire.on('faqUpdateMS', function() {
+            Livewire.on('workingHoursUpdateMS', function() {
                 Swal.fire({
                     position: 'top-start',
                     icon: 'success',

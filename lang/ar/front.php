@@ -31,6 +31,7 @@ return [
     'select-size' => 'اختر المقاس',
     'email' => 'البريد الالكتروني',
     'phone' => 'الهاتف',
+    'close-time' => 'ليس متاح الان',
     'address' => 'العنوان',
     'send-us-message' => 'ارسل لنا رسالة',
     'name' => 'الاسم',

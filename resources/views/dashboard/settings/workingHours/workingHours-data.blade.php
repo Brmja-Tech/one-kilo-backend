@@ -29,7 +29,7 @@
                             <div class="d-flex align-items-center">
                                 <a class="btn btn-primary waves-effect waves-float waves-light"
                                     title="{{ __('dashboard.update') }}" href="#"
-                                    wire:click.prevent="$dispatch('workingHourUpdate', {id: {{ $item->id }}})">
+                                    wire:click.prevent="$dispatch('workingHoursUpdate', {id: {{ $item->id }}})">
                                     <i class="fa-regular fa-pen-to-square"></i>
                                 </a>
                             </div>

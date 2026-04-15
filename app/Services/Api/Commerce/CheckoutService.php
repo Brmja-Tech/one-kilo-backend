@@ -12,12 +12,14 @@ use App\Repositories\Api\Commerce\AddressRepository;
 use App\Repositories\Api\Commerce\CartRepository;
 use App\Repositories\Api\Commerce\CouponRepository;
 use App\Repositories\Api\Commerce\OrderRepository;
+use App\Repositories\Api\Commerce\WorkingHoursRepository;
 use Illuminate\Support\Facades\DB;
 
 class CheckoutService
 {
     public function __construct(
         protected CartRepository $cartRepository,
+        protected WorkingHoursRepository $workingHoursRepository,
         protected AddressRepository $addressRepository,
         protected CouponRepository $couponRepository,
         protected OrderRepository $orderRepository,
@@ -31,11 +33,21 @@ class CheckoutService
             $address = $this->addressRepository->findActiveForUser($userId, (int) $data['address_id']);
             $cart = $this->cartRepository->findForUser($userId);
 
+          $open_status = $this->workingHoursRepository->checkStatus();
+
             if (! $cart || $cart->itemsCount() === 0) {
                 throw new ApiBusinessException(
                     __('front.cart-empty'),
                     422,
                     ['cart' => [__('front.cart-empty')]]
+                );
+            }
+
+            if(!$open_status){
+                throw new ApiBusinessException(
+                    __('front.close-time'),
+                    422,
+                    ['close' => [__('front.close-time')]]
                 );
             }
 

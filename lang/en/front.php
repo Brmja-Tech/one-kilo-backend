@@ -9,6 +9,7 @@ return [
     'my-account' => 'My Account',
     'login' => 'Login',
     'flash-sale' => 'Flash Sale',
+    'close-time' => 'Not available now',
     'see-more' => 'See More',
     'end-time' => 'End Time',
     'no-products-found' => 'No Product Found',
