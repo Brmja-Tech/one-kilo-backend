@@ -281,4 +281,6 @@ return [
     'order-number'                                  => 'Order number',
     'you-can-close-this-page'                       => 'You can close this page now.',
     'method-not-allowed'                            => 'Method not allowed',
+    'profile-success'                   => 'profile-success',
+    'profile-updated'                   => 'Profile updated successfully',
 ];

@@ -117,6 +117,7 @@ Route::prefix('delivery')->group(function () {
 
     Route::post('/logout', [DeliveryAuthController::class, 'logout'])->middleware('auth:sanctum');
     Route::get('/getProfile',       [DeliveryAuthController::class,'getProfile'])->middleware('auth:sanctum');
+    Route::post('/updateProfile',       [DeliveryAuthController::class,'updateProfile'])->middleware('auth:sanctum');
     Route::post('/firebase-login', [DeliveryAuthController::class, 'firebaseLogin']);
 
 

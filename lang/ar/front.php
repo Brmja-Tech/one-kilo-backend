@@ -279,4 +279,6 @@ return [
     'continue'                                  => 'متابعة',
     'order-number'                              => 'رقم الطلب',
     'you-can-close-this-page'                   => 'يمكنك إغلاق هذه الصفحة الآن.',
+    'profile-success'                   => 'بيانات المستخدم',
+    'profile-updated'                   => 'تم تعديل بيانات المستخدم بنجاح',
 ];

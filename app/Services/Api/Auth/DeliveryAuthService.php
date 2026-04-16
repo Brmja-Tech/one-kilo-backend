@@ -92,4 +92,16 @@ class DeliveryAuthService
     public function getProfile(){
         return $this->authRepository->getProfile();
     }
+
+    public function updateProfile($credentials)
+    {
+        if (isset($credentials['image'])) {
+            $credentials['image'] = $this->imageManager->uploadImage('/uploads/deliveries/', $credentials['image']);
+        } else {
+            $credentials['image'] = null;
+        }
+
+        return $this->authRepository->updateProfile($credentials);
+
+    } //End update Method
 }

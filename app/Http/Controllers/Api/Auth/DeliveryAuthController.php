@@ -8,6 +8,7 @@ use App\Http\Requests\Api\DeliveryLoginRequest;
 use App\Http\Requests\Api\FirebaseLoginRequest;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Auth\DeliveryRegisterRequest;
+use App\Http\Requests\Auth\DeliveryUpdateRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\Api\Auth\AuthService;
 use App\Services\Api\Auth\DeliveryAuthService;
@@ -25,7 +26,7 @@ class DeliveryAuthController extends Controller
 
     public function register(DeliveryRegisterRequest $request)
     {
-        $credentials = $request->only(['full_name', 'email', 'phone', 'password', 'birth_date', 'image', 'vehicle_type', 'national_id_image', 'vehicle_license_image','license_image']);
+        $credentials = $request->only(['full_name', 'email', 'phone', 'password', 'image', 'vehicle_type', 'national_id_image', 'vehicle_license_image','license_image']);
         $user = $this->authService->register($credentials);
 
         if (!$user) {
@@ -98,6 +99,18 @@ class DeliveryAuthController extends Controller
 
         if (!$user) {
             return ApiResponse::sendResponse(422, __('front.profile-failed'), []);
+        }
+
+        return ApiResponse::sendResponse($user['status'], $user['message'], $user['data']);
+    }
+
+    public function updateProfile(DeliveryUpdateRequest $request)
+    {
+        $credentials = $request->only(['full_name', 'email',  'image']);
+        $user = $this->authService->updateProfile($credentials);
+
+        if (!$user) {
+            return ApiResponse::sendResponse(422, __('front.user-updated-failed'), []);
         }
 
         return ApiResponse::sendResponse($user['status'], $user['message'], $user['data']);

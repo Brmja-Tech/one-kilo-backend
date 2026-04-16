@@ -220,4 +220,21 @@ class DeliveryAuthRepository
         ];
     } // End Profile Method
 
+
+    public function updateProfile($credentials)
+    {
+        $delivery = Delivery::find(Auth::id());
+         $delivery->update([
+            'full_name' => $credentials['full_name'] ?? $delivery->full_name,
+            'email'     => $credentials['email'] ?? $delivery->email,
+            'image'     => $credentials['image'] ?? $delivery->image,
+        ]);
+        return [
+            'status' => 200,
+            'message' => __('front.profile-updated'),
+            'data' => [
+                'user' => DeliveryResource::make($delivery),
+            ]
+        ];
+    } // End method update
 }
