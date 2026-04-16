@@ -15,7 +15,7 @@ class DeliveryStatusSeeder extends Seeder
     {
         Delivery::create([
             'full_name' => 'Ahmed Ali',
-            'phone' => '01123456789',
+            'phone' => '01123456779',
             'email' => 'ahmed@test.com',
             'password' => bcrypt('123456'),
             'vehicle_type' => 'bike',
@@ -26,13 +26,14 @@ class DeliveryStatusSeeder extends Seeder
 
         Delivery::create([
             'full_name' => 'Mohamed Hassan',
-            'phone' => '01234567890',
+            'phone' => '+201116949928',
             'email' => 'mohamed@test.com',
-            'password' => bcrypt('123456'),
+            'password' => bcrypt('password'),
             'vehicle_type' => 'car',
             'vehicle_model' => '2021',
             'vehicle_brand' => 'Toyota',
-            'status' => 'approved'
+            'status' => 'approved',
+            'email_verified_at' => now()
         ]);
     }
 }

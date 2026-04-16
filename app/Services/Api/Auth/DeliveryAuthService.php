@@ -87,4 +87,9 @@ class DeliveryAuthService
     {
         return $this->authRepository->logout($guard);
     } //End logout Method
+
+
+    public function getProfile(){
+        return $this->authRepository->getProfile();
+    }
 }

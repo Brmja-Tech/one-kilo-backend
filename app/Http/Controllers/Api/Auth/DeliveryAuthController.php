@@ -90,4 +90,16 @@ class DeliveryAuthController extends Controller
             $request->input('fcm_token')
         );
     }
+
+
+    public function getProfile(){
+
+        $user = $this->authService->getProfile();
+
+        if (!$user) {
+            return ApiResponse::sendResponse(422, __('front.profile-failed'), []);
+        }
+
+        return ApiResponse::sendResponse($user['status'], $user['message'], $user['data']);
+    }
 }

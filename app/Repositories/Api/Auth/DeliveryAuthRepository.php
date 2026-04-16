@@ -86,13 +86,13 @@ class DeliveryAuthRepository
 
     public function login($credentials, $guard, $remember = false)
     {
-        if (auth('sanctum')->check()) {
-            return [
-                'status' => 403,
-                'message' => __('front.already-logged-in'),
-                'data' => []
-            ];
-        }
+//        if (auth('sanctum')->check()) {
+//            return [
+//                'status' => 403,
+//                'message' => __('front.already-logged-in'),
+//                'data' => []
+//            ];
+//        }
 
         $delivery = Delivery::where('phone', $credentials['phone'])->first();
 
@@ -196,5 +196,28 @@ class DeliveryAuthRepository
             'data' => []
         ];
     } // End logout Method
+
+
+
+    public function getProfile($guard = null)
+    {
+        $delivery = $guard ? Auth::guard($guard)->user() : Auth::user();
+
+        if ($delivery) {
+            return [
+                'status' => 200,
+                'message' => __('front.profile-success'),
+                'data' =>[
+                    'user' => DeliveryResource::make($delivery)
+                ]
+            ];
+        }
+
+        return [
+            'status' => 422,
+            'message' => __('front.profile-failed'),
+            'data' => []
+        ];
+    } // End Profile Method
 
 }
