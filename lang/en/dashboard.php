@@ -661,4 +661,12 @@ return [
     'day_name-en' => 'Day en',
     'open' => 'Open',
     'busy' => 'Busy',
+
+    'total-active-orders' => 'Total active orders',
+    'total-delivered-orders' => 'Total delivered orders',
+    'delivery-orders' => 'Total orders',
+    'vehicle_type' => 'Vehicle Type',
+    'deliveries' => 'Deliveries',
+    'create-delivery' => 'Create Delivery',
+    'full_name' => 'name'
 ];

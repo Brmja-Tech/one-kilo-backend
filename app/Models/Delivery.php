@@ -66,4 +66,6 @@ class Delivery extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
+
+
 }

@@ -126,5 +126,11 @@ Route::group([
         Route::get('terms',               [SettingsController::class, 'terms'])->middleware('can:settings')->name('terms.setting');
         ############################### End settings Routes ############################################
 
+
+        ############################### Delivery Routes ############################################
+        Route::get('delivery',                  [\App\Http\Controllers\Dashboard\DeliveryController::class, 'index'])->middleware('can:users')->name('deliveries.index');
+        Route::get('delivery/profile/{id}',      [\App\Http\Controllers\Dashboard\DeliveryController::class, 'userProfile'])->middleware('can:users')->name('deliveries.profile');
+        ############################### End Users Routes #########################################
+
     });
 });

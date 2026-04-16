@@ -661,4 +661,11 @@ return [
     'day_name-en' => 'اليوم بالانجليزية',
     'open' => 'مفتوح',
     'busy' => 'مشغول',
+    'total-active-orders' => 'الطلبات الحالية',
+    'total-delivered-orders' => 'الطلبات التى تم توصيلها',
+
+    'delivery-orders' => 'طلبات مندوب التوصيل',
+    'vehicle_type' => 'نوع المركبة',
+    'deliveries' => 'مناديب التوصيل',
+    'create-delivery' => 'انشاء مندوب توصيل',
 ];

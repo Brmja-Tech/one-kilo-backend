@@ -82,6 +82,23 @@
                 </li>
             @endcan
 
+            @can('users')
+            <li class="nav-item @yield('deliveries-open') @yield('createDelivery-open')"><a class="d-flex align-items-center"
+                                                                                   href="#"><i class="fa-solid fa-users"></i><span class="menu-title text-truncate">
+                            {{ __('dashboard.deliveries') }}</span>
+                    <span class="badge badge-light-warning rounded-pill ms-auto me-1"> {{ App\Models\Delivery::count() }}
+                        </span>
+                </a>
+                <ul class="menu-content">
+                    <li><a class="@yield('deliveries-active') d-flex align-items-center"
+                           href="{{ route('dashboard.deliveries.index') }}"><i class="fa-solid fa-circle"></i><span
+                                class="menu-item text-truncate"
+                                data-i18n="Roles">{{ __('dashboard.deliveries') }}</span></a>
+                    </li>
+                </ul>
+            </li>
+            @endcan
+
 
             @can('countries')
                 <li class="nav-item @yield('countries-active')"><a class="d-flex align-items-center"
