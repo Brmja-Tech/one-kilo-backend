@@ -23,9 +23,5 @@ class WorkingHour extends Model
         'status',
     ];
 
-    protected $casts = [
-        'open_time'  => 'datetime:H:i:s',
-        'close_time' => 'datetime:H:i:s',
-    ];
 
 }

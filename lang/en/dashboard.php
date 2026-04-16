@@ -650,4 +650,15 @@ return [
     'variants' => 'Variants',
     'no-price' => 'No Price',
     'total' => 'Total',
+
+
+    'workingHours-settings' => 'Working Hours settings',
+    'update-workingHours' => 'Update Working Hours',
+    'day_name' => 'Day',
+    'open_time' => 'Open Time',
+    'close_time' => 'Close Time',
+    'day_name-ar' => 'Day ar',
+    'day_name-en' => 'Day en',
+    'open' => 'Open',
+    'busy' => 'Busy',
 ];

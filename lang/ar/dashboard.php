@@ -650,4 +650,15 @@ return [
     'variants' => 'الأنواع',
     'no-price' => 'لا يوجد سعر',
     'total' => 'المجموع',
+
+
+    'workingHours-settings' => 'اعدادات ساعات العمل',
+    'update-workingHours' => 'تعديل ساعات العمل',
+    'day_name' => 'اليوم',
+    'open_time' => 'وقت الفتح',
+    'close_time' => 'وقت الاغلاق',
+    'day_name-ar' => 'اليوم بالعربية',
+    'day_name-en' => 'اليوم بالانجليزية',
+    'open' => 'مفتوح',
+    'busy' => 'مشغول',
 ];
