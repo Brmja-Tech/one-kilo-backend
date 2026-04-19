@@ -113,53 +113,23 @@ class OrdersController extends Controller
 
     public function assignDelivery($orderId)
     {
-        $order = Order::findOrFail($orderId);
 
-        // Available (approved + not busy)
-        $availableDeliveries = Delivery::where('status', 'approved')
-            ->whereDoesntHave('orders', function ($q) {
-                $q->whereNotIn('status', ['picked_up', 'delivered']);
-            })
-            ->get();
+        $data = $this->orderService->getDeliveries($orderId);
 
-
-
-        // Busy Deliveries
-        $busyDeliveries = Delivery::where('status', 'approved')
-            ->whereHas('orders', function ($q) {
-                $q->whereNotIn('status', ['picked_up', 'delivered']);
-            })
-            ->with(['orders' => function ($q) {
-                $q->whereNotIn('status', ['picked_up', 'delivered']);
-            }])
-            ->get();
-
-
-       return view('dashboard.orders.assign-delivery', compact(
-          'order',
-           'availableDeliveries',
-           'busyDeliveries'
-       ));
+        return view('dashboard.orders.assign-delivery', [
+            'order' => $data['order'],
+            'availableDeliveries' => $data['availableDeliveries'],
+            'busyDeliveries' => $data['busyDeliveries'],
+        ]);
     }
 
     public function assign(Request $request, $orderId)
     {
-        $request->validate([
-            'delivery_id' => 'required|exists:deliveries,id',
-        ]);
 
-        $order = Order::findOrFail($orderId);
-
-        $delivery = Delivery::where('id', $request->delivery_id)
-            ->where('status', 'approved')
-            ->firstOrFail();
-
-        $order->update([
-            'delivery_id' => $delivery->id,
-        ]);
+        $this->orderService->assign($request,$orderId);
 
         return redirect()
-            ->route('dashboard.orders.show', $order->id)
+            ->route('dashboard.orders.show', $orderId)
             ->with('success', 'Delivery assigned successfully.');
     }
 }

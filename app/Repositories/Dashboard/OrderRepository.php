@@ -2,6 +2,7 @@
 
 namespace App\Repositories\Dashboard;
 
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Models\OrderStatusLog;
 
@@ -35,5 +36,52 @@ class OrderRepository
     public function createStatusLog(Order $order, array $data): OrderStatusLog
     {
         return $order->statusLogs()->create($data);
+    }
+
+
+    public function availableDeliveries()
+    {
+        // Available (approved + not busy)
+        $availableDeliveries = Delivery::where('status', 'approved')
+            ->whereDoesntHave('orders', function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            })
+            ->get();
+
+        return $availableDeliveries;
+    }
+
+
+    public function busyDeliveries()
+    {
+        // Busy Deliveries
+        $busyDeliveries = Delivery::where('status', 'approved')
+            ->whereHas('orders', function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            })
+            ->with(['orders' => function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            }])
+            ->get();
+
+        return $busyDeliveries;
+    }
+
+
+    public function assign($request ,$orderId){
+
+        $request->validate([
+            'delivery_id' => 'required|exists:deliveries,id',
+        ]);
+
+        $order = Order::findOrFail($orderId);
+
+        $delivery = Delivery::where('id', $request->delivery_id)
+            ->where('status', 'approved')
+            ->firstOrFail();
+
+        $order->update([
+            'delivery_id' => $delivery->id,
+        ]);
     }
 }

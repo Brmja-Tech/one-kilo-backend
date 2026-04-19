@@ -54,4 +54,29 @@ class OrderService
     {
         return __('dashboard.order-status-' . str_replace('_', '-', $status));
     }
+
+
+    public function getDeliveries($orderId){
+
+        $order = Order::findOrFail($orderId);
+
+        $availableDeliveries = $this->orderRepository->availableDeliveries();
+
+        $busyDeliveries = $this->orderRepository->busyDeliveries();
+
+
+        $data = array(
+            "order" => $order,
+            "availableDeliveries" => $availableDeliveries,
+            "busyDeliveries" => $busyDeliveries
+        );
+
+        return $data;
+
+    }
+
+    public function assign($request,$orderId){
+
+        return $this->orderRepository->assign($request,$orderId);
+    }
 }
