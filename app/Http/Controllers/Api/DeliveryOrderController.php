@@ -8,12 +8,14 @@ use App\Http\Requests\Api\Commerce\OrderIndexRequest;
 use App\Http\Requests\Api\Commerce\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderDetailsResource;
 use App\Http\Resources\OrderResource;
+use App\Models\Order;
+use App\Services\Api\Commerce\FirebaseService;
 use App\Services\Api\Commerce\OrderService;
 use Illuminate\Http\Resources\Json\JsonResource;
 
 class DeliveryOrderController extends Controller
 {
-    public function __construct(protected OrderService $service) {}
+    public function __construct(protected OrderService $service , protected FirebaseService $firebaseService) {}
 
     public function currentOrders(OrderIndexRequest $request)
     {
@@ -59,6 +61,16 @@ class DeliveryOrderController extends Controller
     public function updateStatus(string $reference ,UpdateOrderStatusRequest $request)
     {
         $order = $this->service->updateStatus($reference,$request);
+
+
+        $data = Order::STATUS_MESSAGES[$request->status] ?? null;
+
+        $msg = $data['title']['ar'];
+        $title = $data['message']['ar'];
+
+        $order = Order::find($reference);
+        $this->firebaseService->sendNotification($order->user->fcm_token??'',$title,$msg);
+        $this->firebaseService->saveNotification($order->user,$order->id,$data['title'],$data['message']);
 
         return ApiResponse::sendResponse(
             200,

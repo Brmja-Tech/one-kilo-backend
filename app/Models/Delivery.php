@@ -13,7 +13,7 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 
 class Delivery extends Authenticatable
 {
-    use HasApiTokens, HasFactory, Notifiable;
+    use HasApiTokens, HasFactory;
 
     /**
      * The attributes that are mass assignable.
@@ -66,6 +66,9 @@ class Delivery extends Authenticatable
         return $this->hasMany(Order::class);
     }
 
-
+    public function appNotifications()
+    {
+        return $this->morphMany(Notification::class, 'notifiable');
+    }
 
 }

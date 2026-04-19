@@ -2,8 +2,12 @@
 
 namespace App\Repositories\Api\Commerce;
 
+use App\Helpers\ApiResponse;
+use App\Http\Resources\NotificationsResource;
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
+use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class OrderRepository
 {
@@ -15,23 +19,23 @@ class OrderRepository
             ->withSum('items as items_count', 'quantity')
             ->latest('id');
 
-        if (! empty($filters['status'])) {
+        if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
             $query->where('payment_status', $filters['payment_status']);
         }
 
-        if (! empty($filters['payment_method'])) {
+        if (!empty($filters['payment_method'])) {
             $query->where('payment_method', $filters['payment_method']);
         }
 
-        if (! empty($filters['date_from'])) {
+        if (!empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
 
-        if (! empty($filters['date_to'])) {
+        if (!empty($filters['date_to'])) {
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
@@ -48,23 +52,23 @@ class OrderRepository
             ->withSum('items as items_count', 'quantity')
             ->latest('id');
 
-        if (! empty($filters['status'])) {
+        if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
             $query->where('payment_status', $filters['payment_status']);
         }
 
-        if (! empty($filters['payment_method'])) {
+        if (!empty($filters['payment_method'])) {
             $query->where('payment_method', $filters['payment_method']);
         }
 
-        if (! empty($filters['date_from'])) {
+        if (!empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
 
-        if (! empty($filters['date_to'])) {
+        if (!empty($filters['date_to'])) {
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
@@ -80,23 +84,23 @@ class OrderRepository
             ->withSum('items as items_count', 'quantity')
             ->latest('id');
 
-        if (! empty($filters['status'])) {
+        if (!empty($filters['status'])) {
             $query->where('status', $filters['status']);
         }
 
-        if (! empty($filters['payment_status'])) {
+        if (!empty($filters['payment_status'])) {
             $query->where('payment_status', $filters['payment_status']);
         }
 
-        if (! empty($filters['payment_method'])) {
+        if (!empty($filters['payment_method'])) {
             $query->where('payment_method', $filters['payment_method']);
         }
 
-        if (! empty($filters['date_from'])) {
+        if (!empty($filters['date_from'])) {
             $query->whereDate('created_at', '>=', $filters['date_from']);
         }
 
-        if (! empty($filters['date_to'])) {
+        if (!empty($filters['date_to'])) {
             $query->whereDate('created_at', '<=', $filters['date_to']);
         }
 
@@ -119,7 +123,7 @@ class OrderRepository
 
         if (ctype_digit($reference)) {
             $query->where(function ($builder) use ($reference) {
-                $builder->whereKey((int) $reference)
+                $builder->whereKey((int)$reference)
                     ->orWhere('order_number', $reference);
             });
         } else {
@@ -146,7 +150,7 @@ class OrderRepository
 
         if (ctype_digit($reference)) {
             $query->where(function ($builder) use ($reference) {
-                $builder->whereKey((int) $reference)
+                $builder->whereKey((int)$reference)
                     ->orWhere('order_number', $reference);
             });
         } else {
@@ -196,10 +200,24 @@ class OrderRepository
         return $orderNumber;
     }
 
-    public function updateStatusForDelivery($reference,$request){
+    public function updateStatusForDelivery($reference, $request)
+    {
         $order = Order::find($reference);
         $order->status = $request->status;
         $order->update();
+
         return $order;
-       }
+    }
+
+
+    public function getNotifications()
+    {
+        $user = Auth::user();
+
+        return  $user->appNotifications()
+            ->latest()
+            ->paginate($filters['per_page'] ?? 15)->withQueryString();
+    }
+
 }
+

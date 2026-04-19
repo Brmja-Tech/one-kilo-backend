@@ -8,7 +8,7 @@ use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 
 class OrderService
 {
-    public function __construct(protected OrderRepository $orderRepository)
+    public function __construct(protected OrderRepository $orderRepository , protected FirebaseService $firebaseService)
     {
     }
 
@@ -40,5 +40,11 @@ class OrderService
     public function updateStatus(string $orderId,$request)
     {
         return $this->orderRepository->updateStatusForDelivery($orderId,$request);
+
+
+    }
+
+    public function getNotifications(){
+        return $this->orderRepository->getNotifications();
     }
 }

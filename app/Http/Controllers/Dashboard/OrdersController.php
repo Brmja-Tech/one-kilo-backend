@@ -6,12 +6,14 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOrderStatusRequest;
 use App\Models\Delivery;
 use App\Models\Order;
+use App\Services\Api\Commerce\FirebaseService;
 use App\Services\Dashboard\OrderService;
+
 use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
-    public function __construct(protected OrderService $orderService)
+    public function __construct(protected OrderService $orderService, protected FirebaseService $firebaseService)
     {
     }
 
@@ -46,6 +48,17 @@ class OrdersController extends Controller
             (string) $request->string('status'),
             $request->user('admin')
         );
+
+        $data = Order::STATUS_MESSAGES[(string)$request->string('status')] ?? null;
+
+        $msg = $data['title']['ar'];
+        $title = $data['message']['ar'];
+
+        $this->firebaseService->sendNotification($order->user->fcm_token??'',$title,$msg);
+
+
+        $this->firebaseService->saveNotification($order->user,$order->id,$data['title'],$data['message']);
+
 
         flash()->success(__('dashboard.status-updated-successfully'));
 
@@ -127,6 +140,17 @@ class OrdersController extends Controller
     {
 
         $this->orderService->assign($request,$orderId);
+
+        $msg = Order::MESSAGE_ASSIGNED_TO_DELIVERY['title']['ar'];
+        $title = Order::MESSAGE_ASSIGNED_TO_DELIVERY['message']['ar'];
+
+        $delivery  = Delivery::find($request->delivery_id);
+
+       $this->firebaseService->sendNotification($delivery->fcm_token??'',$title,$msg);
+
+
+        $this->firebaseService->saveNotification($delivery,$orderId,Order::MESSAGE_ASSIGNED_TO_DELIVERY['title'],Order::MESSAGE_ASSIGNED_TO_DELIVERY['message']);
+
 
         return redirect()
             ->route('dashboard.orders.show', $orderId)

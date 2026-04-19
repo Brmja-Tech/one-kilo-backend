@@ -51,8 +51,8 @@ class StoreAddressRequest extends ApiFormRequest
             'floor' => ['nullable', 'string', 'max:50'],
             'apartment_number' => ['nullable', 'string', 'max:50'],
             'landmark' => ['nullable', 'string', 'max:255'],
-            'latitude' => ['nullable', 'numeric', 'between:-90,90'],
-            'longitude' => ['nullable', 'numeric', 'between:-180,180'],
+            'latitude' => ['required', 'numeric', 'between:-90,90'],
+            'longitude' => ['required', 'numeric', 'between:-180,180'],
             'is_default' => ['sometimes', 'boolean'],
         ];
     }

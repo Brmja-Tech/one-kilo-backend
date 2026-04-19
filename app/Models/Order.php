@@ -18,6 +18,10 @@ class Order extends Model
     public const STATUS_CANCELED = 'canceled';
     public const STATUS_FAILED = 'failed';
 
+
+
+
+
     public const PAYMENT_METHOD_CASH_ON_DELIVERY = 'cash_on_delivery';
     public const PAYMENT_METHOD_CARD = 'card';
     public const PAYMENT_METHOD_WALLET = 'wallet';
@@ -27,6 +31,109 @@ class Order extends Model
     public const PAYMENT_STATUS_PAID = 'paid';
     public const PAYMENT_STATUS_FAILED = 'failed';
     public const PAYMENT_STATUS_REFUNDED = 'refunded';
+
+
+    public const STATUS_MESSAGES = [
+
+        self::STATUS_PENDING => [
+            'title' => [
+                'en' => 'Order Pending',
+                'ar' => 'الطلب قيد الانتظار',
+            ],
+            'message' => [
+                'en' => 'Your order is waiting for confirmation',
+                'ar' => 'طلبك في انتظار التأكيد',
+            ],
+        ],
+
+        self::STATUS_AWAITING_PAYMENT => [
+            'title' => [
+                'en' => 'Awaiting Payment',
+                'ar' => 'في انتظار الدفع',
+            ],
+            'message' => [
+                'en' => 'Please complete your payment to proceed',
+                'ar' => 'يرجى إتمام الدفع للمتابعة',
+            ],
+        ],
+
+        self::STATUS_CONFIRMED => [
+            'title' => [
+                'en' => 'Order Confirmed',
+                'ar' => 'تم تأكيد الطلب',
+            ],
+            'message' => [
+                'en' => 'Your order has been confirmed',
+                'ar' => 'تم تأكيد طلبك',
+            ],
+        ],
+
+        self::STATUS_PREPARING => [
+            'title' => [
+                'en' => 'Order Preparing',
+                'ar' => 'جاري تحضير الطلب',
+            ],
+            'message' => [
+                'en' => 'Your order is being prepared',
+                'ar' => 'جاري تحضير طلبك',
+            ],
+        ],
+
+        self::STATUS_OUT_FOR_DELIVERY => [
+            'title' => [
+                'en' => 'Out for Delivery',
+                'ar' => 'خرج للتوصيل',
+            ],
+            'message' => [
+                'en' => 'Your order is on the way',
+                'ar' => 'طلبك في الطريق',
+            ],
+        ],
+
+        self::STATUS_PICKED_UP => [
+            'title' => [
+                'en' => 'Order Picked Up',
+                'ar' => 'تم استلام الطلب',
+            ],
+            'message' => [
+                'en' => 'The delivery picked up your order',
+                'ar' => 'الدليفري استلم طلبك',
+            ],
+        ],
+
+        self::STATUS_DELIVERED => [
+            'title' => [
+                'en' => 'Order Delivered',
+                'ar' => 'تم التوصيل',
+            ],
+            'message' => [
+                'en' => 'Your order has been delivered',
+                'ar' => 'تم توصيل طلبك',
+            ],
+        ],
+
+        self::STATUS_CANCELED => [
+            'title' => [
+                'en' => 'Order Canceled',
+                'ar' => 'تم إلغاء الطلب',
+            ],
+            'message' => [
+                'en' => 'Your order has been canceled',
+                'ar' => 'تم إلغاء طلبك',
+            ],
+        ],
+    ];
+
+    public const MESSAGE_ASSIGNED_TO_DELIVERY = [
+        'title' => [
+            'en' => 'New Order Assigned',
+            'ar' => 'تم تعيين طلب جديد',
+        ],
+        'message' => [
+            'en' => 'A new order has been assigned to you',
+            'ar' => 'تم تعيين أوردر جديد لك',
+        ],
+    ];
 
     protected $fillable = [
         'user_id',

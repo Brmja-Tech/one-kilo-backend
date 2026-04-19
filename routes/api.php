@@ -43,6 +43,10 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/login',        'login')->middleware('guest');
     Route::post('/logout',       'logout')->middleware('auth:sanctum');
     Route::post('/firebase-login',       [AuthController::class, 'firebaseLogin']);
+
+    Route::middleware('auth:sanctum')->group(function () {
+      Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
+    });
 });
 ## ------------------ AUTH ROUTES ------------------ ##
 
@@ -126,7 +130,9 @@ Route::prefix('delivery')->group(function () {
         Route::get('/past-orders', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'pastOrders']);
         Route::get('/orders/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'show']);
         Route::post('/orders/updateStatus/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'updateStatus']);
+        Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
+
     });
 
-
 });
+
