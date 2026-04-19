@@ -17,6 +17,7 @@ class Order extends Model
     public const STATUS_DELIVERED = 'delivered';
     public const STATUS_CANCELED = 'canceled';
     public const STATUS_FAILED = 'failed';
+    public const STATUS_READY = 'ready';
 
 
 
@@ -89,7 +90,16 @@ class Order extends Model
                 'ar' => 'طلبك في الطريق',
             ],
         ],
-
+        self::STATUS_READY => [
+            'title' => [
+                'en' => 'Order Ready',
+                'ar' => 'تم تجهيز الطلب',
+            ],
+            'message' => [
+                'en' => 'Your order is ready for pickup/delivery',
+                'ar' => 'تم تجهيز طلبك وهو جاهز للتسليم',
+            ],
+        ],
         self::STATUS_PICKED_UP => [
             'title' => [
                 'en' => 'Order Picked Up',
@@ -193,8 +203,10 @@ class Order extends Model
             self::STATUS_AWAITING_PAYMENT,
             self::STATUS_CONFIRMED,
             self::STATUS_PREPARING,
+            self::STATUS_READY,
             self::STATUS_OUT_FOR_DELIVERY,
             self::STATUS_PICKED_UP,
+
             self::STATUS_DELIVERED,
             self::STATUS_CANCELED,
             self::STATUS_FAILED,
@@ -240,8 +252,10 @@ class Order extends Model
                 self::STATUS_CANCELED,
             ],
             self::STATUS_PREPARING => [
+                self::STATUS_READY,
                 self::STATUS_OUT_FOR_DELIVERY,
                 self::STATUS_CANCELED,
+
             ],
             self::STATUS_OUT_FOR_DELIVERY => [
                 self::STATUS_DELIVERED,
@@ -249,6 +263,11 @@ class Order extends Model
                 self::STATUS_CANCELED,
             ],
             self::STATUS_PICKED_UP => [
+                self::STATUS_DELIVERED,
+                self::STATUS_CANCELED,
+            ],
+            self::STATUS_READY => [
+                self::STATUS_PICKED_UP,
                 self::STATUS_DELIVERED,
                 self::STATUS_CANCELED,
             ],
@@ -268,6 +287,7 @@ class Order extends Model
         return [
             self::STATUS_CONFIRMED,
             self::STATUS_PREPARING,
+            self::STATUS_READY,
             self::STATUS_OUT_FOR_DELIVERY,
             self::STATUS_PICKED_UP,
             self::STATUS_DELIVERED,

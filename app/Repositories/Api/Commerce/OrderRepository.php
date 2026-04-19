@@ -47,7 +47,7 @@ class OrderRepository
     {
         $query = Order::query()
             ->where('delivery_id', $userId)
-            ->whereIn('status', ['out_for_delivery', 'preparing', 'confirmed', 'picked_up'])
+            ->whereIn('status', ['out_for_delivery', 'preparing', 'confirmed', 'picked_up','ready'])
             ->with(['address.country', 'address.governorate', 'address.region'])
             ->withSum('items as items_count', 'quantity')
             ->latest('id');
@@ -202,6 +202,7 @@ class OrderRepository
 
     public function updateStatusForDelivery($reference, $request)
     {
+
         $order = Order::find($reference);
         $order->status = $request->status;
         $order->update();

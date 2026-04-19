@@ -41,7 +41,6 @@ class OrderService
     {
         return $this->orderRepository->updateStatusForDelivery($orderId,$request);
 
-
     }
 
     public function getNotifications(){

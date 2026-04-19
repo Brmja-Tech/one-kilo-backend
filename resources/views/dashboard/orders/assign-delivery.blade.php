@@ -5,7 +5,7 @@
 @section('content')
 <div class="container py-4">
     <div class="d-flex justify-content-between align-items-center flex-wrap gap-2 mb-4">
-        <h3 class="mb-0">Assign Delivery To Order #{{ $order->order_number }}</h3>
+        <h3 class="mb-0">{{ __('dashboard.assign_deliveries') }} #{{ $order->order_number }}</h3>
 
         <a href="{{ route('dashboard.orders.show', $order->id) }}" class="btn btn-outline-primary">
             <i class="fa-solid fa-arrow-left"></i> Back To Order Details
@@ -17,16 +17,16 @@
         <div class="col-lg-6">
             <div class="delivery-card">
                 <div class="delivery-card-header">
-                    <h4 class="mb-0">Available Deliveries</h4>
+                    <h4 class="mb-0">{{ __('dashboard.available_deliveries') }}</h4>
                 </div>
 
                 <div class="table-scroll">
                     <table class="table delivery-table align-middle mb-0">
                         <thead>
                         <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th class="text-center">Action</th>
+                            <th>{{ __('dashboard.image') }}</th>
+                            <th>{{ __('dashboard.name') }}</th>
+                            <th class="text-center">{{ __('dashboard.action') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -50,7 +50,7 @@
                                     <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
 
                                     <button type="submit" class="btn btn-assign assign-btn" style="background: linear-gradient(118deg, #7367f0, rgba(115, 103, 240, 0.7));color: white">
-                                        <i class="fa-solid fa-truck"></i> Assign
+                                        <i class="fa-solid fa-truck"></i> {{ __('dashboard.assign') }}
                                     </button>
                                 </form>
                                 @endif
@@ -59,7 +59,7 @@
                         @empty
                         <tr>
                             <td colspan="4" class="text-center text-muted py-4">
-                                No available deliveries found.
+                                {{ __('dashboard.No_available_deliveries') }}
                             </td>
                         </tr>
                         @endforelse
@@ -73,18 +73,18 @@
         <div class="col-lg-6">
             <div class="delivery-card">
                 <div class="delivery-card-header">
-                    <h4 class="mb-0">Busy Deliveries</h4>
+                    <h4 class="mb-0">{{ __('dashboard.busy_deliveries') }}</h4>
                 </div>
 
                 <div class="table-scroll">
                     <table class="table delivery-table align-middle mb-0">
                         <thead>
                         <tr>
-                            <th>Image</th>
-                            <th>Name</th>
-                            <th>Current Orders</th>
-                            <th>Addresses</th>
-                            <th class="text-center">Action</th>
+                            <th> {{ __('dashboard.image') }}</th>
+                            <th>{{ __('dashboard.name') }}</th>
+                            <th>{{ __('dashboard.current_orders') }}</th>
+                            <th>{{ __('dashboard.addresses') }}</th>
+                            <th class="text-center">{{ __('dashboard.action') }}</th>
                         </tr>
                         </thead>
                         <tbody>
@@ -119,7 +119,7 @@
                                     @endforeach
                                 </div>
                                 @else
-                                <span class="text-muted">No active orders</span>
+                                <span class="text-muted"> {{ __('dashboard.no_active_orders') }}</span>
                                 @endif
                             </td>
                             <td class="text-center">
@@ -133,7 +133,7 @@
                                     <input type="hidden" name="delivery_id" value="{{ $delivery->id }}">
 
                                     <button type="submit" class="btn btn-assign-outline assign-btn">
-                                        <i class="fa-solid fa-truck"></i> Assign
+                                        <i class="fa-solid fa-truck"></i> {{ __('dashboard.assign') }}
                                     </button>
                                 </form>
                                 @endif
@@ -142,7 +142,7 @@
                         @empty
                         <tr>
                             <td colspan="5" class="text-center text-muted py-4">
-                                No busy deliveries found.
+                                {{ __('dashboard.No_available_deliveries') }}
                             </td>
                         </tr>
                         @endforelse

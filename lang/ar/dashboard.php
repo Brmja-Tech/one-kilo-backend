@@ -668,4 +668,16 @@ return [
     'vehicle_type' => 'نوع المركبة',
     'deliveries' => 'مناديب التوصيل',
     'create-delivery' => 'انشاء مندوب توصيل',
+
+    'assign_delivery' => 'تعين مندوب توصيل',
+    'assign' => 'تعيين',
+    'available_deliveries' => 'مناديب التوصيل المتاحيين',
+    'busy_deliveries' => 'مناديب التوصيل المشغولين',
+    'current_orders' => 'الطلبات الحالية',
+    'No_available_deliveries' => 'لا يوجد مناديب متاحين',
+    'addresses' => 'العناوين',
+    'action' => 'الاجراء',
+    'assign_deliveries' => 'تعين مندوب للطلب',
+    'order-status-picked-up' => 'تم تسليم الطلب للمندوب',
+    'order-status-ready' => 'جاهز للاستلام',
 ];

@@ -60,6 +60,13 @@ class DeliveryOrderController extends Controller
 
     public function updateStatus(string $reference ,UpdateOrderStatusRequest $request)
     {
+       $order = Order::find($reference);
+        if (!in_array($order->status, [
+            Order::STATUS_READY,
+            Order::STATUS_PICKED_UP
+        ])) {
+            return ApiResponse::sendResponse(422, __('front.order_not_ready'), []);
+        }
         $order = $this->service->updateStatus($reference,$request);
 
 

@@ -44,7 +44,7 @@
 
 
                     @php
-                    $allowedStatuses = ['confirmed', 'preparing', 'out_for_delivery'];
+                    $allowedStatuses = ['confirmed', 'preparing', 'out_for_delivery','ready'];
 
                     $canAssign =
                     in_array($order->status, $allowedStatuses) &&
@@ -54,7 +54,7 @@
                     @if($canAssign)
                     <a href="{{ route('dashboard.orders.assign-delivery', $order->id) }}"
                        class="btn btn-success">
-                        <i class="fa-solid fa-truck"></i> Assign Delivery
+                        <i class="fa-solid fa-truck"></i> {{ __('dashboard.assign_delivery') }}
                     </a>
                     @endif
 

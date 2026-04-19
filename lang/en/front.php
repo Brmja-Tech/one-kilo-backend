@@ -283,4 +283,5 @@ return [
     'method-not-allowed'                            => 'Method not allowed',
     'profile-success'                   => 'profile-success',
     'profile-updated'                   => 'Profile updated successfully',
+    'order_not_ready' => 'Order not ready',
 ];

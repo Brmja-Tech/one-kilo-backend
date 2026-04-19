@@ -5,6 +5,7 @@
             \App\Models\Order::STATUS_AWAITING_PAYMENT => 'info',
             \App\Models\Order::STATUS_CONFIRMED => 'primary',
             \App\Models\Order::STATUS_PREPARING => 'secondary',
+            \App\Models\Order::STATUS_READY => 'success',
             \App\Models\Order::STATUS_OUT_FOR_DELIVERY => 'info',
             \App\Models\Order::STATUS_DELIVERED => 'success',
             \App\Models\Order::STATUS_CANCELED => 'danger',
