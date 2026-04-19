@@ -101,7 +101,15 @@ Route::group([
         Route::get('orders',        [OrdersController::class, 'index'])->middleware('can:orders')->name('orders');
         Route::get('orders/{order}', [OrdersController::class, 'show'])->middleware('can:orders')->name('orders.show');
         Route::get('orders/{order}/print', [OrdersController::class, 'print'])->middleware('can:orders')->name('orders.print');
+        Route::get('orders/{order}/assign-delivery', [OrdersController::class, 'assignDelivery'])
+            ->name('orders.assign-delivery');
         Route::post('orders/{order}/status', [OrdersController::class, 'updateStatus'])->middleware('can:orders_change_status')->name('orders.status.update');
+
+        Route::get('orders/{order}/assign-delivery', [OrdersController::class, 'assignDelivery'])
+            ->name('orders.assign-delivery');
+
+        Route::post('orders/{order}/assign', [OrdersController::class, 'assign'])
+            ->name('orders.assign');
         ############################### End ORDERS Routes ############################################
 
         ############################### COUPONS Routes ############################################

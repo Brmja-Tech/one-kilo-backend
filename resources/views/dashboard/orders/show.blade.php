@@ -40,6 +40,24 @@
                     <a href="{{ route('dashboard.orders') }}" class="btn btn-outline-primary">
                         <i class="fa-solid fa-arrow-left"></i> {{ __('dashboard.back') }}
                     </a>
+
+
+
+                    @php
+                    $allowedStatuses = ['confirmed', 'preparing', 'out_for_delivery'];
+
+                    $canAssign =
+                    in_array($order->status, $allowedStatuses) &&
+                    !($order->delivery_id && in_array($order->status, ['picked_up', 'delivered']));
+                    @endphp
+
+                    @if($canAssign)
+                    <a href="{{ route('dashboard.orders.assign-delivery', $order->id) }}"
+                       class="btn btn-success">
+                        <i class="fa-solid fa-truck"></i> Assign Delivery
+                    </a>
+                    @endif
+
                 </div>
             </div>
         </div>

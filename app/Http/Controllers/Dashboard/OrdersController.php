@@ -4,8 +4,10 @@ namespace App\Http\Controllers\Dashboard;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UpdateOrderStatusRequest;
+use App\Models\Delivery;
 use App\Models\Order;
 use App\Services\Dashboard\OrderService;
+use Illuminate\Http\Request;
 
 class OrdersController extends Controller
 {
@@ -106,5 +108,58 @@ class OrdersController extends Controller
             'address' => $this->resolveAddress($order),
             'couponSnapshot' => (array) data_get($order->meta, 'coupon_snapshot', []),
         ];
+    }
+
+
+    public function assignDelivery($orderId)
+    {
+        $order = Order::findOrFail($orderId);
+
+        // Available (approved + not busy)
+        $availableDeliveries = Delivery::where('status', 'approved')
+            ->whereDoesntHave('orders', function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            })
+            ->get();
+
+
+
+        // Busy Deliveries
+        $busyDeliveries = Delivery::where('status', 'approved')
+            ->whereHas('orders', function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            })
+            ->with(['orders' => function ($q) {
+                $q->whereNotIn('status', ['picked_up', 'delivered']);
+            }])
+            ->get();
+
+
+       return view('dashboard.orders.assign-delivery', compact(
+          'order',
+           'availableDeliveries',
+           'busyDeliveries'
+       ));
+    }
+
+    public function assign(Request $request, $orderId)
+    {
+        $request->validate([
+            'delivery_id' => 'required|exists:deliveries,id',
+        ]);
+
+        $order = Order::findOrFail($orderId);
+
+        $delivery = Delivery::where('id', $request->delivery_id)
+            ->where('status', 'approved')
+            ->firstOrFail();
+
+        $order->update([
+            'delivery_id' => $delivery->id,
+        ]);
+
+        return redirect()
+            ->route('dashboard.orders.show', $order->id)
+            ->with('success', 'Delivery assigned successfully.');
     }
 }
