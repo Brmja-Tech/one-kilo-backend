@@ -352,3 +352,129 @@
         }
     });
 </script>
+<script type="module">
+
+    // TODO: Add SDKs for Firebase products that you want to use
+    // https://firebase.google.com/docs/web/setup#available-libraries
+    import { initializeApp } from "https://www.gstatic.com/firebasejs/10.7.0/firebase-app.js";
+    import { getDatabase, query, ref, orderByChild, startAt, onChildAdded, limitToLast} from "https://www.gstatic.com/firebasejs/10.7.0/firebase-database.js";
+
+    // Your web app's Firebase configuration
+    // For Firebase JS SDK v7.20.0 and later, measurementId is optional
+    const firebaseConfig = {
+        apiKey: "AIzaSyApQN35hDL7ZVCYQYmvWzFkh8CD4xiHYsE",
+        authDomain: "one-kilo-d1a84.firebaseapp.com",
+        databaseURL: "https://one-kilo-d1a84-default-rtdb.firebaseio.com",
+        projectId: "one-kilo-d1a84",
+        storageBucket: "one-kilo-d1a84.firebasestorage.app",
+        messagingSenderId: "993977701470",
+        appId: "1:993977701470:web:6673ecfda54d0d78c6d0cf",
+        measurementId: "G-162JPJ4LEY"
+    };
+
+    // Initialize Firebase
+    const app = initializeApp(firebaseConfig);
+    const db = getDatabase(app);
+
+    let isInitialLoad = true;
+    const lastSeen = Date.now();
+
+    const ordersQuery = query(
+        ref(db, "orders"),
+        limitToLast(1)
+    );
+
+    let firstLoad = true;
+
+    onChildAdded(ordersQuery, (snapshot) => {
+
+        const order = snapshot.val();
+
+        if (firstLoad) {
+            firstLoad = false;
+            return;
+        }
+
+        console.log("NEW ORDER:", order);
+        showOrderToast(order);
+        play();
+    });
+
+
+    function showOrderToast(order) {
+        const toast = document.createElement("div");
+
+        toast.style.cssText = `
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    background: #1f2937;
+    color: #fff;
+    padding: 15px;
+    border-radius: 10px;
+    width: 280px;
+    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
+    z-index: 9999;
+    font-family: sans-serif;
+  `;
+
+        toast.innerHTML = `
+    <div style="margin-bottom:10px;">
+     <b>رقم الطلب #${order.id}</b>
+    </div>
+
+    <div style="margin-bottom:10px;">
+      👤 اسم المستخدم: <b>${order.user_name}</b>
+    </div>
+
+    <button id="confirmBtn"
+      style="
+        background:#22c55e;
+        border:none;
+        padding:8px 12px;
+        color:white;
+        border-radius:6px;
+        cursor:pointer;
+      ">
+      تاكيد
+    </button>
+  `;
+
+        document.body.appendChild(toast);
+
+        // زرار confirm
+        toast.querySelector("#confirmBtn").onclick = () => {
+          //  confirmOrder(order.id);
+            toast.remove();
+        };
+
+        // auto remove بعد 5 ثواني
+      //  setTimeout(() => toast.remove(), 5000);
+    }
+
+
+    let audioUnlocked = false;
+    const orderSound = new Audio('/sounds/sound.mp3');
+
+    function unlockAudio() {
+        if (audioUnlocked) return;
+
+        orderSound.play().then(() => {
+            orderSound.pause();
+            orderSound.currentTime = 0;
+            audioUnlocked = true;
+        }).catch(() => {});
+    }
+function play(){
+    orderSound.play()
+}
+
+    //document.addEventListener('click', play, { once: true });
+
+
+    if (audioUnlocked) {
+        orderSound.currentTime = 0;
+        orderSound.play().catch(() => {});
+    }
+
+</script>

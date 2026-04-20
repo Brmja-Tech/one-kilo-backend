@@ -51,7 +51,7 @@ class DeliveryService
         return $user;
     } //End getUser method
 
-    public function getProfileData(int $id): ?array
+    public function getProfileData(int $id , $date): ?array
     {
         $user = $this->userRepository->getUserProfile($id);
 
@@ -61,7 +61,8 @@ class DeliveryService
 
         return [
             'user' => $user,
-            'orders' => $this->userRepository->getUserOrders($user->id),
+            'orders' => $this->userRepository->getUserOrders($user->id,10,$date),
+            'statistics' => $this->userRepository->statistics($user->id,10,$date),
         ];
     }
 

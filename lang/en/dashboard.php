@@ -681,5 +681,10 @@ return [
     'assign_deliveries' => 'Assign deliveries',
     'order-status-picked-up' => 'order status picked up',
     'order-status-ready' =>  'order status ready',
+    'cash_orders' => 'Cash Orders',
+    'card_orders' => 'Card Orders',
+    'total_orders' =>  'Total Orders',
+    'total_price' =>  'Total Price',
+    'delivery_fee' =>  'Delivery Fee',
 
 ];

@@ -5,6 +5,7 @@ namespace App\Repositories\Dashboard;
 use App\Models\Delivery;
 use App\Models\Order;
 use Illuminate\Support\Collection;
+use Illuminate\Support\Facades\DB;
 
 class DeliveryRepository
 {
@@ -49,16 +50,20 @@ class DeliveryRepository
 
 
 
-    public function getUserOrders(int $userId, int $limit = 10): Collection
+    public function getUserOrders(int $userId, int $limit = 10,$date = null): Collection
     {
-        return Order::query()
+        $all_orders = Order::query()
             ->where('delivery_id', $userId)
             ->withCount('items')
             ->withSum('items as items_quantity_sum', 'quantity')
             ->latest('placed_at')
             ->latest('id')
-            ->limit($limit)
-            ->get([
+            ->limit($limit);
+
+        if($date){
+            $all_orders  = $all_orders->whereDate('created_at', $date);
+        }
+        $all_orders =   $all_orders->get([
                 'id',
                 'delivery_id',
                 'order_number',
@@ -69,9 +74,35 @@ class DeliveryRepository
                 'placed_at',
                 'created_at',
             ]);
+        return $all_orders;
     }
 
+    public function statistics(int $userId, int $limit = 10,$date = null)
+    {
+        $statistics = DB::table('orders')
+            ->selectRaw("
+            COUNT(CASE WHEN status = 'delivered' THEN 1 END) AS delivered_orders_count,
 
+            SUM(CASE WHEN status = 'delivered' THEN delivery_fee ELSE 0 END) AS total_delivery_fee_delivered,
+
+            COUNT(CASE WHEN payment_method = 'cash_on_delivery' THEN 1 END) AS cash_orders_count,
+            SUM(CASE WHEN payment_method = 'cash_on_delivery' THEN total ELSE 0 END) AS cash_total_amount,
+            SUM(CASE WHEN payment_method = 'cash_on_delivery' THEN delivery_fee ELSE 0 END) AS cash_delivery_fee,
+
+            COUNT(CASE WHEN payment_method = 'card' THEN 1 END) AS card_orders_count,
+            SUM(CASE WHEN payment_method = 'card' THEN total ELSE 0 END) AS card_total_amount,
+            SUM(CASE WHEN payment_method = 'card' THEN delivery_fee ELSE 0 END) AS card_delivery_fee,
+             COUNT(*) AS delivered_orders_count,
+            COALESCE(SUM(total), 0) AS total_orders_amount,
+            COALESCE(SUM(delivery_fee), 0) AS total_delivery_fee
+        ")
+            ->where('delivery_id', $userId);
+        if($date){
+            $statistics  = $statistics->whereDate('created_at', $date);
+        }
+
+       return $statistics->first();
+    }
 
     public function createUser(array $data)
     {

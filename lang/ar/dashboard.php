@@ -680,4 +680,9 @@ return [
     'assign_deliveries' => 'تعين مندوب للطلب',
     'order-status-picked-up' => 'تم تسليم الطلب للمندوب',
     'order-status-ready' => 'جاهز للاستلام',
+    'cash_orders' => 'طلبات الكاش',
+    'card_orders' => 'طلبات الفيزا',
+    'total_orders' =>  'كل الطلبات',
+    'total_price' =>  'المبلغ الكلى',
+    'delivery_fee' =>  'سعر التوصيل',
 ];

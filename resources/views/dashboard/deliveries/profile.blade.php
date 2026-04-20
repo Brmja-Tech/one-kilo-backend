@@ -33,7 +33,7 @@
 
     <section class="app-user-view-account">
         <div class="row">
-            <div class="col-xl-4 col-lg-5 col-md-5 order-1 order-md-0">
+            <div class="col-xl-3 col-lg-5 col-md-5 order-1 order-md-0">
                 <div class="card">
                     <div class="card-body">
                         <div class="user-avatar-section">
@@ -101,88 +101,89 @@
                 </div>
 
             </div>
+            <div class="col-xl-9 col-lg-7 col-md-7 order-0 order-md-1">
 
-            <div class="col-xl-8 col-lg-7 col-md-7 order-0 order-md-1">
-                <div class="row g-1 mb-1">
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100 mb-0">
-                            <div class="card-body">
-                                <small class="text-muted d-block">{{ __('dashboard.total-active-orders') }}</small>
-                                <h3 class="mb-0">{{ $user->confirmed_orders_count }}</h3>
+                <div class="card mb-1">
+                    <div class="card-body">
+                        <div class="row g-1 align-items-end">
+                            <div class="col-md-5">
+                                <label class="form-label">{{ __('dashboard.date') }}</label>
+                                <input type="date" id="filter_from_date" class="form-control"
+                                       value="{{ request('from_date', now()->toDateString()) }}">
                             </div>
-                        </div>
-                    </div>
-                    <div class="col-md-6 col-xl-3">
-                        <div class="card h-100 mb-0">
-                            <div class="card-body">
-                                <small class="text-muted d-block">{{ __('dashboard.total-delivered-orders') }}</small>
-                                <h3 class="mb-0">{{ $user->delivered_orders_count }}</h3>
+
+                            <div class="col-md-2">
+                                <button type="button" id="reset_filter" class="btn btn-outline-secondary w-100">
+                                    {{ __('dashboard.reset') }}
+                                </button>
                             </div>
                         </div>
                     </div>
                 </div>
 
-
-
-                <div class="card">
-                    <div class="card-header">
-                        <h4 class="card-title">{{ __('dashboard.delivery-orders') }}</h4>
-                    </div>
-                    <div class="table-responsive">
-                        <table class="table table-hover align-middle mb-0">
-                            <thead>
-                                <tr>
-                                    <th>{{ __('dashboard.order-number') }}</th>
-                                    <th>{{ __('dashboard.created-at') }}</th>
-                                    <th>{{ __('dashboard.total') }}</th>
-                                    <th>{{ __('dashboard.payment-method') }}</th>
-                                    <th>{{ __('dashboard.payment-status') }}</th>
-                                    <th>{{ __('dashboard.order-status') }}</th>
-                                    <th>{{ __('dashboard.item-count') }}</th>
-                                    <th>{{ __('dashboard.actions') }}</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                @forelse ($orders as $order)
-                                    <tr>
-                                        <td>
-                                            <div class="fw-semibold">{{ $order->order_number }}</div>
-                                            <small class="text-muted">#{{ $order->id }}</small>
-                                        </td>
-                                        <td>{{ $order->placed_at?->format('Y-m-d H:i') ?? $order->created_at?->format('Y-m-d H:i') ?? '-' }}</td>
-                                        <td>{{ number_format((float) $order->total, 2) }}</td>
-                                        <td>
-                                            <span class="badge bg-light-primary">
-                                                {{ __('dashboard.payment-method-' . str_replace('_', '-', $order->payment_method)) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light-{{ $paymentStatusClasses[$order->payment_status] ?? 'secondary' }}">
-                                                {{ __('dashboard.payment-status-' . str_replace('_', '-', $order->payment_status)) }}
-                                            </span>
-                                        </td>
-                                        <td>
-                                            <span class="badge bg-light-{{ $orderStatusClasses[$order->status] ?? 'secondary' }}">
-                                                {{ __('dashboard.order-status-' . str_replace('_', '-', $order->status)) }}
-                                            </span>
-                                        </td>
-                                        <td>{{ (int) ($order->items_quantity_sum ?? $order->items_count) }}</td>
-                                        <td>
-                                            <a href="{{ route('dashboard.orders.show', $order) }}" class="btn btn-sm btn-outline-primary">
-                                                {{ __('dashboard.open-order-details') }}
-                                            </a>
-                                        </td>
-                                    </tr>
-                                @empty
-                                    <tr>
-                                        <td colspan="8" class="text-center text-muted py-2">{{ __('dashboard.no-orders-found') }}</td>
-                                    </tr>
-                                @endforelse
-                            </tbody>
-                        </table>
-                    </div>
+                <div id="delivery-report-wrapper">
+                    @include('dashboard.partials.delivery-report', [
+                    'statistics' => $statistics,
+                    'orders' => $orders,
+                    'paymentStatusClasses' => $paymentStatusClasses,
+                    'orderStatusClasses' => $orderStatusClasses,
+                    ])
                 </div>
             </div>
+
         </div>
     </section>
+
+
+
+<script>
+    console.log('hhh');
+    document.addEventListener('DOMContentLoaded', function () {
+        const fromInput = document.getElementById('filter_from_date');
+        const resetBtn = document.getElementById('reset_filter');
+        const wrapper = document.getElementById('delivery-report-wrapper');
+
+        let timeout = null;
+
+
+        function loadFilteredData() {
+            const fromDate = fromInput.value;
+            const deliveryId = "{{ $user->id }}";
+            const url = new URL(`/ar/dashboard/delivery/profile/${deliveryId}`, window.location.origin);
+            url.searchParams.set('from_date', fromDate);
+
+            wrapper.style.opacity = '0.6';
+
+            fetch(url, {
+                headers: {
+                    'X-Requested-With': 'XMLHttpRequest',
+                    'Accept': 'text/html'
+                },
+                credentials: 'same-origin'
+            })
+                .then(response => response.text())
+                .then(html => {
+                    wrapper.innerHTML = html;
+                    wrapper.style.opacity = '1';
+                })
+                .catch(error => {
+                    console.error('Filter error:', error);
+                    wrapper.style.opacity = '1';
+                });
+        }
+
+        function delayedLoad() {
+            clearTimeout(timeout);
+            timeout = setTimeout(loadFilteredData, 300);
+        }
+
+        fromInput.addEventListener('change', delayedLoad);
+
+        resetBtn.addEventListener('click', function () {
+            const today = "{{ now()->toDateString() }}";
+            fromInput.value = today;
+            loadFilteredData();
+        });
+    });
+</script>
 @endsection
