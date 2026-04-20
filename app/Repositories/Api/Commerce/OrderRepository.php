@@ -114,6 +114,7 @@ class OrderRepository
             ->with([
                 'coupon',
                 'items',
+                'delivery',
                 'address.country',
                 'address.governorate',
                 'address.region',

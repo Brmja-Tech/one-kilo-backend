@@ -284,4 +284,5 @@ return [
     'profile-success'                   => 'profile-success',
     'profile-updated'                   => 'Profile updated successfully',
     'order_not_ready' => 'Order not ready',
+    'update-location' => 'Location Updated',
 ];

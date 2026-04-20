@@ -25,6 +25,8 @@ class DeliveryResource extends JsonResource
             'license_image'      => asset($this->license_image),
             'vehicle_license_image'      => asset($this->vehicle_license_image),
             'status'      => $this->status,
+            'lat'      => $this->lat,
+            'lng'      => $this->lng,
         ];
     }
 }

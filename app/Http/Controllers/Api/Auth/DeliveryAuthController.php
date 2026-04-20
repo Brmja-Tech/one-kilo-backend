@@ -8,6 +8,7 @@ use App\Http\Requests\Api\DeliveryLoginRequest;
 use App\Http\Requests\Api\FirebaseLoginRequest;
 use App\Http\Requests\Api\LoginRequest;
 use App\Http\Requests\Auth\DeliveryRegisterRequest;
+use App\Http\Requests\Auth\DeliveryUpdateLocationRequest;
 use App\Http\Requests\Auth\DeliveryUpdateRequest;
 use App\Http\Requests\Auth\RegisterRequest;
 use App\Services\Api\Auth\AuthService;
@@ -111,6 +112,19 @@ class DeliveryAuthController extends Controller
 
         if (!$user) {
             return ApiResponse::sendResponse(422, __('front.user-updated-failed'), []);
+        }
+
+        return ApiResponse::sendResponse($user['status'], $user['message'], $user['data']);
+    }
+
+    public function updateLocation(DeliveryUpdateLocationRequest $request){
+
+        $credentials = $request->only(['lat', 'lng']);
+
+        $user = $this->authService->updateLocation($credentials);
+
+        if (!$user) {
+            return ApiResponse::sendResponse(422, __('front.update-location-failed'), []);
         }
 
         return ApiResponse::sendResponse($user['status'], $user['message'], $user['data']);

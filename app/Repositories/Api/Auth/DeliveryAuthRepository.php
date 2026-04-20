@@ -237,4 +237,20 @@ class DeliveryAuthRepository
             ]
         ];
     } // End method update
+
+    public function updateLocation($credentials)
+    {
+        $delivery = Delivery::find(Auth::id());
+        $delivery->update([
+            'lat' => $credentials['lat'] ?? $delivery->lat,
+            'lng'     => $credentials['lng'] ?? $delivery->lng,
+        ]);
+        return [
+            'status' => 200,
+            'message' => __('front.location-updated'),
+            'data' => [
+                'user' => DeliveryResource::make($delivery),
+            ]
+        ];
+    } // End method update
 }

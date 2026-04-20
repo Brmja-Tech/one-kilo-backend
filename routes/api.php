@@ -117,6 +117,8 @@ Route::prefix('delivery')->group(function () {
         Route::post('/forgot/verify-otp',     [DeliveryForgotController::class, 'verifyOtp']);
         Route::post('/forgot/resend-otp',     [DeliveryForgotController::class, 'resendOtp']);
         Route::post('/forgot/reset-password', [DeliveryForgotController::class, 'resetPassword']);
+
+
     });
 
     Route::post('/logout', [DeliveryAuthController::class, 'logout'])->middleware('auth:sanctum');
@@ -131,6 +133,8 @@ Route::prefix('delivery')->group(function () {
         Route::get('/orders/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'show']);
         Route::post('/orders/updateStatus/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'updateStatus']);
         Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
+        Route::post('/test', [\App\Http\Controllers\Api\NotificationsController::class, 'test']);
+        Route::post('/update-location', [DeliveryAuthController::class, 'updateLocation']);
 
     });
 

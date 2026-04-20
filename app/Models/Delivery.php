@@ -42,6 +42,8 @@ class Delivery extends Authenticatable
         'status',
         'login_status',
         'email_verified_at',
+        'lat',
+        'lng',
     ];
 
     /**

@@ -282,4 +282,5 @@ return [
     'profile-success'                   => 'بيانات المستخدم',
     'profile-updated'                   => 'تم تعديل بيانات المستخدم بنجاح',
     'order_not_ready' => 'لا يمكن تنفيذ العملية لأن الطلب غير جاهز ',
+    'update-location' => 'تم تعديل العنوان',
 ];

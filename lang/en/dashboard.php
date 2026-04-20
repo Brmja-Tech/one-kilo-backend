@@ -670,6 +670,16 @@ return [
     'create-delivery' => 'Create Delivery',
     'full_name' => 'name',
 
-
+    'assign_delivery' => 'Assign Delivery',
+    'assign' => 'Assign',
+    'available_deliveries' => 'Available deliveries',
+    'busy_deliveries' =>  'Busy Deliveries',
+    'current_orders' => 'Current Orders',
+    'No_available_deliveries' => 'No available deliveries',
+    'addresses' => 'Addresses',
+    'action' => 'Action',
+    'assign_deliveries' => 'Assign deliveries',
+    'order-status-picked-up' => 'order status picked up',
+    'order-status-ready' =>  'order status ready',
 
 ];

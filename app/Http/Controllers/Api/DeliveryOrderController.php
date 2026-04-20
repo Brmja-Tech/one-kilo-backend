@@ -96,4 +96,5 @@ class DeliveryOrderController extends Controller
             new OrderDetailsResource($order)
         );
     }
+
 }

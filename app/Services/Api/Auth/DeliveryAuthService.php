@@ -104,4 +104,11 @@ class DeliveryAuthService
         return $this->authRepository->updateProfile($credentials);
 
     } //End update Method
+
+
+    public function updateLocation($credentials)
+    {
+        return $this->authRepository->updateLocation($credentials);
+
+    } //End update Method
 }

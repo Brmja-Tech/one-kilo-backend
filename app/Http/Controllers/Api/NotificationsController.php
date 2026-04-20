@@ -33,4 +33,5 @@ class NotificationsController extends Controller
             ]
         );
     }
+
 }
