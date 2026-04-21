@@ -9,88 +9,90 @@ use Illuminate\Support\Facades\Log;
 class WhatsappChannel
 {
     /**
-     * BULQ API settings
+     * إعدادات beon.chat
      */
-    protected string $apiUrl = 'https://app.bulq.chat/api/v1/bluebird/messages/template';
-    protected string $token  = 'c2b9346330b70290c6b390ca8ec73eb65a91533ce984b2628bb7172a2cd3702c';
+    protected string $apiBase = 'https://v3.api.beon.chat/api/v3';
+    protected string $token   = 'e0vIQ9ihyYXiantBF6Q9BZCwHrLvWaCJq3hGeRwIx8Ir4gPPABACfDLl9vc0';
 
     /**
-     * Send OTP via BULQ template endpoint.
+     * يرسل OTP عبر beon.chat باستخدام form-data.
      *
-     * Supported notification methods:
-     * - toWhatsapp($notifiable)
-     * - toBulq($notifiable)
+     * يدعم طريقتين لاستخراج الداتا من النوتيفكيشن:
+     * - toBeon($notifiable)  => المفضّل
+     * - toWhatsapp($notifiable) => توافقًا مع الكود القديم
      *
-     * Expected payload from notification:
-     * [
-     *     'phone' => '201140158807', // required
-     *     'code'  => '12345',        // required
-     * ]
+     * توقُّع الداتا من النوتيفكيشن:
+     *   [
+     *     'phone' => '+2010...',   // إجباري
+     *     'code'  => '8807',       // إجباري
+     *     'name'  => 'fisal',      // اختياري
+     *     'type'  => 'sms',        // اختياري (sms | whatsapp)
+     *     'lang'  => 'ar',         // اختياري
+     *   ]
      */
-    public function send($notifiable, Notification $notification): void
+    public function send($notifiable, Notification $notification)
     {
-        if (!method_exists($notification, 'toBulq') && !method_exists($notification, 'toWhatsapp')) {
+        if (!method_exists($notification, 'toBeon') && !method_exists($notification, 'toWhatsapp')) {
+            // لا توجد داتا للإرسال
             return;
         }
 
-        $message = method_exists($notification, 'toBulq')
-            ? $notification->toBulq($notifiable)
+        // أعطي أولوية لـ toBeon ولو مش موجودة أستخدم toWhatsapp (توافقًا مع القديم)
+        $message = method_exists($notification, 'toBeon')
+            ? $notification->toBeon($notifiable)
             : $notification->toWhatsapp($notifiable);
 
         if (!is_array($message) || !isset($message['phone'], $message['code'])) {
-            Log::error('Invalid WhatsApp OTP payload. Required: phone & code.', [
-                'message' => $message,
-            ]);
+            Log::error('رسالة OTP غير صالحة (مطلوب phone & code).', ['message' => $message]);
             return;
         }
 
-        $phone = $this->normalizePhone($message['phone']);
+        // تجهيز الحقول المطلوبة لـ beon.chat
+        $phone = $this->normalizeE164($message['phone']);
+        $name  = $message['name'] ?? ($notifiable->name ?? 'besohola');
         $code  = (string) $message['code'];
 
+        $url = rtrim($this->apiBase, '/') . '/messages/otp';
+
         try {
-            $response = Http::timeout(15)
+            $response = Http::asForm()
+                ->timeout(15)
                 ->withHeaders([
-                    'Authorization' => 'Bearer ' . $this->token,
-                    'Accept'        => 'application/json',
-                    'Content-Type'  => 'application/json',
+                    'beon-token' => $this->token,
+                    'Accept'     => 'application/json',
                 ])
-                ->post($this->apiUrl, [
-                    'phone_number'      => $phone,
-                    'template_name'     => 'login_otp',
-                    'template_language' => 'ar',
-                    'field_1'           => $code,
+                ->post($url, [
+                    'phoneNumber' => $phone,
+                    'name'        => $name,
+                    'type'        => 'sms',  // sms : whatsapp
+                    'lang'        => 'ar',  // ar
+                    'custom_code' => $code,  // 8807
                 ]);
 
             if ($response->failed()) {
-                Log::error('❌ Failed sending OTP via BULQ', [
+                Log::error('❌ فشل إرسال OTP عبر beon.chat', [
                     'status' => $response->status(),
                     'body'   => $response->body(),
-                    'phone'  => $phone,
                 ]);
                 return;
             }
-
-            Log::info('✅ OTP sent successfully via BULQ', [
-                'status' => $response->status(),
-                'phone'  => $phone,
-                'body'   => $response->json(),
-            ]);
         } catch (\Throwable $e) {
-            Log::error('📛 BULQ OTP Error: ' . $e->getMessage(), [
+            Log::error('📛 Beon OTP Error: ' . $e->getMessage(), [
                 'trace' => $e->getTraceAsString(),
             ]);
         }
     }
 
     /**
-     * Normalize phone number for BULQ endpoint.
-     * Converts to digits only and removes leading +
+     * تطبيع الرقم لصيغة E.164 البسيطة:
+     * - يضمن وجود + في البداية
      */
-    protected function normalizePhone(string $phone): string
+    protected function normalizeE164(string $phone): string
     {
         $phone = trim($phone);
-        $phone = preg_replace('/[^\d]/', '', $phone);
-
-        return ltrim($phone, '+');
+        if (strpos($phone, '+') !== 0) {
+            $phone = '+' . ltrim($phone, '+');
+        }
+        return preg_replace('/[\s\-()]/', '', $phone);
     }
 }
