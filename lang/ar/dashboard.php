@@ -685,4 +685,10 @@ return [
     'total_orders' =>  'كل الطلبات',
     'total_price' =>  'المبلغ الكلى',
     'delivery_fee' =>  'سعر التوصيل',
+    'notifications-settings' =>  'الاشعارات',
+    'create-notification' =>  'انشاء اشعار',
+    'message' =>  'الرسالة',
+    'message-ar' =>  'الرسالة بالعربية',
+    'message-en' =>  ' الرسالة بالانجليزية',
+    'notifications' =>  'الاشعارات',
 ];

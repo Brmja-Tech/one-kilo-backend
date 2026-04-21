@@ -402,54 +402,26 @@
 
 
     function showOrderToast(order) {
-        const toast = document.createElement("div");
 
-        toast.style.cssText = `
-    position: fixed;
-    top: 20px;
-    right: 20px;
-    background: #1f2937;
-    color: #fff;
-    padding: 15px;
-    border-radius: 10px;
-    width: 280px;
-    box-shadow: 0 10px 25px rgba(0,0,0,0.3);
-    z-index: 9999;
-    font-family: sans-serif;
-  `;
+        Swal.fire({
+            icon: "info", // or "success", "warning", etc.
+            position: "top-end",
+            showConfirmButton: true,
+            confirmButtonText: "OK",
 
-        toast.innerHTML = `
-    <div style="margin-bottom:10px;">
-     <b>رقم الطلب #${order.id}</b>
+            html: `
+    <div style="direction:rtl;">
+        <div style="margin-bottom:10px;">
+            <b>رقم الطلب # ${order.id}</b>
+        </div>
+
+        <div style="margin-bottom:10px;">
+            👤 اسم المستخدم: <b>${order.user_name}</b>
+        </div>
     </div>
+    `,
+        });
 
-    <div style="margin-bottom:10px;">
-      👤 اسم المستخدم: <b>${order.user_name}</b>
-    </div>
-
-    <button id="confirmBtn"
-      style="
-        background:#22c55e;
-        border:none;
-        padding:8px 12px;
-        color:white;
-        border-radius:6px;
-        cursor:pointer;
-      ">
-      تاكيد
-    </button>
-  `;
-
-        document.body.appendChild(toast);
-
-        // زرار confirm
-        toast.querySelector("#confirmBtn").onclick = () => {
-          //  confirmOrder(order.id);
-            toast.remove();
-        };
-
-        // auto remove بعد 5 ثواني
-      //  setTimeout(() => toast.remove(), 5000);
     }
 
 

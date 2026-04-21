@@ -107,6 +107,13 @@
                 </li>
             @endcan
 
+            @can('countries')
+            <li class="nav-item @yield('notifications-active')"><a class="d-flex align-items-center"
+                                                               href="{{ route('dashboard.notifications') }}"><i class="fa-solid fa-bell"></i><span
+                        class="menu-title text-truncate" data-i18n="Email">{{ __('dashboard.notifications') }}</span></a>
+            </li>
+            @endcan
+
             @can('categories')
                 <li class="nav-item @yield('categories-active')"><a class="d-flex align-items-center"
                         href="{{ route('dashboard.categories') }}"><i class="fa-solid fa-th-large"></i><span

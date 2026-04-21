@@ -1,6 +1,6 @@
 @extends('dashboard.master', ['title' => __('dashboard.user-profile')])
-@section('users-active', 'active')
-@section('users-open', 'open')
+@section('deliveries-active', 'active')
+@section('deliveries-open', 'open')
 
 @section('content')
     @php

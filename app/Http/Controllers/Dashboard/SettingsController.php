@@ -28,6 +28,11 @@ class SettingsController extends Controller
         return view('dashboard.settings.faqs.index');
     } //End faqs method
 
+    public function notifications()
+    {
+        return view('dashboard.notifications.index');
+    } //End notifications method
+
     public function workingHours()
     {
         return view('dashboard.settings.workingHours.index');

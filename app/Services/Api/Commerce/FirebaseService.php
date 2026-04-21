@@ -3,6 +3,7 @@
 namespace App\Services\Api\Commerce;
 
 use App\Models\Order;
+use App\Models\User;
 use Illuminate\Support\Facades\Log;
 use Kreait\Firebase\Factory;
 use Kreait\Firebase\Messaging\CloudMessage;
@@ -85,7 +86,7 @@ class FirebaseService
      */
     public function sendToTopic(string $title, string $body): bool
     {
-        $topic = 'elmotamizon';
+        $topic = 'oneKilo';
 
         $notification = FirebaseNotification::create($title, $body);
 
@@ -141,5 +142,19 @@ class FirebaseService
                 'message' => $msg,
             ]);
         }
+
+
+    public function saveAllNotifications($title, $msg)
+    {
+        $users = User::where('status', 1)->get();
+
+        foreach ($users as $user) {
+            $user->appNotifications()->create([
+                'title' => $title,
+                'message' => $msg,
+            ]);
+        }
+    }
+
 
 }

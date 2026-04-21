@@ -686,5 +686,11 @@ return [
     'total_orders' =>  'Total Orders',
     'total_price' =>  'Total Price',
     'delivery_fee' =>  'Delivery Fee',
+    'notifications-settings' =>  'Notifications',
+    'create-notification' =>  'Create Notification',
+    'message' =>  'Message',
+    'message-ar' =>  'Message ar',
+    'message-en' =>  'Message en',
+    'notifications' =>  'Notifications',
 
 ];

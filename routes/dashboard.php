@@ -87,7 +87,7 @@ Route::group([
         ############################### CATEGORIES Routes ############################################
         Route::get('categories',    [CategoriesController::class, 'index'])->middleware('can:categories')->name('categories');
         ############################### End CATEGORIES Routes ############################################
-
+        Route::get('notifications',    [SettingsController::class, 'notifications'])->middleware('can:countries')->name('notifications');
         ############################### PRODUCTS Routes ############################################
         Route::get('products',      [ProductsController::class, 'index'])->middleware('can:products')->name('products');
         Route::get('products/{product}/skus', [ProductsController::class, 'skus'])->middleware('can:products')->name('products.skus');

@@ -4,12 +4,12 @@
             <ul class="nav navbar-nav d-xl-none">
                 <li class="nav-item"><a class="nav-link menu-toggle" href="#"><i class="ficon fa-solid fa-bars"></i></a></li>
             </ul>
-            <ul class="nav navbar-nav bookmark-icons">
-                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Email"><i class="ficon fa-solid fa-envelope"></i></a></li>
-                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Chat"><i class="ficon fa-solid fa-message"></i></a></li>
-                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Calendar"><i class="ficon fa-solid fa-calendar-days"></i></a></li>
-                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Todo"><i class="ficon fa-solid fa-square-check"></i></a></li>
-            </ul>
+<!--            <ul class="nav navbar-nav bookmark-icons">-->
+<!--                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Email"><i class="ficon fa-solid fa-envelope"></i></a></li>-->
+<!--                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Chat"><i class="ficon fa-solid fa-message"></i></a></li>-->
+<!--                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Calendar"><i class="ficon fa-solid fa-calendar-days"></i></a></li>-->
+<!--                <li class="nav-item d-none d-lg-block"><a class="nav-link" href="#" data-bs-toggle="tooltip" data-bs-placement="bottom" title="Todo"><i class="ficon fa-solid fa-square-check"></i></a></li>-->
+<!--            </ul>-->
             {{-- <ul class="nav navbar-nav">
                 <li class="nav-item d-none d-lg-block"><a class="nav-link bookmark-star"><i class="ficon text-warning fa-solid fa-star"></i></a>
                     <div class="bookmark-input search-input">
@@ -162,13 +162,13 @@
                 <div class="dropdown-menu dropdown-menu-end" aria-labelledby="dropdown-user">
                     <a class="dropdown-item @yield('profile-active')" href="{{route('dashboard.profile')}}"><i class="me-50 fa-solid fa-user"></i> {{__('dashboard.account')}}</a>
                     <a class="dropdown-item @yield('security-active')" href="{{route('dashboard.security')}}"><i class="me-50 fa-solid fa-lock"></i> {{__('dashboard.security')}}</a>
-                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-envelope"></i> Inbox</a>
-                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-square-check"></i> Task</a>
-                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-message"></i> Chats</a>
+<!--                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-envelope"></i> Inbox</a>-->
+<!--                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-square-check"></i> Task</a>-->
+<!--                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-message"></i> Chats</a>-->
                     <div class="dropdown-divider"></div>
                     {{-- <a class="dropdown-item @yield('settings-active')" href="{{route('dashboard.settings')}}"><i class="me-50 fa-solid fa-gear"></i> {{__('dashboard.settings')}}</a> --}}
-                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-credit-card"></i> Pricing</a>
-                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-circle-question"></i> FAQ</a>
+<!--                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-credit-card"></i> Pricing</a>-->
+<!--                    <a class="dropdown-item" href="#"><i class="me-50 fa-solid fa-circle-question"></i> FAQ</a>-->
                     <form method="POST" action="{{ route('dashboard.logout') }}">
                         @csrf
                         <a class="dropdown-item" onclick="event.preventDefault(); this.closest('form').submit();"
