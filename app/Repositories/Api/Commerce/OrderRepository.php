@@ -161,6 +161,26 @@ class OrderRepository
         return $query->firstOrFail();
     }
 
+    public function findLocationForDelivery(int $userId, string $reference): Order
+    {
+        $query = Order::query()
+            ->with([
+                'delivery',
+
+            ]);
+
+        if (ctype_digit($reference)) {
+            $query->where(function ($builder) use ($reference) {
+                $builder->whereKey((int)$reference)
+                    ->orWhere('order_number', $reference);
+            });
+        } else {
+            $query->where('order_number', $reference);
+        }
+
+        return $query->firstOrFail();
+    }
+
     public function create(array $data): Order
     {
         return Order::query()->create($data);

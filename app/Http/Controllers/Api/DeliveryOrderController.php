@@ -7,6 +7,7 @@ use App\Http\Controllers\Controller;
 use App\Http\Requests\Api\Commerce\OrderIndexRequest;
 use App\Http\Requests\Api\Commerce\UpdateOrderStatusRequest;
 use App\Http\Resources\OrderDetailsResource;
+use App\Http\Resources\OrderLocationResource;
 use App\Http\Resources\OrderResource;
 use App\Models\Order;
 use App\Services\Api\Commerce\FirebaseService;
@@ -94,6 +95,17 @@ class DeliveryOrderController extends Controller
             200,
             __('front.order-retrieved-successfully'),
             new OrderDetailsResource($order)
+        );
+    }
+
+    public function getLocation(string $reference)
+    {
+        $order = $this->service->showLocationForDelivery(auth('sanctum')->user()->id, $reference);
+
+        return ApiResponse::sendResponse(
+            200,
+            __('front.order-retrieved-successfully'),
+            new OrderLocationResource($order)
         );
     }
 

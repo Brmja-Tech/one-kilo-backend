@@ -27,6 +27,11 @@ class OrderService
         return $this->orderRepository->findForDelivery($userId, $reference);
     }
 
+    public function showLocationForDelivery(int $userId, string $reference): Order
+    {
+        return $this->orderRepository->findLocationForDelivery($userId, $reference);
+    }
+
     public function currentOrders(int $userId, array $filters): LengthAwarePaginator
     {
         return $this->orderRepository->paginateCurrentForDelivery($userId, $filters);

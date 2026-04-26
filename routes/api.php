@@ -102,6 +102,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/checkout', [CheckoutController::class, 'store']);
     Route::get('/orders', [OrderController::class, 'index']);
     Route::get('/orders/{reference}', [OrderController::class, 'show']);
+    Route::get('/getLocation/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'getLocation']);
 });
 
 
@@ -131,6 +132,7 @@ Route::prefix('delivery')->group(function () {
         Route::get('/current-orders', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'currentOrders']);
         Route::get('/past-orders', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'pastOrders']);
         Route::get('/orders/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'show']);
+
         Route::post('/orders/updateStatus/{reference}', [\App\Http\Controllers\Api\DeliveryOrderController::class, 'updateStatus']);
         Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
         Route::post('/test', [\App\Http\Controllers\Api\NotificationsController::class, 'test']);
