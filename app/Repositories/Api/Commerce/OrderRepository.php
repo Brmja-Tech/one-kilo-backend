@@ -4,6 +4,7 @@ namespace App\Repositories\Api\Commerce;
 
 use App\Helpers\ApiResponse;
 use App\Http\Resources\NotificationsResource;
+use App\Models\Notification;
 use App\Models\Order;
 use Illuminate\Contracts\Pagination\LengthAwarePaginator;
 use Illuminate\Http\Request;
@@ -235,10 +236,24 @@ class OrderRepository
     public function getNotifications()
     {
         $user = Auth::user();
-
-        return  $user->appNotifications()
+        $notifications = Notification::query()
+            ->where(function ($query) use ($user) {
+                $query->whereHasMorph(
+                    'notifiable',
+                    [get_class($user)],
+                    function ($q) use ($user) {
+                        $q->where('id', $user->id);
+                    }
+                )
+                    ->orWhere(function ($q) {
+                        $q->whereNull('notifiable_type')
+                            ->whereNull('notifiable_id');
+                    });
+            })
             ->latest()
-            ->paginate($filters['per_page'] ?? 15)->withQueryString();
+            ->paginate(15);
+
+        return $notifications;
     }
 
 }

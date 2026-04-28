@@ -3,6 +3,7 @@
 namespace App\Livewire\Dashboard\Notifications;
 
 use App\Models\AdminNotification;
+use App\Models\Notification;
 use Livewire\Component;
 use Livewire\WithPagination;
 
@@ -20,7 +21,7 @@ class NotificationsData extends Component
 
     public function deleteItem($id)
     {
-        $item = AdminNotification::find($id);
+        $item = Notification::find($id);
         if ($item) {
             $item->delete();
             $this->dispatch('itemDeleted');
@@ -31,10 +32,11 @@ class NotificationsData extends Component
 
     public function render()
     {
-        $data = AdminNotification::where(function ($query) {
-            $query->where('title', 'like', '%' . $this->search . '%')
-                ->orWhere('message', 'like', '%' . $this->search . '%');
-        })
+        $data = Notification::whereNull('notifiable_type')
+            ->whereNull('notifiable_id')->where(function ($query) {
+                $query->where('title', 'like', '%' . $this->search . '%')
+                    ->orWhere('message', 'like', '%' . $this->search . '%');
+            })
             ->latest()
             ->paginate(10);
         return view('dashboard.notifications.notifications-data', compact('data'));

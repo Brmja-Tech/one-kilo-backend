@@ -5,7 +5,8 @@ namespace App\Livewire\Dashboard\Notifications;
 use App\Livewire\Dashboard\Notifications\NotificationsData;
 use App\Models\AdminNotification;
 use App\Models\Faq;
-use App\Services\Api\Commerce\FirebaseService;
+use App\Models\Notification;
+use App\Services\Api\Order\FirebaseService;
 use App\Services\Dashboard\OrderService;
 use Livewire\Component;
 use CodeZero\UniqueTranslation\UniqueTranslationRule;
@@ -22,14 +23,14 @@ class NotificationsCreate extends Component
                 'string',
                 'min:4',
                 'max:200',
-                UniqueTranslationRule::for('admin_notifications', 'title')
+                UniqueTranslationRule::for('notifications', 'title')
             ],
             'title_en' => [
                 'required',
                 'string',
                 'min:4',
                 'max:200',
-                UniqueTranslationRule::for('admin_notifications', 'title')
+                UniqueTranslationRule::for('notifications', 'title')
             ],
 
             'message_ar'          => 'required|string|min:4|',
@@ -49,14 +50,12 @@ class NotificationsCreate extends Component
             'ar' => $this->message_ar,
             'en' => $this->message_en,
         ];
-        $admin_notifications = AdminNotification::create($data);
+        $admin_notifications = Notification::create($data);
 
 
-      //send firebase notifications
+        //send firebase notifications
         $firebaseService->sendToTopic($data['title']['ar'],$data['message']['ar']);
 
-        //save all notifications
-        $firebaseService->saveAllNotifications($data['title'],$data['message']);
 
         $this->reset('title_ar', 'title_en', 'message_ar', 'message_en');
         $this->dispatch('notificationAddMS');
