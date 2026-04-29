@@ -6,7 +6,8 @@ use App\Livewire\Dashboard\Notifications\NotificationsData;
 use App\Models\AdminNotification;
 use App\Models\Faq;
 use App\Models\Notification;
-use App\Services\Api\Order\FirebaseService;
+use App\Models\User;
+use App\Services\Api\Commerce\FirebaseService;
 use App\Services\Dashboard\OrderService;
 use Livewire\Component;
 use CodeZero\UniqueTranslation\UniqueTranslationRule;
@@ -14,6 +15,17 @@ use CodeZero\UniqueTranslation\UniqueTranslationRule;
 class NotificationsCreate extends Component
 {
     public $title_ar, $title_en, $message_ar, $message_en;
+    public $type = 'all';
+    public $selected_users = [];
+    public $search = '';
+
+    public function updatedType($value)
+    {
+        if ($value == 'all') {
+            $this->selected_users = [];
+            $this->search = '';
+        }
+    }
 
     public function rules()
     {
@@ -35,6 +47,8 @@ class NotificationsCreate extends Component
 
             'message_ar'          => 'required|string|min:4|',
             'message_en'          => 'required|string|min:4|',
+            'type'                => 'required|in:all,specific',
+            'selected_users'      => $this->type == 'specific' ? 'required|array|min:1' : 'nullable',
         ];
     }
 
@@ -50,14 +64,22 @@ class NotificationsCreate extends Component
             'ar' => $this->message_ar,
             'en' => $this->message_en,
         ];
-        $admin_notifications = Notification::create($data);
 
+        if ($this->type == 'all') {
+            Notification::create($data);
+            //send firebase notifications
+            $firebaseService->sendToTopic($data['title']['ar'], $data['message']['ar']);
+        } else {
+            $users = User::whereIn('id', $this->selected_users)->get();
+            foreach ($users as $user) {
+                $user->appNotifications()->create($data);
+                if ($user->fcm_token) {
+                    $firebaseService->sendNotification($user->fcm_token, $data['title']['ar'], $data['message']['ar']);
+                }
+            }
+        }
 
-        //send firebase notifications
-        $firebaseService->sendToTopic($data['title']['ar'],$data['message']['ar']);
-
-
-        $this->reset('title_ar', 'title_en', 'message_ar', 'message_en');
+        $this->reset('title_ar', 'title_en', 'message_ar', 'message_en', 'type', 'selected_users', 'search');
         $this->dispatch('notificationAddMS');
         //hide modal
         $this->dispatch('createModalToggle');
@@ -66,6 +88,23 @@ class NotificationsCreate extends Component
     }
     public function render()
     {
-        return view('dashboard.notifications.notifications-create');
+        $users = [];
+        if ($this->type == 'specific') {
+            $users = User::query()
+                ->whereNotNull('fcm_token')
+                ->where('status', 1)
+                ->when($this->search, function ($q) {
+                    $q->where(function($query) {
+                        $query->where('name', 'like', '%' . $this->search . '%')
+                              ->orWhere('phone', 'like', '%' . $this->search . '%');
+                    });
+                })
+                ->limit(20)
+                ->get();
+        }
+
+        return view('dashboard.notifications.notifications-create', [
+            'users' => $users
+        ]);
     }
 }

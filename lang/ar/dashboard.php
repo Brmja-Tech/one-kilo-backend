@@ -695,4 +695,8 @@ return [
     'message-ar' =>  'الرسالة بالعربية',
     'message-en' =>  ' الرسالة بالانجليزية',
     'notifications' =>  'الاشعارات',
+    'send_to' => 'ارسال الي',
+    'all_users' => 'جميع المستخدمين',
+    'specific_users' => 'مستخدمين محددين',
+    'search_users' => 'بحث عن مستخدمين',
 ];

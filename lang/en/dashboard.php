@@ -696,5 +696,9 @@ return [
     'message-ar' =>  'Message ar',
     'message-en' =>  'Message en',
     'notifications' =>  'Notifications',
+    'send_to' => 'Send To',
+    'all_users' => 'All Users',
+    'specific_users' => 'Specific Users',
+    'search_users' => 'Search Users',
 
 ];
