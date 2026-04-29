@@ -668,6 +668,10 @@ return [
     'vehicle_type' => 'نوع المركبة',
     'deliveries' => 'مناديب التوصيل',
     'create-delivery' => 'انشاء مندوب توصيل',
+    'national_id_image' => 'صورة الهوية الوطنية',
+    'license_image' => 'صورة الرخصة',
+    'vehicle_license_image' => 'صورة رخصة المركبة',
+    'documents' => 'الوثائق والمستندات',
 
     'assign_delivery' => 'تعين مندوب توصيل',
     'assign' => 'تعيين',

@@ -668,6 +668,10 @@ return [
     'vehicle_type' => 'Vehicle Type',
     'deliveries' => 'Deliveries',
     'create-delivery' => 'Create Delivery',
+    'national_id_image' => 'National ID Image',
+    'license_image' => 'License Image',
+    'vehicle_license_image' => 'Vehicle License Image',
+    'documents' => 'Documents',
     'full_name' => 'name',
 
     'assign_delivery' => 'Assign Delivery',

@@ -99,7 +99,56 @@
                         </ul>
                     </div>
                 </div>
-
+                <!-- Documents Card -->
+                <div class="card mt-2">
+                    <div class="card-body">
+                        <h4 class="fw-bolder border-bottom pb-50 mb-1">{{ __('dashboard.documents') }}</h4>
+                        <div class="row">
+                            <div class="col-12 mb-2">
+                                <p class="fw-bolder mb-0">{{ __('dashboard.national_id_image') }}</p>
+                                <div class="mt-1 position-relative">
+                                    <a href="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}" target="_blank">
+                                        <img src="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}" 
+                                             class="img-fluid rounded shadow-sm border w-100" 
+                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
+                                             alt="{{ __('dashboard.national_id_image') }}">
+                                        <div class="position-absolute top-0 end-0 p-50">
+                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12 mb-2">
+                                <p class="fw-bolder mb-0">{{ __('dashboard.license_image') }}</p>
+                                <div class="mt-1 position-relative">
+                                    <a href="{{ asset($user->license_image ?: 'uploads/images/image.png') }}" target="_blank">
+                                        <img src="{{ asset($user->license_image ?: 'uploads/images/image.png') }}" 
+                                             class="img-fluid rounded shadow-sm border w-100" 
+                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
+                                             alt="{{ __('dashboard.license_image') }}">
+                                        <div class="position-absolute top-0 end-0 p-50">
+                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                            <div class="col-12">
+                                <p class="fw-bolder mb-0">{{ __('dashboard.vehicle_license_image') }}</p>
+                                <div class="mt-1 position-relative">
+                                    <a href="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}" target="_blank">
+                                        <img src="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}" 
+                                             class="img-fluid rounded shadow-sm border w-100" 
+                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
+                                             alt="{{ __('dashboard.vehicle_license_image') }}">
+                                        <div class="position-absolute top-0 end-0 p-50">
+                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                        </div>
+                                    </a>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
             </div>
             <div class="col-xl-9 col-lg-7 col-md-7 order-0 order-md-1">
 
