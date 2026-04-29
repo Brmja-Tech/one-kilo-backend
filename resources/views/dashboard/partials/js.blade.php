@@ -426,7 +426,7 @@
 
 
     let audioUnlocked = false;
-    const orderSound = new Audio('/sounds/sound.mp3');
+    const orderSound = new Audio('/sounds/sounds.mp3');
 
     function unlockAudio() {
         if (audioUnlocked) return;
