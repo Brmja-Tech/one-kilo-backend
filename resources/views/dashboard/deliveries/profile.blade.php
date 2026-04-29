@@ -54,22 +54,21 @@
                             <span class="badge bg-light-{{ $user->email_verified_at ? 'success' : 'warning' }}">
                                 {{ $user->email_verified_at ? __('dashboard.verified') : __('dashboard.not-verified') }}
                             </span>
-                            <span class="badge
+                            <span
+                                class="badge
     {{ $user->status == 'approved' ? 'bg-success' : '' }}
     {{ $user->status == 'pending' ? 'bg-warning' : '' }}
     {{ $user->status == 'rejected' ? 'bg-danger' : '' }}">
 
-    {{
-        $user->status == 'approved' ? __('Approved') :
-        ($user->status == 'pending' ? __('Pending') : __('Rejected'))
-    }}
-</span>
+                                {{ $user->status == 'approved' ? __('Approved') : ($user->status == 'pending' ? __('Pending') : __('Rejected')) }}
+                            </span>
                         </div>
 
 
 
 
-                        <h4 class="fw-bolder border-bottom pb-50 mb-1">{{ __('dashboard.details-for') }} {{ $user->full_name }}</h4>
+                        <h4 class="fw-bolder border-bottom pb-50 mb-1">{{ __('dashboard.details-for') }}
+                            {{ $user->full_name }}</h4>
 
                         <ul class="list-unstyled mb-0">
                             <li class="mb-75">
@@ -107,13 +106,15 @@
                             <div class="col-12 mb-2">
                                 <p class="fw-bolder mb-0">{{ __('dashboard.national_id_image') }}</p>
                                 <div class="mt-1 position-relative">
-                                    <a href="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}" target="_blank">
-                                        <img src="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}" 
-                                             class="img-fluid rounded shadow-sm border w-100" 
-                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
-                                             alt="{{ __('dashboard.national_id_image') }}">
+                                    <a href="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}"
+                                        target="_blank">
+                                        <img src="{{ asset($user->national_id_image ?: 'uploads/images/image.png') }}"
+                                            class="img-fluid rounded shadow-sm border w-100"
+                                            style="height: 140px; object-fit: cover; cursor: zoom-in;"
+                                            alt="{{ __('dashboard.national_id_image') }}">
                                         <div class="position-absolute top-0 end-0 p-50">
-                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                            <span class="badge bg-primary opacity-75"><i
+                                                    class="fa-solid fa-expand"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -121,13 +122,15 @@
                             <div class="col-12 mb-2">
                                 <p class="fw-bolder mb-0">{{ __('dashboard.license_image') }}</p>
                                 <div class="mt-1 position-relative">
-                                    <a href="{{ asset($user->license_image ?: 'uploads/images/image.png') }}" target="_blank">
-                                        <img src="{{ asset($user->license_image ?: 'uploads/images/image.png') }}" 
-                                             class="img-fluid rounded shadow-sm border w-100" 
-                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
-                                             alt="{{ __('dashboard.license_image') }}">
+                                    <a href="{{ asset($user->license_image ?: 'uploads/images/image.png') }}"
+                                        target="_blank">
+                                        <img src="{{ asset($user->license_image ?: 'uploads/images/image.png') }}"
+                                            class="img-fluid rounded shadow-sm border w-100"
+                                            style="height: 140px; object-fit: cover; cursor: zoom-in;"
+                                            alt="{{ __('dashboard.license_image') }}">
                                         <div class="position-absolute top-0 end-0 p-50">
-                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                            <span class="badge bg-primary opacity-75"><i
+                                                    class="fa-solid fa-expand"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -135,13 +138,15 @@
                             <div class="col-12">
                                 <p class="fw-bolder mb-0">{{ __('dashboard.vehicle_license_image') }}</p>
                                 <div class="mt-1 position-relative">
-                                    <a href="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}" target="_blank">
-                                        <img src="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}" 
-                                             class="img-fluid rounded shadow-sm border w-100" 
-                                             style="height: 140px; object-fit: cover; cursor: zoom-in;" 
-                                             alt="{{ __('dashboard.vehicle_license_image') }}">
+                                    <a href="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}"
+                                        target="_blank">
+                                        <img src="{{ asset($user->vehicle_license_image ?: 'uploads/images/image.png') }}"
+                                            class="img-fluid rounded shadow-sm border w-100"
+                                            style="height: 140px; object-fit: cover; cursor: zoom-in;"
+                                            alt="{{ __('dashboard.vehicle_license_image') }}">
                                         <div class="position-absolute top-0 end-0 p-50">
-                                            <span class="badge bg-primary opacity-75"><i class="fa-solid fa-expand"></i></span>
+                                            <span class="badge bg-primary opacity-75"><i
+                                                    class="fa-solid fa-expand"></i></span>
                                         </div>
                                     </a>
                                 </div>
@@ -158,7 +163,7 @@
                             <div class="col-md-5">
                                 <label class="form-label">{{ __('dashboard.date') }}</label>
                                 <input type="date" id="filter_from_date" class="form-control"
-                                       value="{{ request('from_date', now()->toDateString()) }}">
+                                    value="{{ request('from_date', now()->toDateString()) }}">
                             </div>
 
                             <div class="col-md-2">
@@ -172,10 +177,10 @@
 
                 <div id="delivery-report-wrapper">
                     @include('dashboard.partials.delivery-report', [
-                    'statistics' => $statistics,
-                    'orders' => $orders,
-                    'paymentStatusClasses' => $paymentStatusClasses,
-                    'orderStatusClasses' => $orderStatusClasses,
+                        'statistics' => $statistics,
+                        'orders' => $orders,
+                        'paymentStatusClasses' => $paymentStatusClasses,
+                        'orderStatusClasses' => $orderStatusClasses,
                     ])
                 </div>
             </div>
@@ -185,54 +190,54 @@
 
 
 
-<script>
-    console.log('hhh');
-    document.addEventListener('DOMContentLoaded', function () {
-        const fromInput = document.getElementById('filter_from_date');
-        const resetBtn = document.getElementById('reset_filter');
-        const wrapper = document.getElementById('delivery-report-wrapper');
+    <script>
+        console.log('hhh');
+        document.addEventListener('DOMContentLoaded', function() {
+            const fromInput = document.getElementById('filter_from_date');
+            const resetBtn = document.getElementById('reset_filter');
+            const wrapper = document.getElementById('delivery-report-wrapper');
 
-        let timeout = null;
+            let timeout = null;
 
 
-        function loadFilteredData() {
-            const fromDate = fromInput.value;
-            const deliveryId = "{{ $user->id }}";
-            const url = new URL(`/ar/dashboard/delivery/profile/${deliveryId}`, window.location.origin);
-            url.searchParams.set('from_date', fromDate);
+            function loadFilteredData() {
+                const fromDate = fromInput.value;
+                const deliveryId = "{{ $user->id }}";
+                const url = new URL(`/ar/dashboard/delivery/profile/${deliveryId}`, window.location.origin);
+                url.searchParams.set('from_date', fromDate);
 
-            wrapper.style.opacity = '0.6';
+                wrapper.style.opacity = '0.6';
 
-            fetch(url, {
-                headers: {
-                    'X-Requested-With': 'XMLHttpRequest',
-                    'Accept': 'text/html'
-                },
-                credentials: 'same-origin'
-            })
-                .then(response => response.text())
-                .then(html => {
-                    wrapper.innerHTML = html;
-                    wrapper.style.opacity = '1';
-                })
-                .catch(error => {
-                    console.error('Filter error:', error);
-                    wrapper.style.opacity = '1';
-                });
-        }
+                fetch(url, {
+                        headers: {
+                            'X-Requested-With': 'XMLHttpRequest',
+                            'Accept': 'text/html'
+                        },
+                        credentials: 'same-origin'
+                    })
+                    .then(response => response.text())
+                    .then(html => {
+                        wrapper.innerHTML = html;
+                        wrapper.style.opacity = '1';
+                    })
+                    .catch(error => {
+                        console.error('Filter error:', error);
+                        wrapper.style.opacity = '1';
+                    });
+            }
 
-        function delayedLoad() {
-            clearTimeout(timeout);
-            timeout = setTimeout(loadFilteredData, 300);
-        }
+            function delayedLoad() {
+                clearTimeout(timeout);
+                timeout = setTimeout(loadFilteredData, 300);
+            }
 
-        fromInput.addEventListener('change', delayedLoad);
+            fromInput.addEventListener('change', delayedLoad);
 
-        resetBtn.addEventListener('click', function () {
-            const today = "{{ now()->toDateString() }}";
-            fromInput.value = today;
-            loadFilteredData();
+            resetBtn.addEventListener('click', function() {
+                const today = "{{ now()->toDateString() }}";
+                fromInput.value = today;
+                loadFilteredData();
+            });
         });
-    });
-</script>
+    </script>
 @endsection
