@@ -19,14 +19,20 @@ class ProductSummaryResource extends JsonResource
             'sold_quantity' => $this->when(isset($this->sold_quantity), (int) $this->sold_quantity),
             'stock' => $this->when(! $this->hasVariants(), (int) $this->stock),
             'status' => (bool) $this->status,
-            'price_before_discount' => $this->when(! $this->hasVariants(), fn () => $this->priceBeforeDiscount()),
-            'price_after_discount' => $this->when(! $this->hasVariants(), fn () => $this->priceAfterDiscount()),
+            'price_before_discount' => $this->when(! $this->hasVariants(), fn () => $this->asDouble($this->priceBeforeDiscount())),
+            'price' => $this->when(! $this->hasVariants(), fn () => $this->asDouble($this->priceAfterDiscount())),
+            'price_after_discount' => $this->when(! $this->hasVariants(), fn () => $this->asDouble($this->priceAfterDiscount())),
             'has_active_discount' => $this->when(! $this->hasVariants(), fn () => $this->hasActiveDiscount()),
             'price_range' => $this->when($this->hasVariants(), [
-                'min' => (double) $this->minVariantPrice(),
-                'max' => (double) $this->maxVariantPrice(),
+                'min' => $this->asDouble($this->minVariantPrice()),
+                'max' => $this->asDouble($this->maxVariantPrice()),
             ]),
             'is_favorite' => (bool) ($this->is_favorite ?? false),
         ];
+    }
+
+    private function asDouble(?float $value): ?float
+    {
+        return $value === null ? null : (double) $value;
     }
 }

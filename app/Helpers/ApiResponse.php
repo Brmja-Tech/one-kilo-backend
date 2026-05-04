@@ -17,6 +17,6 @@ class ApiResponse
             $response['pagination'] = $pagination;
         }
 
-        return response()->json($response, $code);
+        return response()->json($response, $code, [], JSON_PRESERVE_ZERO_FRACTION);
     }
 }
