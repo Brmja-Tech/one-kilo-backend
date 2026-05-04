@@ -20,7 +20,7 @@ class ProductSkuResource extends JsonResource
             'price' => (double) $finalPrice,
             'discount' => [
                 'is_active' => (bool) $this->hasActiveDiscount(),
-                'amount' => (float) $this->activeDiscountAmount(),
+                'amount' => (int) $this->activeDiscountAmount(),
             ],
             'quantity' => (int) $this->quantity,
             'sku' => $this->sku,
