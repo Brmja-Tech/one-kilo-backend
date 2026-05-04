@@ -16,8 +16,8 @@ class ProductSkuResource extends JsonResource
         return [
             'id' => (int) $this->id,
             'attributes' => $this->attributesPayload(),
-            'price_before_discount' => (float) $basePrice,
-            'price' => (float) $finalPrice,
+            'price_before_discount' => (double) $basePrice,
+            'price' => (double) $finalPrice,
             'discount' => [
                 'is_active' => (bool) $this->hasActiveDiscount(),
                 'amount' => (float) $this->activeDiscountAmount(),
