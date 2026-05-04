@@ -19,9 +19,9 @@ class ProductSummaryResource extends JsonResource
             'sold_quantity' => $this->when(isset($this->sold_quantity), (int) $this->sold_quantity),
             'stock' => $this->when(! $this->hasVariants(), (int) $this->stock),
             'status' => (bool) $this->status,
-            'price_before_discount' =>(double) $this->when(! $this->hasVariants(), $this->priceBeforeDiscount()),
-            'price_after_discount' => (double) $this->when(! $this->hasVariants(), $this->priceAfterDiscount()),
-            'has_active_discount' => (double) $this->when(! $this->hasVariants(), $this->hasActiveDiscount()),
+            'price_before_discount' => $this->when(! $this->hasVariants(), fn () => $this->priceBeforeDiscount()),
+            'price_after_discount' => $this->when(! $this->hasVariants(), fn () => $this->priceAfterDiscount()),
+            'has_active_discount' => $this->when(! $this->hasVariants(), fn () => $this->hasActiveDiscount()),
             'price_range' => $this->when($this->hasVariants(), [
                 'min' => (double) $this->minVariantPrice(),
                 'max' => (double) $this->maxVariantPrice(),
