@@ -117,6 +117,7 @@ class KashierSessionService
     protected function extractSessionId(array $response): ?string
     {
         $candidates = [
+            data_get($response, '_id'),
             data_get($response, 'sessionId'),
             data_get($response, 'session.id'),
             data_get($response, 'data.sessionId'),
