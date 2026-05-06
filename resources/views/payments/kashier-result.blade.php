@@ -134,7 +134,7 @@
                     </div>
                 @endif
 
-                <a class="btn" href="https://admin.hyberonekilo.com/api/payment-callback?status={{ $state }}&order_number={{ $orderNumber }}">
+                <a class="btn" href="https://admin.hyberonekilo.com/api/payment-callback?status={{ $state === 'success' ? 'true' : 'false' }}&order_number={{ $orderNumber }}">
                     {{ $buttonText }}
                 </a>
 
