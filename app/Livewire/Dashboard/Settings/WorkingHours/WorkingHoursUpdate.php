@@ -42,7 +42,7 @@ class WorkingHoursUpdate extends Component
             ],
 
             'open_time'          => 'required',
-            'close_time'          => 'required|after:open_time',
+            'close_time'          => 'required',
             'status'             => 'required|in:open,close,busy',
         ];
     }
