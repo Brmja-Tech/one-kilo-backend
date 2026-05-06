@@ -32,7 +32,7 @@ Route::get('/workingHours',      [SettingsController::class, 'workingHours']);
 ## ================== LOOKUPS (Mobile) ================== ##
 Route::get('/countries',                            [LocationController::class, 'countries']);
 Route::get('/countries/{country_id}/governorates',  [LocationController::class, 'governorates']);
-Route::get('/governorates/{governorate_id}/regions',[LocationController::class, 'regions']);
+Route::get('/governorates/{governorate_id}/regions', [LocationController::class, 'regions']);
 ## ================== LOOKUPS (Mobile) ==================
 
 ## ------------------ AUTH ROUTES ------------------ ##
@@ -45,7 +45,7 @@ Route::controller(AuthController::class)->group(function () {
     Route::post('/firebase-login',       [AuthController::class, 'firebaseLogin']);
 
     Route::middleware('auth:sanctum')->group(function () {
-      Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
+        Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
     });
 });
 ## ------------------ AUTH ROUTES ------------------ ##
@@ -118,13 +118,11 @@ Route::prefix('delivery')->group(function () {
         Route::post('/forgot/verify-otp',     [DeliveryForgotController::class, 'verifyOtp']);
         Route::post('/forgot/resend-otp',     [DeliveryForgotController::class, 'resendOtp']);
         Route::post('/forgot/reset-password', [DeliveryForgotController::class, 'resetPassword']);
-
-
     });
 
     Route::post('/logout', [DeliveryAuthController::class, 'logout'])->middleware('auth:sanctum');
-    Route::get('/getProfile',       [DeliveryAuthController::class,'getProfile'])->middleware('auth:sanctum');
-    Route::post('/updateProfile',       [DeliveryAuthController::class,'updateProfile'])->middleware('auth:sanctum');
+    Route::get('/getProfile',       [DeliveryAuthController::class, 'getProfile'])->middleware('auth:sanctum');
+    Route::post('/updateProfile',       [DeliveryAuthController::class, 'updateProfile'])->middleware('auth:sanctum');
     Route::post('/firebase-login', [DeliveryAuthController::class, 'firebaseLogin']);
 
 
@@ -137,8 +135,5 @@ Route::prefix('delivery')->group(function () {
         Route::get('/notifications', [\App\Http\Controllers\Api\NotificationsController::class, 'notifications']);
         Route::post('/test', [\App\Http\Controllers\Api\NotificationsController::class, 'test']);
         Route::post('/update-location', [DeliveryAuthController::class, 'updateLocation']);
-
     });
-
 });
-

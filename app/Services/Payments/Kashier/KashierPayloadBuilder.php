@@ -46,12 +46,14 @@ class KashierPayloadBuilder
             // Kashier requires "amount" to be a string (e.g. "188.89").
             'amount' => (string) $payment->amount,
             'currency' => (string) config('kashier.currency', 'EGP'),
-            'merchantOrderId' => (string) $payment->merchant_order_id,
-            // 'orderid' => (string) $payment->merchant_order_id,
+            'order' => (string) $payment->merchant_order_id,
             'merchantId' => (string) config('kashier.merchant_id'),
-            // 'mode' => $this->resolveMode(),
             'merchantRedirect' => $merchantRedirectUrl,
             'type' => (string) config('kashier.type', 'external'),
+            'paymentType' => 'credit',
+            'allowedMethods' => 'card,wallet',
+            'enable3DS' => true,
+            'interactionSource' => 'ECOMMERCE',
 
             // Minimal optional fields kept in the stable integration
             'serverWebhook' => $serverWebhookUrl,
