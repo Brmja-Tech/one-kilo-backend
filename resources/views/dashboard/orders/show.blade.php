@@ -428,11 +428,14 @@
                                                 </td>
                                                 <td>
                                                     <div class="fw-semibold">{{ $item->product_name }}</div>
+                                                    @if ($item->sku_label)
+                                                        <div class="small text-muted mb-25">{{ $item->sku_label }}</div>
+                                                    @endif
                                                     @if ($item->product_id)
                                                         <small class="text-muted">#{{ $item->product_id }}</small>
                                                     @endif
                                                 </td>
-                                                <td>{{ $item->product?->sku ?? '-' }}</td>
+                                                <td>{{ $item->sku?->sku ?? $item->product?->sku ?? '-' }}</td>
                                                 <td>{{ $item->quantity }}</td>
                                                 <td>{{ number_format((float) $item->unit_price, 2) }}</td>
                                                 <td>{{ number_format((float) $item->line_total, 2) }}</td>

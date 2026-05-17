@@ -425,8 +425,10 @@
                     <tbody>
                         @forelse ($order->items as $item)
                             @php
+                                $sku = $item->sku?->sku ?? $item->product?->sku;
                                 $itemMeta = collect([
-                                    $item->product?->sku ? __('dashboard.sku') . ': ' . $item->product->sku : null,
+                                    $item->sku_label ?: null,
+                                    $sku ? __('dashboard.sku') . ': ' . $sku : null,
                                     $item->product_id ? 'ID: #' . $item->product_id : null,
                                 ])->filter()->implode(' | ');
                             @endphp
