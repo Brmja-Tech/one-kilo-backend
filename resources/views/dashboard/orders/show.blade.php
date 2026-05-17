@@ -428,8 +428,9 @@
                                                 </td>
                                                 <td>
                                                     <div class="fw-semibold">{{ $item->product_name }}</div>
-                                                    @if ($item->sku_label)
-                                                        <div class="small text-muted mb-25">{{ $item->sku_label }}</div>
+                                                    @php $skuLabel = $item->sku_label ?: $item->sku?->label(); @endphp
+                                                    @if ($skuLabel)
+                                                        <div class="small text-muted mb-25">{{ $skuLabel }}</div>
                                                     @endif
                                                     @if ($item->product_id)
                                                         <small class="text-muted">#{{ $item->product_id }}</small>

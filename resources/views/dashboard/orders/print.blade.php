@@ -426,8 +426,9 @@
                         @forelse ($order->items as $item)
                             @php
                                 $sku = $item->sku?->sku ?? $item->product?->sku;
+                                $skuLabel = $item->sku_label ?: $item->sku?->label();
                                 $itemMeta = collect([
-                                    $item->sku_label ?: null,
+                                    $skuLabel ?: null,
                                     $sku ? __('dashboard.sku') . ': ' . $sku : null,
                                     $item->product_id ? 'ID: #' . $item->product_id : null,
                                 ])->filter()->implode(' | ');
