@@ -18,8 +18,9 @@ class OrderRepository
             'address.region:id,governorate_id,name,shipping_price',
             'coupon:id,code',
             'walletTransaction:id,wallet_id,user_id,order_id,type,transaction_type,amount,balance_before,balance_after,reference,notes,status,created_at',
-            'items:id,order_id,product_id,product_name,product_image,unit_price,quantity,line_total',
+            'items:id,order_id,product_id,product_sku_id,sku_label,product_name,product_image,unit_price,quantity,line_total',
             'items.product:id,sku,slug',
+            'items.sku',
             'statusLogs.changedByAdmin:id,name',
         ]);
     }
